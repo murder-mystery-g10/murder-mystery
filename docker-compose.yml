@@ -1,0 +1,43 @@
+name: murder-mystery
+
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  ai-service:
+    build: { context: ., dockerfile: ai-service/Dockerfile }
+    environment:
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY}
+    ports: ["8001:8001"]
+
+  backend:
+    build: { context: ., dockerfile: backend/Dockerfile }
+    environment:
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      AI_SERVICE_URL: http://ai-service:8001
+      CORS_ORIGINS: '["http://localhost:8080", "http://localhost:5173"]'
+    ports: ["8000:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      ai-service: { condition: service_started }
+
+  frontend:
+    build: { context: ., dockerfile: frontend/Dockerfile }
+    ports: ["8080:8080"]
+    depends_on: [backend]
+
+volumes:
+  pgdata:

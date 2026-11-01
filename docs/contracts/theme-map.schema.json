@@ -1,0 +1,182 @@
+{
+  "$defs": {
+    "Door": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "to": {
+          "description": "Target room id, or 'station' for the police station",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "To",
+          "type": "string"
+        },
+        "zone": {
+          "items": {
+            "$ref": "#/$defs/Point"
+          },
+          "minItems": 3,
+          "title": "Zone",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "to",
+        "zone"
+      ],
+      "title": "Door",
+      "type": "object"
+    },
+    "MapObject": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Unique in the whole map, by convention '<room>.<object>'",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "zone": {
+          "items": {
+            "$ref": "#/$defs/Point"
+          },
+          "minItems": 3,
+          "title": "Zone",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "zone"
+      ],
+      "title": "MapObject",
+      "type": "object"
+    },
+    "MapRoom": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "description": "Display name shown to players (Romanian)",
+          "title": "Name",
+          "type": "string"
+        },
+        "image": {
+          "description": "Background image path, relative to the theme folder",
+          "title": "Image",
+          "type": "string"
+        },
+        "objects": {
+          "items": {
+            "$ref": "#/$defs/MapObject"
+          },
+          "title": "Objects",
+          "type": "array"
+        },
+        "doors": {
+          "items": {
+            "$ref": "#/$defs/Door"
+          },
+          "title": "Doors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "image",
+        "objects",
+        "doors"
+      ],
+      "title": "MapRoom",
+      "type": "object"
+    },
+    "Point": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "description": "Percent of the image width",
+          "maximum": 100,
+          "minimum": 0,
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "description": "Percent of the image height",
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "title": "Point",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "theme_id": {
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.-]+$",
+      "title": "Theme Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "station_image": {
+      "description": "Police station image, relative to the theme folder",
+      "title": "Station Image",
+      "type": "string"
+    },
+    "rooms": {
+      "items": {
+        "$ref": "#/$defs/MapRoom"
+      },
+      "minItems": 1,
+      "title": "Rooms",
+      "type": "array"
+    }
+  },
+  "required": [
+    "theme_id",
+    "name",
+    "station_image",
+    "rooms"
+  ],
+  "title": "ThemeMap",
+  "type": "object"
+}

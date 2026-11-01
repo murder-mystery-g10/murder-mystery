@@ -37,3 +37,15 @@ async def test_ping_answers_pong() -> None:
     sio = create_socket_server(cors_origins=[])
     handler = sio.handlers["/"]["system:ping"]
     assert await handler("some-sid", None) == {"message": "pong"}
+
+
+def test_game_rest_api_is_documented() -> None:
+    with TestClient(create_app(UNREACHABLE)) as client:
+        paths = client.get("/api/openapi.json").json()["paths"]
+    for path in (
+        "/api/lobbies",
+        "/api/lobbies/{code}/join",
+        "/api/cases",
+        "/api/themes/{theme_id}/map",
+    ):
+        assert path in paths

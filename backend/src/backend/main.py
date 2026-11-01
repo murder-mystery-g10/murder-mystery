@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.ai_client import AIClient
 from backend.config import Settings, get_settings
 from backend.db import create_engine
+from backend.game_routes import router as game_router
 from backend.meta import SERVICE_VERSION
 from backend.routes import router
 from backend.sockets import create_socket_server
@@ -43,6 +44,7 @@ def create_app(settings: Settings | None = None) -> socketio.ASGIApp:
         allow_headers=["*"],
     )
     api.include_router(router)
+    api.include_router(game_router)
 
     sio = create_socket_server(settings.cors_origins)
     return socketio.ASGIApp(sio, other_asgi_app=api)

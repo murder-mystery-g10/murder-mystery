@@ -1,0 +1,1587 @@
+{
+  "$defs": {
+    "AccusationChoices": {
+      "additionalProperties": false,
+      "properties": {
+        "culprit": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Culprit",
+          "type": "string"
+        },
+        "motive": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Motive",
+          "type": "string"
+        },
+        "method": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Method",
+          "type": "string"
+        }
+      },
+      "required": [
+        "culprit",
+        "motive",
+        "method"
+      ],
+      "title": "AccusationChoices",
+      "type": "object"
+    },
+    "AccusationOption": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "text"
+      ],
+      "title": "AccusationOption",
+      "type": "object"
+    },
+    "AccusationOptions": {
+      "additionalProperties": false,
+      "description": "The culprit is chosen among the suspects.",
+      "properties": {
+        "motive_options": {
+          "items": {
+            "$ref": "#/$defs/AccusationOption"
+          },
+          "title": "Motive Options",
+          "type": "array"
+        },
+        "method_options": {
+          "items": {
+            "$ref": "#/$defs/AccusationOption"
+          },
+          "title": "Method Options",
+          "type": "array"
+        }
+      },
+      "required": [
+        "motive_options",
+        "method_options"
+      ],
+      "title": "AccusationOptions",
+      "type": "object"
+    },
+    "AccusationProposal": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "proposed_by": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Proposed By",
+          "type": "string"
+        },
+        "choices": {
+          "$ref": "#/$defs/AccusationChoices"
+        },
+        "votes": {
+          "description": "Player id -> accepted; all must accept",
+          "patternProperties": {
+            "^[A-Za-z0-9_.-]+$": {
+              "type": "boolean"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 64,
+            "minLength": 1
+          },
+          "title": "Votes",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "proposed_by",
+        "choices",
+        "votes"
+      ],
+      "title": "AccusationProposal",
+      "type": "object"
+    },
+    "AccusationState": {
+      "additionalProperties": false,
+      "properties": {
+        "proposal": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AccusationProposal"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "None after a rejection"
+        }
+      },
+      "required": [
+        "proposal"
+      ],
+      "title": "AccusationState",
+      "type": "object"
+    },
+    "Ack": {
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Shown to the player when ok is false",
+          "title": "Error"
+        }
+      },
+      "required": [
+        "ok"
+      ],
+      "title": "Ack",
+      "type": "object"
+    },
+    "Ask": {
+      "additionalProperties": false,
+      "properties": {
+        "suspect": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Suspect",
+          "type": "string"
+        },
+        "question": {
+          "maxLength": 300,
+          "minLength": 1,
+          "title": "Question",
+          "type": "string"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Clue or quote id from the board",
+          "title": "Evidence"
+        }
+      },
+      "required": [
+        "suspect",
+        "question"
+      ],
+      "title": "Ask",
+      "type": "object"
+    },
+    "BoardAddNote": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "text",
+        "x",
+        "y"
+      ],
+      "title": "BoardAddNote",
+      "type": "object"
+    },
+    "BoardConnect": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Source",
+          "type": "string"
+        },
+        "target": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "target"
+      ],
+      "title": "BoardConnect",
+      "type": "object"
+    },
+    "BoardEditNote": {
+      "additionalProperties": false,
+      "properties": {
+        "item": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Item",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "item",
+        "text"
+      ],
+      "title": "BoardEditNote",
+      "type": "object"
+    },
+    "BoardItem": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/BoardItemKind"
+        },
+        "ref": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Clue, suspect or interrogation entry id",
+          "title": "Ref"
+        },
+        "text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Note text",
+          "title": "Text"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        },
+        "added_by": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Added By",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "x",
+        "y",
+        "added_by"
+      ],
+      "title": "BoardItem",
+      "type": "object"
+    },
+    "BoardItemKind": {
+      "enum": [
+        "clue",
+        "suspect",
+        "note",
+        "quote"
+      ],
+      "title": "BoardItemKind",
+      "type": "string"
+    },
+    "BoardLink": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Source",
+          "type": "string"
+        },
+        "target": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "target"
+      ],
+      "title": "BoardLink",
+      "type": "object"
+    },
+    "BoardMove": {
+      "additionalProperties": false,
+      "properties": {
+        "item": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Item",
+          "type": "string"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "item",
+        "x",
+        "y"
+      ],
+      "title": "BoardMove",
+      "type": "object"
+    },
+    "BoardPin": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "clue",
+            "suspect",
+            "quote"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "ref": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Ref",
+          "type": "string"
+        },
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        }
+      },
+      "required": [
+        "kind",
+        "ref",
+        "x",
+        "y"
+      ],
+      "title": "BoardPin",
+      "type": "object"
+    },
+    "BoardRemove": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Item or link id",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ],
+      "title": "BoardRemove",
+      "type": "object"
+    },
+    "BoardState": {
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/$defs/BoardItem"
+          },
+          "title": "Items",
+          "type": "array"
+        },
+        "links": {
+          "items": {
+            "$ref": "#/$defs/BoardLink"
+          },
+          "title": "Links",
+          "type": "array"
+        }
+      },
+      "required": [
+        "items",
+        "links"
+      ],
+      "title": "BoardState",
+      "type": "object"
+    },
+    "Briefing": {
+      "additionalProperties": false,
+      "properties": {
+        "when": {
+          "title": "When",
+          "type": "string"
+        },
+        "where": {
+          "title": "Where",
+          "type": "string"
+        },
+        "victim": {
+          "$ref": "#/$defs/Person"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        },
+        "discovery": {
+          "title": "Discovery",
+          "type": "string"
+        },
+        "coroner_report": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Coroner Report",
+          "type": "array"
+        },
+        "story_hooks": {
+          "items": {
+            "$ref": "#/$defs/StoryHook"
+          },
+          "title": "Story Hooks",
+          "type": "array"
+        }
+      },
+      "required": [
+        "when",
+        "where",
+        "victim",
+        "summary",
+        "discovery",
+        "coroner_report"
+      ],
+      "title": "Briefing",
+      "type": "object"
+    },
+    "CaseSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "difficulty": {
+          "$ref": "#/$defs/Difficulty"
+        },
+        "player_count": {
+          "title": "Player Count",
+          "type": "integer"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "title",
+        "difficulty",
+        "player_count",
+        "summary"
+      ],
+      "title": "CaseSummary",
+      "type": "object"
+    },
+    "ClueCard": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "icon": {
+          "$ref": "#/$defs/ClueIcon"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "room": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Room",
+          "type": "string"
+        },
+        "found_by": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Found By",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "icon",
+        "text",
+        "room",
+        "found_by"
+      ],
+      "title": "ClueCard",
+      "type": "object"
+    },
+    "ClueIcon": {
+      "enum": [
+        "letter",
+        "document",
+        "bottle",
+        "key",
+        "photo",
+        "item"
+      ],
+      "title": "ClueIcon",
+      "type": "string"
+    },
+    "CreateLobbyRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "player_name": {
+          "maxLength": 24,
+          "minLength": 1,
+          "title": "Player Name",
+          "type": "string"
+        },
+        "solo": {
+          "default": false,
+          "description": "Solo test mode: one player sees every room",
+          "title": "Solo",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "player_name"
+      ],
+      "title": "CreateLobbyRequest",
+      "type": "object"
+    },
+    "Difficulty": {
+      "enum": [
+        "easy",
+        "normal",
+        "hard"
+      ],
+      "title": "Difficulty",
+      "type": "string"
+    },
+    "Emotion": {
+      "enum": [
+        "calm",
+        "nervous",
+        "angry",
+        "sad",
+        "arrogant",
+        "broken"
+      ],
+      "title": "Emotion",
+      "type": "string"
+    },
+    "EnterRoom": {
+      "additionalProperties": false,
+      "properties": {
+        "room": {
+          "description": "Room id, or 'station'",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Room",
+          "type": "string"
+        }
+      },
+      "required": [
+        "room"
+      ],
+      "title": "EnterRoom",
+      "type": "object"
+    },
+    "GameResult": {
+      "additionalProperties": false,
+      "properties": {
+        "chosen": {
+          "$ref": "#/$defs/AccusationChoices"
+        },
+        "correct": {
+          "$ref": "#/$defs/AccusationChoices"
+        },
+        "score": {
+          "$ref": "#/$defs/ScoreBreakdown"
+        },
+        "reveal": {
+          "title": "Reveal",
+          "type": "string"
+        },
+        "missed_clues": {
+          "items": {
+            "$ref": "#/$defs/MissedClue"
+          },
+          "title": "Missed Clues",
+          "type": "array"
+        }
+      },
+      "required": [
+        "chosen",
+        "correct",
+        "score",
+        "reveal",
+        "missed_clues"
+      ],
+      "title": "GameResult",
+      "type": "object"
+    },
+    "GameSnapshot": {
+      "additionalProperties": false,
+      "description": "Everything one player may see. Sent at the start and on every (re)connect.",
+      "properties": {
+        "lobby": {
+          "$ref": "#/$defs/LobbyState"
+        },
+        "you": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "You",
+          "type": "string"
+        },
+        "theme": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Theme",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "briefing": {
+          "$ref": "#/$defs/Briefing"
+        },
+        "rooms": {
+          "items": {
+            "$ref": "#/$defs/RoomAccess"
+          },
+          "title": "Rooms",
+          "type": "array"
+        },
+        "notebook": {
+          "items": {
+            "$ref": "#/$defs/ClueCard"
+          },
+          "title": "Notebook",
+          "type": "array"
+        },
+        "board": {
+          "$ref": "#/$defs/BoardState"
+        },
+        "suspects": {
+          "items": {
+            "$ref": "#/$defs/SuspectCard"
+          },
+          "title": "Suspects",
+          "type": "array"
+        },
+        "interrogations": {
+          "items": {
+            "$ref": "#/$defs/SuspectInterrogation"
+          },
+          "title": "Interrogations",
+          "type": "array"
+        },
+        "accusation_options": {
+          "$ref": "#/$defs/AccusationOptions"
+        },
+        "accusation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AccusationProposal"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "lobby",
+        "you",
+        "theme",
+        "started_at",
+        "briefing",
+        "rooms",
+        "notebook",
+        "board",
+        "suspects",
+        "interrogations",
+        "accusation_options"
+      ],
+      "title": "GameSnapshot",
+      "type": "object"
+    },
+    "InspectAck": {
+      "additionalProperties": false,
+      "properties": {
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Shown to the player when ok is false",
+          "title": "Error"
+        },
+        "clues": {
+          "description": "Empty: 'Nimic interesant'",
+          "items": {
+            "$ref": "#/$defs/ClueCard"
+          },
+          "title": "Clues",
+          "type": "array"
+        }
+      },
+      "required": [
+        "ok"
+      ],
+      "title": "InspectAck",
+      "type": "object"
+    },
+    "InspectObject": {
+      "additionalProperties": false,
+      "properties": {
+        "object": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Object",
+          "type": "string"
+        }
+      },
+      "required": [
+        "object"
+      ],
+      "title": "InspectObject",
+      "type": "object"
+    },
+    "InterrogationAnswer": {
+      "additionalProperties": false,
+      "properties": {
+        "entry": {
+          "$ref": "#/$defs/InterrogationEntry"
+        },
+        "questions_left": {
+          "title": "Questions Left",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "entry",
+        "questions_left"
+      ],
+      "title": "InterrogationAnswer",
+      "type": "object"
+    },
+    "InterrogationEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "suspect": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Suspect",
+          "type": "string"
+        },
+        "asked_by": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Asked By",
+          "type": "string"
+        },
+        "question": {
+          "title": "Question",
+          "type": "string"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evidence"
+        },
+        "answer": {
+          "title": "Answer",
+          "type": "string"
+        },
+        "emotion": {
+          "$ref": "#/$defs/Emotion"
+        },
+        "intensity": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Intensity",
+          "type": "number"
+        }
+      },
+      "required": [
+        "id",
+        "suspect",
+        "asked_by",
+        "question",
+        "answer",
+        "emotion",
+        "intensity"
+      ],
+      "title": "InterrogationEntry",
+      "type": "object"
+    },
+    "JoinLobbyRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "player_name": {
+          "maxLength": 24,
+          "minLength": 1,
+          "title": "Player Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "player_name"
+      ],
+      "title": "JoinLobbyRequest",
+      "type": "object"
+    },
+    "LobbySession": {
+      "additionalProperties": false,
+      "properties": {
+        "lobby_code": {
+          "title": "Lobby Code",
+          "type": "string"
+        },
+        "player_id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Player Id",
+          "type": "string"
+        },
+        "player_token": {
+          "description": "Secret; sent as auth in the Socket.IO handshake",
+          "title": "Player Token",
+          "type": "string"
+        }
+      },
+      "required": [
+        "lobby_code",
+        "player_id",
+        "player_token"
+      ],
+      "title": "LobbySession",
+      "type": "object"
+    },
+    "LobbyState": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/LobbyStatus"
+        },
+        "solo": {
+          "title": "Solo",
+          "type": "boolean"
+        },
+        "players": {
+          "items": {
+            "$ref": "#/$defs/Player"
+          },
+          "title": "Players",
+          "type": "array"
+        },
+        "case": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CaseSummary"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "code",
+        "status",
+        "solo",
+        "players"
+      ],
+      "title": "LobbyState",
+      "type": "object"
+    },
+    "LobbyStatus": {
+      "enum": [
+        "waiting",
+        "playing",
+        "finished"
+      ],
+      "title": "LobbyStatus",
+      "type": "string"
+    },
+    "MissedClue": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "icon": {
+          "$ref": "#/$defs/ClueIcon"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "room": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Room",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "icon",
+        "text",
+        "room"
+      ],
+      "title": "MissedClue",
+      "type": "object"
+    },
+    "Person": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "age": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Age"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "description"
+      ],
+      "title": "Person",
+      "type": "object"
+    },
+    "Ping": {
+      "additionalProperties": false,
+      "description": "Empty payload.",
+      "properties": {},
+      "title": "Ping",
+      "type": "object"
+    },
+    "Player": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "is_host": {
+          "title": "Is Host",
+          "type": "boolean"
+        },
+        "connected": {
+          "title": "Connected",
+          "type": "boolean"
+        },
+        "location": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Room id, 'station', or null",
+          "title": "Location"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "is_host",
+        "connected"
+      ],
+      "title": "Player",
+      "type": "object"
+    },
+    "Pong": {
+      "additionalProperties": false,
+      "properties": {
+        "message": {
+          "const": "pong",
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "message"
+      ],
+      "title": "Pong",
+      "type": "object"
+    },
+    "PresenceUpdate": {
+      "additionalProperties": false,
+      "properties": {
+        "players": {
+          "items": {
+            "$ref": "#/$defs/Player"
+          },
+          "title": "Players",
+          "type": "array"
+        }
+      },
+      "required": [
+        "players"
+      ],
+      "title": "PresenceUpdate",
+      "type": "object"
+    },
+    "RoomAccess": {
+      "additionalProperties": false,
+      "properties": {
+        "room": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Room",
+          "type": "string"
+        },
+        "yours": {
+          "description": "False: the door says another team handles this room",
+          "title": "Yours",
+          "type": "boolean"
+        },
+        "unlocked": {
+          "title": "Unlocked",
+          "type": "boolean"
+        },
+        "lock": {
+          "anyOf": [
+            {
+              "enum": [
+                "key",
+                "code"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lock"
+        }
+      },
+      "required": [
+        "room",
+        "yours",
+        "unlocked"
+      ],
+      "title": "RoomAccess",
+      "type": "object"
+    },
+    "RoomUnlocked": {
+      "additionalProperties": false,
+      "properties": {
+        "room": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Room",
+          "type": "string"
+        },
+        "by": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "By",
+          "type": "string"
+        }
+      },
+      "required": [
+        "room",
+        "by"
+      ],
+      "title": "RoomUnlocked",
+      "type": "object"
+    },
+    "ScoreBreakdown": {
+      "additionalProperties": false,
+      "properties": {
+        "culprit": {
+          "title": "Culprit",
+          "type": "integer"
+        },
+        "motive": {
+          "title": "Motive",
+          "type": "integer"
+        },
+        "method": {
+          "title": "Method",
+          "type": "integer"
+        },
+        "time_bonus": {
+          "title": "Time Bonus",
+          "type": "integer"
+        },
+        "unused_questions": {
+          "title": "Unused Questions",
+          "type": "integer"
+        },
+        "total": {
+          "title": "Total",
+          "type": "integer"
+        },
+        "elapsed_seconds": {
+          "title": "Elapsed Seconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "culprit",
+        "motive",
+        "method",
+        "time_bonus",
+        "unused_questions",
+        "total",
+        "elapsed_seconds"
+      ],
+      "title": "ScoreBreakdown",
+      "type": "object"
+    },
+    "SelectCase": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Case Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id"
+      ],
+      "title": "SelectCase",
+      "type": "object"
+    },
+    "SocketAuth": {
+      "additionalProperties": false,
+      "properties": {
+        "lobby_code": {
+          "title": "Lobby Code",
+          "type": "string"
+        },
+        "player_token": {
+          "title": "Player Token",
+          "type": "string"
+        }
+      },
+      "required": [
+        "lobby_code",
+        "player_token"
+      ],
+      "title": "SocketAuth",
+      "type": "object"
+    },
+    "StartGame": {
+      "additionalProperties": false,
+      "description": "Empty payload. Host only; needs the case's player count, or solo mode.",
+      "properties": {},
+      "title": "StartGame",
+      "type": "object"
+    },
+    "StoryHook": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "points_to_room": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Points To Room",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "points_to_room"
+      ],
+      "title": "StoryHook",
+      "type": "object"
+    },
+    "SuspectCard": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "role": {
+          "title": "Role",
+          "type": "string"
+        },
+        "archetype": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Archetype",
+          "type": "string"
+        },
+        "initial_statement": {
+          "title": "Initial Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "role",
+        "archetype",
+        "initial_statement"
+      ],
+      "title": "SuspectCard",
+      "type": "object"
+    },
+    "SuspectInterrogation": {
+      "additionalProperties": false,
+      "properties": {
+        "suspect": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Suspect",
+          "type": "string"
+        },
+        "questions_left": {
+          "title": "Questions Left",
+          "type": "integer"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/InterrogationEntry"
+          },
+          "title": "Entries",
+          "type": "array"
+        }
+      },
+      "required": [
+        "suspect",
+        "questions_left",
+        "entries"
+      ],
+      "title": "SuspectInterrogation",
+      "type": "object"
+    },
+    "SuspectRef": {
+      "additionalProperties": false,
+      "properties": {
+        "suspect": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Suspect",
+          "type": "string"
+        }
+      },
+      "required": [
+        "suspect"
+      ],
+      "title": "SuspectRef",
+      "type": "object"
+    },
+    "SuspectUnavailable": {
+      "additionalProperties": false,
+      "properties": {
+        "suspect": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Suspect",
+          "type": "string"
+        },
+        "message": {
+          "description": "E.g. 'Suspectul refuză să vorbească momentan'",
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "suspect",
+        "message"
+      ],
+      "title": "SuspectUnavailable",
+      "type": "object"
+    },
+    "UnlockRoom": {
+      "additionalProperties": false,
+      "properties": {
+        "room": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Room",
+          "type": "string"
+        },
+        "key_clue": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Key lock: a key from your notebook",
+          "title": "Key Clue"
+        },
+        "code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Code lock: the code",
+          "title": "Code"
+        }
+      },
+      "required": [
+        "room"
+      ],
+      "title": "UnlockRoom",
+      "type": "object"
+    },
+    "VoteAccusation": {
+      "additionalProperties": false,
+      "properties": {
+        "proposal": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Proposal",
+          "type": "string"
+        },
+        "accept": {
+          "title": "Accept",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "proposal",
+        "accept"
+      ],
+      "title": "VoteAccusation",
+      "type": "object"
+    }
+  },
+  "title": "GameApi"
+}

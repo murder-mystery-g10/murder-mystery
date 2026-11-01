@@ -47,3 +47,23 @@ Internal; only the backend calls it, with the `X-Internal-Key` header. Interacti
 - If the AI service fails, the backend shows "Suspectul refuză să vorbească momentan"
   and does not consume the question.
 - Theme maps for `/generate` and `/validate` are read from `themes/<theme>/map.json`.
+
+## Game API (backend ↔ frontend)
+
+| File | Contents |
+|---|---|
+| `game-api.schema.json` | REST bodies and every Socket.IO payload (`shared_schemas.game_api`) |
+| `socket-events.md` | Table of all Socket.IO events — start here |
+| `socket-events.json` | Same table, machine-readable (used to generate TypeScript) |
+
+REST (interactive docs: http://localhost:8000/api/docs):
+
+| Endpoint | Request | Response |
+|---|---|---|
+| `POST /api/lobbies` | `CreateLobbyRequest` | `201` + `LobbySession` |
+| `POST /api/lobbies/{code}/join` | `JoinLobbyRequest` | `LobbySession` |
+| `GET /api/cases` | — | `CaseSummary[]` |
+| `GET /api/themes/{theme_id}/map` | — | `ThemeMap` |
+
+The frontend's TypeScript types are generated: `cd frontend && npm run gen:contracts`.
+CI fails if `frontend/src/contracts/` is out of date.

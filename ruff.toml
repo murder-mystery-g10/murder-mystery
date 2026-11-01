@@ -1,6 +1,9 @@
 target-version = "py313"
 line-length = 100
 src = ["shared/schemas/src", "backend/src", "ai-service/src"]
+# Alembic revisions are generated code.
+extend-exclude = ["**/alembic/versions"]
 
 [lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
+

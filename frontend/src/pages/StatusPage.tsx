@@ -18,7 +18,7 @@ export function StatusPage() {
     const onConnect = async () => {
       setConnected(true)
       try {
-        const reply = await socket.timeout(3000).emitWithAck('system:ping')
+        const reply = await socket.timeout(3000).emitWithAck('system:ping', {})
         setPong(reply?.message === 'pong')
       } catch {
         setPong(false)

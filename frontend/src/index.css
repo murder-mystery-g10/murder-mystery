@@ -1,0 +1,40 @@
+:root {
+  color-scheme: dark;
+  font-family: system-ui, sans-serif;
+  background: #15171c;
+  color: #e8e6e3;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 480px;
+  margin: 4rem auto;
+  padding: 0 1rem;
+}
+
+.status-list {
+  list-style: none;
+  padding: 0;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #2c2f36;
+}
+
+[data-state='ok'] {
+  color: #6fcf97;
+}
+
+[data-state='down'] {
+  color: #eb5757;
+}
+
+[data-state='pending'] {
+  color: #9aa0a6;
+}

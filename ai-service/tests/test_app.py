@@ -5,6 +5,7 @@ from ai_service.config import Settings, get_settings
 from ai_service.main import app
 
 TEST_KEY = "test-key"
+AUTH = {"X-Internal-Key": TEST_KEY}
 
 
 @pytest.fixture
@@ -21,23 +22,29 @@ def test_health_is_public(client: TestClient) -> None:
 
 
 def test_missing_key_is_rejected(client: TestClient) -> None:
-    assert client.post("/interrogate").status_code == 401
+    assert client.post("/interrogate", json={}).status_code == 401
 
 
 def test_wrong_key_is_rejected(client: TestClient) -> None:
-    response = client.post("/interrogate", headers={"X-Internal-Key": "wrong"})
+    response = client.post("/interrogate", json={}, headers={"X-Internal-Key": "wrong"})
     assert response.status_code == 401
 
 
-@pytest.mark.parametrize(
-    ("method", "path"),
-    [
-        ("post", "/interrogate"),
-        ("post", "/generate"),
-        ("get", "/generate/some-job"),
-        ("post", "/validate"),
-    ],
-)
-def test_stub_endpoints_return_501(client: TestClient, method: str, path: str) -> None:
-    response = client.request(method, path, headers={"X-Internal-Key": TEST_KEY})
-    assert response.status_code == 501
+@pytest.mark.parametrize("path", ["/interrogate", "/generate", "/validate"])
+def test_invalid_body_is_rejected(client: TestClient, path: str) -> None:
+    assert client.post(path, json={}, headers=AUTH).status_code == 422
+
+
+def test_valid_generate_request_reaches_the_stub(client: TestClient) -> None:
+    body = {"theme": "conac", "player_count": 4, "suspect_count": 4, "difficulty": "normal"}
+    assert client.post("/generate", json=body, headers=AUTH).status_code == 501
+
+
+def test_generation_status_is_a_stub(client: TestClient) -> None:
+    assert client.get("/generate/some-job", headers=AUTH).status_code == 501
+
+
+def test_openapi_exposes_the_contract_models(client: TestClient) -> None:
+    schemas = client.get("/openapi.json").json()["components"]["schemas"]
+    for name in ("InterrogateRequest", "InterrogateResponse", "GenerationJob", "ValidationReport"):
+        assert name in schemas

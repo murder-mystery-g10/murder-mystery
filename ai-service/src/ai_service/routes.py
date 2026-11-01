@@ -1,6 +1,16 @@
-"""Stub endpoints. Request/response models are added with the contracts (setup step 9b)."""
+"""Endpoints of the AI service. Still stubs: they validate input, then answer 501."""
 
 from fastapi import APIRouter, HTTPException, status
+
+from shared_schemas.ai_api import (
+    GenerateRequest,
+    GenerationAccepted,
+    GenerationJob,
+    InterrogateRequest,
+    InterrogateResponse,
+    ValidateRequest,
+    ValidationReport,
+)
 
 router = APIRouter()
 
@@ -10,7 +20,7 @@ def _not_implemented() -> HTTPException:
 
 
 @router.post("/interrogate", tags=["interrogation"], summary="Answer a question as a suspect")
-def interrogate() -> None:
+def interrogate(request: InterrogateRequest) -> InterrogateResponse:
     raise _not_implemented()
 
 
@@ -20,15 +30,15 @@ def interrogate() -> None:
     tags=["generation"],
     summary="Start generating a case; returns a job id",
 )
-def start_generation() -> None:
+def start_generation(request: GenerateRequest) -> GenerationAccepted:
     raise _not_implemented()
 
 
 @router.get("/generate/{job_id}", tags=["generation"], summary="Generation status, then the case")
-def get_generation(job_id: str) -> None:
+def get_generation(job_id: str) -> GenerationJob:
     raise _not_implemented()
 
 
 @router.post("/validate", tags=["validation"], summary="Check a case against the checklist")
-def validate_case() -> None:
+def validate_case(request: ValidateRequest) -> ValidationReport:
     raise _not_implemented()

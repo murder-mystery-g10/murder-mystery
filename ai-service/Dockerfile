@@ -9,6 +9,7 @@ WORKDIR /app
 COPY pyproject.toml uv.lock .python-version ./
 COPY shared/schemas/pyproject.toml shared/schemas/
 COPY ai-service/pyproject.toml ai-service/
+COPY backend/pyproject.toml backend/
 RUN uv sync --frozen --no-dev --package ai-service --no-install-workspace
 
 # Then our own code.

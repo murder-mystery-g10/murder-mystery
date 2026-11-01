@@ -1,0 +1,6 @@
+# Virtual workspace root: not a package itself, only ties the members together.
+[tool.uv.workspace]
+members = ["shared/schemas"]
+
+[dependency-groups]
+dev = ["ruff", "pytest"]

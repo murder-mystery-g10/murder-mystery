@@ -1,0 +1,1210 @@
+{
+  "$defs": {
+    "Accusation": {
+      "additionalProperties": false,
+      "description": "The culprit is picked among the suspects; motive and method among 4 options each.",
+      "properties": {
+        "motive_options": {
+          "items": {
+            "$ref": "#/$defs/AccusationOption"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "title": "Motive Options",
+          "type": "array"
+        },
+        "correct_motive": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Correct Motive",
+          "type": "string"
+        },
+        "method_options": {
+          "items": {
+            "$ref": "#/$defs/AccusationOption"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "title": "Method Options",
+          "type": "array"
+        },
+        "correct_method": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Correct Method",
+          "type": "string"
+        }
+      },
+      "required": [
+        "motive_options",
+        "correct_motive",
+        "method_options",
+        "correct_method"
+      ],
+      "title": "Accusation",
+      "type": "object"
+    },
+    "AccusationOption": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "text"
+      ],
+      "title": "AccusationOption",
+      "type": "object"
+    },
+    "BreakStage": {
+      "additionalProperties": false,
+      "properties": {
+        "triggers": {
+          "description": "Alternatives (OR) of evidence combinations (AND); ids are clue or testimony ids. A combination is met once all its ids have been shown to this suspect, possibly across different questions.",
+          "items": {
+            "items": {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.-]+$",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "minItems": 1,
+          "title": "Triggers",
+          "type": "array"
+        },
+        "admits": {
+          "description": "What the suspect admits at this stage",
+          "title": "Admits",
+          "type": "string"
+        },
+        "unlocks": {
+          "description": "Testimony ids the suspect only shares from this stage on",
+          "items": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Unlocks",
+          "type": "array"
+        }
+      },
+      "required": [
+        "triggers",
+        "admits"
+      ],
+      "title": "BreakStage",
+      "type": "object"
+    },
+    "Briefing": {
+      "additionalProperties": false,
+      "properties": {
+        "when": {
+          "title": "When",
+          "type": "string"
+        },
+        "where": {
+          "title": "Where",
+          "type": "string"
+        },
+        "victim": {
+          "$ref": "#/$defs/Person"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        },
+        "discovery": {
+          "title": "Discovery",
+          "type": "string"
+        },
+        "coroner_report": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Coroner Report",
+          "type": "array"
+        },
+        "story_hooks": {
+          "items": {
+            "$ref": "#/$defs/StoryHook"
+          },
+          "title": "Story Hooks",
+          "type": "array"
+        }
+      },
+      "required": [
+        "when",
+        "where",
+        "victim",
+        "summary",
+        "discovery",
+        "coroner_report"
+      ],
+      "title": "Briefing",
+      "type": "object"
+    },
+    "Case": {
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 1,
+          "default": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "case_id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "theme": {
+          "description": "theme_id of the map this case is built on",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Theme",
+          "type": "string"
+        },
+        "difficulty": {
+          "$ref": "#/$defs/Difficulty"
+        },
+        "player_count": {
+          "maximum": 5,
+          "minimum": 3,
+          "title": "Player Count",
+          "type": "integer"
+        },
+        "questions_per_suspect": {
+          "minimum": 1,
+          "title": "Questions Per Suspect",
+          "type": "integer"
+        },
+        "briefing": {
+          "$ref": "#/$defs/Briefing"
+        },
+        "truth": {
+          "$ref": "#/$defs/Truth"
+        },
+        "suspects": {
+          "items": {
+            "$ref": "#/$defs/Suspect"
+          },
+          "minItems": 3,
+          "title": "Suspects",
+          "type": "array"
+        },
+        "rooms": {
+          "items": {
+            "$ref": "#/$defs/CaseRoom"
+          },
+          "title": "Rooms",
+          "type": "array"
+        },
+        "players": {
+          "items": {
+            "$ref": "#/$defs/PlayerSlot"
+          },
+          "title": "Players",
+          "type": "array"
+        },
+        "clues": {
+          "items": {
+            "$ref": "#/$defs/Clue"
+          },
+          "title": "Clues",
+          "type": "array"
+        },
+        "accusation": {
+          "$ref": "#/$defs/Accusation"
+        },
+        "reveal": {
+          "description": "Final reveal story, generated with the case",
+          "title": "Reveal",
+          "type": "string"
+        }
+      },
+      "required": [
+        "case_id",
+        "title",
+        "theme",
+        "difficulty",
+        "player_count",
+        "questions_per_suspect",
+        "briefing",
+        "truth",
+        "suspects",
+        "rooms",
+        "players",
+        "clues",
+        "accusation",
+        "reveal"
+      ],
+      "title": "Case",
+      "type": "object"
+    },
+    "CaseRoom": {
+      "additionalProperties": false,
+      "properties": {
+        "room": {
+          "description": "Room id from the theme map",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Room",
+          "type": "string"
+        },
+        "lock": {
+          "anyOf": [
+            {
+              "discriminator": {
+                "mapping": {
+                  "code": "#/$defs/CodeLock",
+                  "key": "#/$defs/KeyLock"
+                },
+                "propertyName": "type"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/KeyLock"
+                },
+                {
+                  "$ref": "#/$defs/CodeLock"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "None means open at the start",
+          "title": "Lock"
+        }
+      },
+      "required": [
+        "room"
+      ],
+      "title": "CaseRoom",
+      "type": "object"
+    },
+    "Clue": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "object": {
+          "description": "Clickable object id from the theme map",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Object",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/ClueType"
+        },
+        "pillar": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Pillar"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Only for critical (C) clues"
+        },
+        "also": {
+          "description": "Secondary roles",
+          "items": {
+            "$ref": "#/$defs/ClueType"
+          },
+          "title": "Also",
+          "type": "array"
+        },
+        "icon": {
+          "$ref": "#/$defs/ClueIcon"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "player_text": {
+          "description": "Exactly what the player reads when they find it",
+          "title": "Player Text",
+          "type": "string"
+        },
+        "proves": {
+          "title": "Proves",
+          "type": "string"
+        },
+        "refutes": {
+          "description": "False-lead clue ids it disproves",
+          "items": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Refutes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "object",
+        "type",
+        "icon",
+        "title",
+        "player_text",
+        "proves"
+      ],
+      "title": "Clue",
+      "type": "object"
+    },
+    "ClueIcon": {
+      "enum": [
+        "letter",
+        "document",
+        "bottle",
+        "key",
+        "photo",
+        "item"
+      ],
+      "title": "ClueIcon",
+      "type": "string"
+    },
+    "ClueType": {
+      "enum": [
+        "C",
+        "F",
+        "E",
+        "P",
+        "A",
+        "T"
+      ],
+      "title": "ClueType",
+      "type": "string"
+    },
+    "CodeLock": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "code",
+          "default": "code",
+          "title": "Type",
+          "type": "string"
+        },
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "hint_clues": {
+          "items": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Hint Clues",
+          "type": "array"
+        }
+      },
+      "required": [
+        "code",
+        "hint_clues"
+      ],
+      "title": "CodeLock",
+      "type": "object"
+    },
+    "Deflection": {
+      "additionalProperties": false,
+      "properties": {
+        "suspect": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Suspect",
+          "type": "string"
+        },
+        "claim": {
+          "title": "Claim",
+          "type": "string"
+        }
+      },
+      "required": [
+        "suspect",
+        "claim"
+      ],
+      "title": "Deflection",
+      "type": "object"
+    },
+    "DialogueTurn": {
+      "additionalProperties": false,
+      "properties": {
+        "question": {
+          "title": "Question",
+          "type": "string"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Evidence"
+        },
+        "answer": {
+          "title": "Answer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "question",
+        "answer"
+      ],
+      "title": "DialogueTurn",
+      "type": "object"
+    },
+    "Difficulty": {
+      "enum": [
+        "easy",
+        "normal",
+        "hard"
+      ],
+      "title": "Difficulty",
+      "type": "string"
+    },
+    "Emotion": {
+      "enum": [
+        "calm",
+        "nervous",
+        "angry",
+        "sad",
+        "arrogant",
+        "broken"
+      ],
+      "title": "Emotion",
+      "type": "string"
+    },
+    "GenerateRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "theme": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Theme",
+          "type": "string"
+        },
+        "player_count": {
+          "maximum": 5,
+          "minimum": 3,
+          "title": "Player Count",
+          "type": "integer"
+        },
+        "suspect_count": {
+          "maximum": 5,
+          "minimum": 3,
+          "title": "Suspect Count",
+          "type": "integer"
+        },
+        "difficulty": {
+          "$ref": "#/$defs/Difficulty"
+        },
+        "tone": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tone"
+        },
+        "idea": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Host's starting idea",
+          "title": "Idea"
+        }
+      },
+      "required": [
+        "theme",
+        "player_count",
+        "suspect_count",
+        "difficulty"
+      ],
+      "title": "GenerateRequest",
+      "type": "object"
+    },
+    "GenerationAccepted": {
+      "additionalProperties": false,
+      "properties": {
+        "job_id": {
+          "title": "Job Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "job_id"
+      ],
+      "title": "GenerationAccepted",
+      "type": "object"
+    },
+    "GenerationJob": {
+      "additionalProperties": false,
+      "properties": {
+        "job_id": {
+          "title": "Job Id",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/JobStatus"
+        },
+        "step": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Current step, for the waiting screen",
+          "title": "Step"
+        },
+        "case": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Case"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Set when status is succeeded"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Set when status is failed",
+          "title": "Error"
+        }
+      },
+      "required": [
+        "job_id",
+        "status"
+      ],
+      "title": "GenerationJob",
+      "type": "object"
+    },
+    "InterrogateRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "case": {
+          "$ref": "#/$defs/Case"
+        },
+        "suspect_id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Suspect Id",
+          "type": "string"
+        },
+        "question": {
+          "maxLength": 300,
+          "minLength": 1,
+          "title": "Question",
+          "type": "string"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Clue or testimony id shown with this question",
+          "title": "Evidence"
+        },
+        "history": {
+          "description": "Earlier questions to this suspect, oldest first",
+          "items": {
+            "$ref": "#/$defs/DialogueTurn"
+          },
+          "title": "History",
+          "type": "array"
+        },
+        "state": {
+          "$ref": "#/$defs/InterrogationState"
+        }
+      },
+      "required": [
+        "case",
+        "suspect_id",
+        "question",
+        "state"
+      ],
+      "title": "InterrogateRequest",
+      "type": "object"
+    },
+    "InterrogateResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "answer": {
+          "description": "1-4 sentences, in character, in Romanian",
+          "title": "Answer",
+          "type": "string"
+        },
+        "emotion": {
+          "$ref": "#/$defs/Emotion"
+        },
+        "intensity": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Intensity",
+          "type": "number"
+        },
+        "revealed_testimonies": {
+          "description": "Testimony ids shared in this answer",
+          "items": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Revealed Testimonies",
+          "type": "array"
+        }
+      },
+      "required": [
+        "answer",
+        "emotion",
+        "intensity"
+      ],
+      "title": "InterrogateResponse",
+      "type": "object"
+    },
+    "InterrogationState": {
+      "additionalProperties": false,
+      "description": "Decided by the backend before calling the AI service.",
+      "properties": {
+        "break_stage": {
+          "description": "Highest break stage reached (0 = not broken)",
+          "minimum": 0,
+          "title": "Break Stage",
+          "type": "integer"
+        },
+        "just_broke": {
+          "default": false,
+          "description": "True if the evidence shown with this question made the suspect break now",
+          "title": "Just Broke",
+          "type": "boolean"
+        },
+        "revealed_testimonies": {
+          "description": "Testimony ids the suspect already shared in earlier answers",
+          "items": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Revealed Testimonies",
+          "type": "array"
+        }
+      },
+      "required": [
+        "break_stage"
+      ],
+      "title": "InterrogationState",
+      "type": "object"
+    },
+    "JobStatus": {
+      "enum": [
+        "queued",
+        "running",
+        "succeeded",
+        "failed"
+      ],
+      "title": "JobStatus",
+      "type": "string"
+    },
+    "KeyLock": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "key",
+          "default": "key",
+          "title": "Type",
+          "type": "string"
+        },
+        "key_clue": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Key Clue",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key_clue"
+      ],
+      "title": "KeyLock",
+      "type": "object"
+    },
+    "Person": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "age": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Age"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "description"
+      ],
+      "title": "Person",
+      "type": "object"
+    },
+    "Pillar": {
+      "enum": [
+        "method",
+        "means",
+        "motive",
+        "opportunity"
+      ],
+      "title": "Pillar",
+      "type": "string"
+    },
+    "PlayerSlot": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "rooms": {
+          "items": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Rooms",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "rooms"
+      ],
+      "title": "PlayerSlot",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "error",
+        "warning"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "StoryHook": {
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "points_to_room": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Points To Room",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "points_to_room"
+      ],
+      "title": "StoryHook",
+      "type": "object"
+    },
+    "Suspect": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "age": {
+          "title": "Age",
+          "type": "integer"
+        },
+        "role": {
+          "title": "Role",
+          "type": "string"
+        },
+        "archetype": {
+          "description": "Character type; picks the portrait set",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Archetype",
+          "type": "string"
+        },
+        "personality": {
+          "title": "Personality",
+          "type": "string"
+        },
+        "speech_style": {
+          "title": "Speech Style",
+          "type": "string"
+        },
+        "initial_statement": {
+          "title": "Initial Statement",
+          "type": "string"
+        },
+        "secret": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Required for innocents; the culprit's secret is the crime",
+          "title": "Secret"
+        },
+        "lies_about": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Lies About",
+          "type": "array"
+        },
+        "deflects_to": {
+          "items": {
+            "$ref": "#/$defs/Deflection"
+          },
+          "title": "Deflects To",
+          "type": "array"
+        },
+        "testimonies": {
+          "items": {
+            "$ref": "#/$defs/Testimony"
+          },
+          "title": "Testimonies",
+          "type": "array"
+        },
+        "break_stages": {
+          "description": "In order; innocents usually have one, the culprit several",
+          "items": {
+            "$ref": "#/$defs/BreakStage"
+          },
+          "minItems": 1,
+          "title": "Break Stages",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "age",
+        "role",
+        "archetype",
+        "personality",
+        "speech_style",
+        "initial_statement",
+        "lies_about",
+        "break_stages"
+      ],
+      "title": "Suspect",
+      "type": "object"
+    },
+    "Testimony": {
+      "additionalProperties": false,
+      "description": "Verbal clue: something true the suspect says only when asked about it precisely.",
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "fact": {
+          "title": "Fact",
+          "type": "string"
+        },
+        "trigger": {
+          "description": "What the question must be about for the suspect to say it",
+          "title": "Trigger",
+          "type": "string"
+        },
+        "event": {
+          "anyOf": [
+            {
+              "maxLength": 64,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Timeline event the testimony is about",
+          "title": "Event"
+        }
+      },
+      "required": [
+        "id",
+        "fact",
+        "trigger"
+      ],
+      "title": "Testimony",
+      "type": "object"
+    },
+    "TimelineEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Id",
+          "type": "string"
+        },
+        "time": {
+          "description": "Story time label, e.g. '21:45'; list order is chronological",
+          "title": "Time",
+          "type": "string"
+        },
+        "event": {
+          "title": "Event",
+          "type": "string"
+        },
+        "proven_by": {
+          "description": "Physical clue ids",
+          "items": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Proven By",
+          "type": "array"
+        },
+        "witnessed_by": {
+          "description": "Suspects who know about this event; a suspect's sheet only includes these",
+          "items": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Witnessed By",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "time",
+        "event"
+      ],
+      "title": "TimelineEvent",
+      "type": "object"
+    },
+    "Truth": {
+      "additionalProperties": false,
+      "properties": {
+        "culprit": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Culprit",
+          "type": "string"
+        },
+        "motive": {
+          "title": "Motive",
+          "type": "string"
+        },
+        "method": {
+          "title": "Method",
+          "type": "string"
+        },
+        "timeline": {
+          "items": {
+            "$ref": "#/$defs/TimelineEvent"
+          },
+          "minItems": 1,
+          "title": "Timeline",
+          "type": "array"
+        }
+      },
+      "required": [
+        "culprit",
+        "motive",
+        "method",
+        "timeline"
+      ],
+      "title": "Truth",
+      "type": "object"
+    },
+    "ValidateRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "case": {
+          "$ref": "#/$defs/Case"
+        }
+      },
+      "required": [
+        "case"
+      ],
+      "title": "ValidateRequest",
+      "type": "object"
+    },
+    "ValidationIssue": {
+      "additionalProperties": false,
+      "properties": {
+        "rule": {
+          "description": "Checklist rule, e.g. 'rule_of_two'",
+          "title": "Rule",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rule",
+        "severity",
+        "message"
+      ],
+      "title": "ValidationIssue",
+      "type": "object"
+    },
+    "ValidationReport": {
+      "additionalProperties": false,
+      "properties": {
+        "valid": {
+          "description": "True when there are no errors (warnings are allowed)",
+          "title": "Valid",
+          "type": "boolean"
+        },
+        "issues": {
+          "items": {
+            "$ref": "#/$defs/ValidationIssue"
+          },
+          "title": "Issues",
+          "type": "array"
+        }
+      },
+      "required": [
+        "valid"
+      ],
+      "title": "ValidationReport",
+      "type": "object"
+    }
+  },
+  "title": "AiApi"
+}

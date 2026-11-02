@@ -1,0 +1,23 @@
+# Who reviews what. The last matching line wins, so general rules come first.
+
+# Default: the admins
+*                          @davidcristian11 @TiberiuSzabo
+
+# Services
+/backend/                  @murder-mystery-g10/backend
+/ai-service/               @murder-mystery-g10/ai
+/cases/                    @murder-mystery-g10/ai
+/docs/case-design.md       @murder-mystery-g10/ai
+/frontend/                 @murder-mystery-g10/frontend
+/themes/                   @murder-mystery-g10/frontend
+
+# Contracts: every team that produces or uses them is asked to review
+/shared/schemas/           @murder-mystery-g10/backend @murder-mystery-g10/ai @murder-mystery-g10/frontend
+/docs/contracts/           @murder-mystery-g10/backend @murder-mystery-g10/ai @murder-mystery-g10/frontend
+/frontend/src/contracts/   @murder-mystery-g10/backend @murder-mystery-g10/ai @murder-mystery-g10/frontend
+
+# Infrastructure, CI and deploy: the admins
+/infra/                    @davidcristian11 @TiberiuSzabo
+/deploy/                   @davidcristian11 @TiberiuSzabo
+/.github/                  @davidcristian11 @TiberiuSzabo
+/docker-compose*.yml       @davidcristian11 @TiberiuSzabo

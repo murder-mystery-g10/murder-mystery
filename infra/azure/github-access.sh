@@ -26,6 +26,15 @@ az identity federated-credential create -g "$RESOURCE_GROUP" --identity-name "$I
   --subject "repo:${GITHUB_REPO}:environment:${GITHUB_ENVIRONMENT}" \
   --audiences api://AzureADTokenExchange -o none
 
+# Newer GitHub repos put immutable IDs in the subject (owner@id/repo@id); trust that format too.
+OWNER_ID="$(gh api "repos/$GITHUB_REPO" --jq .owner.id)"
+REPO_ID="$(gh api "repos/$GITHUB_REPO" --jq .id)"
+az identity federated-credential create -g "$RESOURCE_GROUP" --identity-name "$IDENTITY_NAME" \
+  -n github-production-ids \
+  --issuer https://token.actions.githubusercontent.com \
+  --subject "repo:${GITHUB_REPO%%/*}@${OWNER_ID}/${GITHUB_REPO#*/}@${REPO_ID}:environment:${GITHUB_ENVIRONMENT}" \
+  --audiences api://AzureADTokenExchange -o none
+
 log "Role: Virtual Machine Contributor on $VM_NAME only"
 PRINCIPAL_ID="$(az identity show -g "$RESOURCE_GROUP" -n "$IDENTITY_NAME" --query principalId -o tsv)"
 VM_ID="$(az vm show -g "$RESOURCE_GROUP" -n "$VM_NAME" --query id -o tsv)"

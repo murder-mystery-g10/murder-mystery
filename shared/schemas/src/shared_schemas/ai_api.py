@@ -2,7 +2,8 @@
 
 Called only by the backend, with the X-Internal-Key header. The service is
 stateless: every request carries everything it needs. Theme maps are read
-from themes/<theme>/map.json, by case.theme.
+from themes/<theme>/map.json, by case.theme. POST /validate checks the rules in
+docs/case-design.md.
 """
 
 from enum import StrEnum

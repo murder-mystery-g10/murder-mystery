@@ -41,4 +41,5 @@ def get_generation(job_id: str) -> GenerationJob:
 
 @router.post("/validate", tags=["validation"], summary="Check a case against the checklist")
 def validate_case(request: ValidateRequest) -> ValidationReport:
+    """Rules and checklist: docs/case-design.md."""
     raise _not_implemented()

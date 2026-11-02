@@ -11,10 +11,22 @@
 /frontend/                 @murder-mystery-g10/frontend
 /themes/                   @murder-mystery-g10/frontend
 
-# Contracts: every team that produces or uses them is asked to review
+# Shared contract code and docs (base models, export, tests, README): all teams
 /shared/schemas/           @murder-mystery-g10/backend @murder-mystery-g10/ai @murder-mystery-g10/frontend
 /docs/contracts/           @murder-mystery-g10/backend @murder-mystery-g10/ai @murder-mystery-g10/frontend
-/frontend/src/contracts/   @murder-mystery-g10/backend @murder-mystery-g10/ai @murder-mystery-g10/frontend
+
+# Each contract: the two teams on its two sides
+/shared/schemas/src/shared_schemas/theme_map.py   @murder-mystery-g10/frontend @murder-mystery-g10/ai
+/shared/schemas/src/shared_schemas/case.py        @murder-mystery-g10/ai @murder-mystery-g10/backend
+/shared/schemas/src/shared_schemas/ai_api.py      @murder-mystery-g10/ai @murder-mystery-g10/backend
+/shared/schemas/src/shared_schemas/game_api.py    @murder-mystery-g10/backend @murder-mystery-g10/frontend
+/docs/contracts/theme-map.schema.json             @murder-mystery-g10/frontend @murder-mystery-g10/ai
+/docs/contracts/case.schema.json                  @murder-mystery-g10/ai @murder-mystery-g10/backend
+/docs/contracts/ai-api.schema.json                @murder-mystery-g10/ai @murder-mystery-g10/backend
+/docs/contracts/game-api.schema.json              @murder-mystery-g10/backend @murder-mystery-g10/frontend
+/docs/contracts/socket-events.*                   @murder-mystery-g10/backend @murder-mystery-g10/frontend
+/frontend/src/contracts/                          @murder-mystery-g10/frontend @murder-mystery-g10/backend
+/frontend/src/contracts/theme-map.ts              @murder-mystery-g10/frontend @murder-mystery-g10/ai
 
 # Infrastructure, CI and deploy: the admins
 /infra/                    @davidcristian11 @TiberiuSzabo

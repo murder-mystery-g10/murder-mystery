@@ -10,11 +10,11 @@ describe('StatusRow', () => {
 
   it('shows unavailable when the service is down', () => {
     render(<StatusRow label="Backend" ok={false} />)
-    expect(screen.getByText('Indisponibil')).toBeInTheDocument()
+    expect(screen.getByText('Unavailable')).toBeInTheDocument()
   })
 
   it('shows a pending state while checking', () => {
     render(<StatusRow label="Backend" ok={null} />)
-    expect(screen.getByText('Se verifică…')).toBeInTheDocument()
+    expect(screen.getByText('Checking…')).toBeInTheDocument()
   })
 })

@@ -17,6 +17,8 @@ BOOT_GRACE_MINUTES="${BOOT_GRACE_MINUTES:-15}"
 MAX_UPTIME_MINUTES="${MAX_UPTIME_MINUTES:-180}"
 NIGHT_START_HOUR="${NIGHT_START_HOUR:-1}"   # Romania time
 NIGHT_END_HOUR="${NIGHT_END_HOUR:-7}"
+STORAGE_ACCOUNT="${STORAGE_ACCOUNT:-mmg10backups}"     # must match backup-storage.sh
+BACKUP_CONTAINER="${BACKUP_CONTAINER:-postgres-backups}"
 
 log() { printf '\n==> %s\n' "$*"; }
 [[ $EUID -eq 0 ]] || { echo "Run as root (sudo)" >&2; exit 1; }
@@ -190,6 +192,69 @@ UNIT
 
 systemctl daemon-reload
 systemctl enable --now idle-deallocate.timer
+
+log "Daily Postgres backup to Azure Blob Storage ($STORAGE_ACCOUNT/$BACKUP_CONTAINER)"
+cat > /etc/default/pg-backup <<EOF
+STORAGE_ACCOUNT=$STORAGE_ACCOUNT
+BACKUP_CONTAINER=$BACKUP_CONTAINER
+EOF
+
+cat > /usr/local/bin/pg-backup <<'SCRIPT'
+#!/usr/bin/env bash
+# Dumps the game database and uploads it to Azure Blob Storage with the VM's managed identity.
+# Old backups are deleted by the storage lifecycle policy (infra/azure/backup-storage.sh).
+set -euo pipefail
+source /etc/default/pg-backup
+
+cid=$(docker ps -q -f label=com.docker.compose.project=murder-mystery -f label=com.docker.compose.service=postgres)
+if [[ -z "$cid" ]]; then echo "postgres is not running, nothing to back up"; exit 0; fi
+
+# Check over TCP: during first init the temporary server listens only on the socket.
+for _ in $(seq 60); do
+  docker exec "$cid" sh -c 'pg_isready -q -h 127.0.0.1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"' && break
+  sleep 2
+done
+
+dump=$(mktemp /var/tmp/pg-backup.XXXXXX)
+trap 'rm -f "$dump"' EXIT
+docker exec "$cid" sh -c 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" --format=custom' > "$dump"
+
+name="postgres/$(date -u +%Y-%m-%dT%H%MZ).dump"
+token=$(curl -fsS -H Metadata:true \
+  "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://storage.azure.com/" \
+  | jq -r .access_token)
+curl -fsS -X PUT -T "$dump" \
+  -H "Authorization: Bearer $token" -H "x-ms-version: 2021-08-06" -H "x-ms-blob-type: BlockBlob" \
+  "https://${STORAGE_ACCOUNT}.blob.core.windows.net/${BACKUP_CONTAINER}/${name}"
+logger -t pg-backup "uploaded $name ($(stat -c %s "$dump") bytes)"
+echo "uploaded $name"
+SCRIPT
+chmod 755 /usr/local/bin/pg-backup
+
+cat > /etc/systemd/system/pg-backup.service <<'UNIT'
+[Unit]
+Description=Back up Postgres to Azure Blob Storage
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/pg-backup
+UNIT
+
+cat > /etc/systemd/system/pg-backup.timer <<'UNIT'
+[Unit]
+Description=Daily Postgres backup (runs at next boot if the VM was off)
+
+[Timer]
+OnCalendar=*-*-* 12:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+UNIT
+
+systemctl daemon-reload
+systemctl enable --now pg-backup.timer
 
 log "Done"
 docker --version

@@ -14,6 +14,16 @@ Browser-based multiplayer murder mystery game with AI-played suspects. Universit
 | `cases/` | Validated cases |
 | `tools/` | Clickable-zone editor, scripts |
 | `docs/contracts/` | Contracts between teams |
+| `docs/setup/` | Setup and server documentation |
+| `infra/azure/` | Scripts that create and configure the shared server |
+| `deploy/` | Production config copied to the server (Caddy) |
+
+## Documentation
+
+- [Local development](docs/setup/local-development.md): install the tools, run the project, daily workflow
+- [Shared server](docs/setup/shared-server.md): https://murder-mystery-g10.polandcentral.cloudapp.azure.com, start/stop, deploys, logs
+- [Server administration](docs/setup/server-admin.md): Azure, backups, rebuilding the server
+- [Contracts](docs/contracts/README.md): case schema, theme map, APIs and Socket.IO events between teams
 
 ## Requirements
 

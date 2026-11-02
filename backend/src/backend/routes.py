@@ -1,16 +1,10 @@
 from fastapi import APIRouter, Request, Response, status
-from pydantic import BaseModel
 
 from backend.db import is_database_reachable
 from backend.meta import SERVICE_NAME, SERVICE_VERSION
-from shared_schemas import HealthResponse
+from shared_schemas import HealthResponse, ReadinessResponse
 
 router = APIRouter(prefix="/api")
-
-
-class ReadinessResponse(BaseModel):
-    database: bool
-    ai_service: bool
 
 
 @router.get("/health", response_model=HealthResponse, tags=["meta"])

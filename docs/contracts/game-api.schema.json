@@ -835,6 +835,32 @@
       "title": "GameSnapshot",
       "type": "object"
     },
+    "HealthResponse": {
+      "additionalProperties": false,
+      "description": "Response of every service's GET /health endpoint.",
+      "properties": {
+        "status": {
+          "const": "ok",
+          "default": "ok",
+          "title": "Status",
+          "type": "string"
+        },
+        "service": {
+          "title": "Service",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "service",
+        "version"
+      ],
+      "title": "HealthResponse",
+      "type": "object"
+    },
     "InspectAck": {
       "additionalProperties": false,
       "properties": {
@@ -1224,6 +1250,26 @@
         "players"
       ],
       "title": "PresenceUpdate",
+      "type": "object"
+    },
+    "ReadinessResponse": {
+      "additionalProperties": false,
+      "description": "Response of the backend's GET /api/health/ready; HTTP 503 when a dependency is down.",
+      "properties": {
+        "database": {
+          "title": "Database",
+          "type": "boolean"
+        },
+        "ai_service": {
+          "title": "Ai Service",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "database",
+        "ai_service"
+      ],
+      "title": "ReadinessResponse",
       "type": "object"
     },
     "RoomAccess": {

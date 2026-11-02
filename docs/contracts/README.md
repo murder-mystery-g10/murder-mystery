@@ -60,6 +60,8 @@ REST (interactive docs: http://localhost:8000/api/docs):
 
 | Endpoint | Request | Response |
 |---|---|---|
+| `GET /api/health` | — | `HealthResponse` |
+| `GET /api/health/ready` | — | `ReadinessResponse` (`503` when the database or the AI service is down) |
 | `POST /api/lobbies` | `CreateLobbyRequest` | `201` + `LobbySession` |
 | `POST /api/lobbies/{code}/join` | `JoinLobbyRequest` | `LobbySession` |
 | `GET /api/cases` | — | `CaseSummary[]` |

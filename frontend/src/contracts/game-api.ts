@@ -163,6 +163,9 @@ export type Answer = string
 export type Intensity = number
 export type Entries = InterrogationEntry[]
 export type Interrogations = SuspectInterrogation[]
+export type Status = 'ok'
+export type Service = string
+export type Version = string
 export type Ok1 = boolean
 /**
  * Shown to the player when ok is false
@@ -183,6 +186,8 @@ export type PlayerId = string
 export type PlayerToken = string
 export type Message = 'pong'
 export type Players1 = Player[]
+export type Database = boolean
+export type AiService = boolean
 export type Room4 = string
 export type By = string
 export type CaseId1 = string
@@ -554,6 +559,17 @@ export interface InterrogationEntry {
   intensity: Intensity
 }
 /**
+ * Response of every service's GET /health endpoint.
+ *
+ * This interface was referenced by `GameApi`'s JSON-Schema
+ * via the `definition` "HealthResponse".
+ */
+export interface HealthResponse {
+  status?: Status
+  service: Service
+  version: Version
+}
+/**
  * This interface was referenced by `GameApi`'s JSON-Schema
  * via the `definition` "InspectAck".
  */
@@ -613,6 +629,16 @@ export interface Pong {
  */
 export interface PresenceUpdate {
   players: Players1
+}
+/**
+ * Response of the backend's GET /api/health/ready; HTTP 503 when a dependency is down.
+ *
+ * This interface was referenced by `GameApi`'s JSON-Schema
+ * via the `definition` "ReadinessResponse".
+ */
+export interface ReadinessResponse {
+  database: Database
+  ai_service: AiService
 }
 /**
  * This interface was referenced by `GameApi`'s JSON-Schema

@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 
 from shared_schemas.base import Id, Schema
 from shared_schemas.case import Case, Difficulty
+from shared_schemas.health import HealthResponse
 
 MAX_QUESTION_LENGTH = 300
 
@@ -127,6 +128,7 @@ class ValidationReport(Schema):
 
 
 MODELS: list[type[BaseModel]] = [
+    HealthResponse,
     InterrogateRequest,
     InterrogateResponse,
     GenerateRequest,

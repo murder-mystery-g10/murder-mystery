@@ -17,6 +17,7 @@ from pydantic import BaseModel, Field
 from shared_schemas.ai_api import MAX_QUESTION_LENGTH, Emotion
 from shared_schemas.base import Id, Schema
 from shared_schemas.case import AccusationOption, Briefing, ClueIcon, Difficulty
+from shared_schemas.health import HealthResponse, ReadinessResponse
 
 PlayerName = Annotated[str, Field(min_length=1, max_length=24)]
 
@@ -393,6 +394,8 @@ SERVER_EVENTS: dict[str, ServerEvent] = {
 
 def _collect_models() -> list[type[BaseModel]]:
     models: list[type[BaseModel]] = [
+        HealthResponse,
+        ReadinessResponse,
         CreateLobbyRequest,
         JoinLobbyRequest,
         LobbySession,

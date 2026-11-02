@@ -43,11 +43,11 @@ export function StatusPage() {
   const loaded = readiness !== undefined
   return (
     <main>
-      <h1>Stare sistem</h1>
+      <h1>System status</h1>
       <ul className="status-list">
         <StatusRow label="Backend" ok={loaded ? readiness !== null : null} />
-        <StatusRow label="Bază de date" ok={loaded ? (readiness?.database ?? false) : null} />
-        <StatusRow label="Serviciul AI" ok={loaded ? (readiness?.ai_service ?? false) : null} />
+        <StatusRow label="Database" ok={loaded ? (readiness?.database ?? false) : null} />
+        <StatusRow label="AI service" ok={loaded ? (readiness?.ai_service ?? false) : null} />
         <StatusRow label="Socket.IO" ok={pong} />
       </ul>
     </main>

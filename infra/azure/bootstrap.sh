@@ -3,7 +3,7 @@
 # Run from your laptop:
 #   ssh azureuser@<fqdn> "sudo DEPLOY_PUBKEY='$(cat ~/.ssh/mm-deploy.pub)' bash -s" < infra/azure/bootstrap.sh
 #
-# Keep the VM running (demo / test days):  sudo touch /etc/idle-deallocate.disabled
+# Disable idle + 3h limits (demo / test days):  sudo touch /etc/idle-deallocate.disabled
 # Re-enable auto-deallocate:                sudo rm /etc/idle-deallocate.disabled
 
 set -euo pipefail
@@ -14,6 +14,9 @@ APP_DIR="${APP_DIR:-/opt/murder-mystery}"
 DEPLOY_PUBKEY="${DEPLOY_PUBKEY:?Set DEPLOY_PUBKEY to the public key GitHub Actions will use}"
 IDLE_MINUTES="${IDLE_MINUTES:-30}"
 BOOT_GRACE_MINUTES="${BOOT_GRACE_MINUTES:-15}"
+MAX_UPTIME_MINUTES="${MAX_UPTIME_MINUTES:-180}"
+NIGHT_START_HOUR="${NIGHT_START_HOUR:-1}"   # Romania time
+NIGHT_END_HOUR="${NIGHT_END_HOUR:-7}"
 
 log() { printf '\n==> %s\n' "$*"; }
 [[ $EUID -eq 0 ]] || { echo "Run as root (sudo)" >&2; exit 1; }
@@ -93,6 +96,9 @@ log "Idle detector: deallocate after $IDLE_MINUTES min without use"
 cat > /etc/default/idle-deallocate <<EOF
 IDLE_MINUTES=$IDLE_MINUTES
 BOOT_GRACE_MINUTES=$BOOT_GRACE_MINUTES
+MAX_UPTIME_MINUTES=$MAX_UPTIME_MINUTES
+NIGHT_START_HOUR=$NIGHT_START_HOUR
+NIGHT_END_HOUR=$NIGHT_END_HOUR
 EOF
 
 cat > /usr/local/bin/idle-deallocate <<'SCRIPT'
@@ -106,11 +112,26 @@ STATE=/var/lib/idle-deallocate
 mkdir -p "$STATE"
 touch -a "$STATE/last-active"
 mark_active() { touch "$STATE/last-active"; }
+deallocate() {
+  logger -t idle-deallocate "$1, deallocating"
+  token=$(curl -fsS -H Metadata:true \
+    "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/" \
+    | jq -r .access_token)
+  rid=$(curl -fsS -H Metadata:true \
+    "http://169.254.169.254/metadata/instance/compute/resourceId?api-version=2021-02-01&format=text")
+  curl -fsS -X POST -H "Authorization: Bearer $token" -H "Content-Length: 0" \
+    "https://management.azure.com${rid}/deallocate?api-version=2024-07-01"
+  exit 0
+}
 
 if [[ -e /etc/idle-deallocate.disabled ]]; then mark_active; exit 0; fi
 
+hour=$(TZ=Europe/Bucharest date +%-H)
+if (( hour >= NIGHT_START_HOUR && hour < NIGHT_END_HOUR )); then deallocate "night hours ($hour:00 Romania time)"; fi
+
 uptime_s=$(cut -d. -f1 /proc/uptime)
 if (( uptime_s < BOOT_GRACE_MINUTES * 60 )); then mark_active; exit 0; fi
+if (( uptime_s >= MAX_UPTIME_MINUTES * 60 )); then deallocate "up for $(( uptime_s / 60 )) min, limit is $MAX_UPTIME_MINUTES"; fi
 
 active=0
 
@@ -142,14 +163,7 @@ if (( active )); then mark_active; exit 0; fi
 idle=$(( $(date +%s) - $(stat -c %Y "$STATE/last-active") ))
 (( idle < IDLE_MINUTES * 60 )) && exit 0
 
-logger -t idle-deallocate "idle for $(( idle / 60 )) min, deallocating"
-token=$(curl -fsS -H Metadata:true \
-  "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/" \
-  | jq -r .access_token)
-rid=$(curl -fsS -H Metadata:true \
-  "http://169.254.169.254/metadata/instance/compute/resourceId?api-version=2021-02-01&format=text")
-curl -fsS -X POST -H "Authorization: Bearer $token" -H "Content-Length: 0" \
-  "https://management.azure.com${rid}/deallocate?api-version=2024-07-01"
+deallocate "idle for $(( idle / 60 )) min"
 SCRIPT
 chmod 755 /usr/local/bin/idle-deallocate
 

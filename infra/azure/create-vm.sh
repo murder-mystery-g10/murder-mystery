@@ -75,6 +75,7 @@ else
   log "VM $VM_NAME already exists, skipping"
 fi
 
+
 FQDN="$(az network public-ip show -g "$RESOURCE_GROUP" -n "$IP_NAME" --query dnsSettings.fqdn -o tsv)"
 IP="$(az network public-ip show -g "$RESOURCE_GROUP" -n "$IP_NAME" --query ipAddress -o tsv)"
 

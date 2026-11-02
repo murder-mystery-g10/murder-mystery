@@ -1,0 +1,63 @@
+# Production overrides, used on the server together with docker-compose.yml:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# Images are built by GitHub Actions and pulled from GHCR; nothing is built on the server.
+# Only Caddy publishes ports; every other service is reachable only inside the Docker network.
+
+x-app-image: &restart
+  restart: unless-stopped
+
+services:
+  postgres:
+    <<: *restart
+    ports: !reset []
+    healthcheck:
+      interval: 10s
+
+  ai-service:
+    <<: *restart
+    image: ${IMAGE_REGISTRY:-ghcr.io/murder-mystery-g10}/ai-service:${IMAGE_TAG:-latest}
+    build: !reset null
+    ports: !reset []
+
+  backend:
+    <<: *restart
+    image: ${IMAGE_REGISTRY:-ghcr.io/murder-mystery-g10}/backend:${IMAGE_TAG:-latest}
+    build: !reset null
+    ports: !reset []
+    environment:
+      CORS_ORIGINS: '["https://${DOMAIN}"]'
+
+  frontend:
+    <<: *restart
+    image: ${IMAGE_REGISTRY:-ghcr.io/murder-mystery-g10}/frontend:${IMAGE_TAG:-latest}
+    build: !reset null
+    ports: !reset []
+
+  caddy:
+    <<: *restart
+    image: caddy:2
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      DOMAIN: ${DOMAIN}
+      LOGS_USER: ${LOGS_USER}
+      LOGS_PASSWORD_HASH: ${LOGS_PASSWORD_HASH}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [frontend, dozzle]
+
+  dozzle:
+    <<: *restart
+    image: amir20/dozzle:latest
+    environment:
+      DOZZLE_BASE: /logs
+      DOZZLE_NO_ANALYTICS: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - dozzle_data:/data
+
+volumes:
+  caddy_data:
+  caddy_config:
+  dozzle_data:

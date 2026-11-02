@@ -18,7 +18,7 @@ All containers run with Docker Compose on one Azure VM. Only Caddy publishes por
 
 | Resource | Name | Notes |
 |---|---|---|
-| Subscription | Azure for Students (UBB tenant) | University policies limit regions and VM sizes |
+| Subscription | Azure for Students (UBB tenant) | The university's policies limit regions and VM sizes |
 | Resource group | `murder-mystery-rg` | Holds everything below; deleting it removes the whole server |
 | Region | `polandcentral` | |
 | VM | `mm-server` | `Standard_B2s_v2` (2 vCPU, 8 GiB), Ubuntu 24.04, 64 GiB disk; ~0.10 USD per running hour |
@@ -29,9 +29,9 @@ All containers run with Docker Compose on one Azure VM. Only Caddy publishes por
 | Backups | storage `mmg10backups`, container `postgres-backups` | Deleted after 14 days |
 | Budget | `murder-mystery-monthly` | 20 per month, email alerts at 30/50/80/100% and on forecast |
 
-The University policy only allows `Standard_B2s_v2` among the sizes actually available to the
-subscription (in `polandcentral` and `swedencentral`). Smaller sizes are either not offered or
-blocked.
+Why only one VM size: the university's policy allows `Standard_B2s_v2` as the only size that is
+also available to the subscription (in `polandcentral` and `swedencentral`). Smaller sizes are
+either not offered or blocked.
 
 ## Access
 
@@ -79,7 +79,8 @@ Environment **`production`** (Settings → Environments), usable only from `main
 | `DEPLOY_SSH_KEY` | secret | private key `~/.ssh/mm-deploy` |
 
 Workflows: `ci.yml` (checks on every PR), `deploy.yml` (deploy on `main` and `v*` tags),
-`server.yml` (start/stop buttons, nightly stop). See [.github/workflows](../../.github/workflows/README.md).
+`server.yml` (start/stop buttons, nightly stop). See
+[What GitHub Actions does](shared-server.md#what-github-actions-does).
 
 The GHCR packages (`ai-service`, `backend`, `frontend`) are public, so the server pulls them
 without logging in.
@@ -103,7 +104,8 @@ ssh azureuser@murder-mystery-g10.polandcentral.cloudapp.azure.com "sudo touch /e
 ssh azureuser@murder-mystery-g10.polandcentral.cloudapp.azure.com "sudo rm /etc/idle-deallocate.disabled"
 ```
 
-The nightly **Server** workflow still stops the VM at 01:30. To skip it for one night, disable
+The nightly **Server** workflow still stops the VM at 23:30 UTC (01:30 in winter, 02:30 in
+summer, Romania time). To skip it for one night, disable
 the workflow in **Actions → Server → ⋯ → Disable workflow** and enable it again the next day.
 
 Check the auto-stop decisions: `journalctl -t idle-deallocate --since today`.

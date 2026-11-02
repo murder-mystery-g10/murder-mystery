@@ -3,8 +3,8 @@
 # Run from your laptop:
 #   ssh azureuser@<fqdn> "sudo DEPLOY_PUBKEY='$(cat ~/.ssh/mm-deploy.pub)' bash -s" < infra/azure/bootstrap.sh
 #
-# Disable idle + 3h limits (demo / test days):  sudo touch /etc/idle-deallocate.disabled
-# Re-enable auto-deallocate:                sudo rm /etc/idle-deallocate.disabled
+# Disable the idle, 3-hour and night stops (demo / test days):  sudo touch /etc/idle-deallocate.disabled
+# Re-enable them:                                               sudo rm /etc/idle-deallocate.disabled
 
 set -euo pipefail
 

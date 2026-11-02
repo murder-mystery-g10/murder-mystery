@@ -9,7 +9,7 @@ on:
         options: [start, stop]
         default: start
   schedule:
-    - cron: "30 23 * * *"   # 01:30 Romania time (winter): nightly safety stop
+    - cron: "30 23 * * *"   # nightly safety stop: 23:30 UTC (01:30 in winter, 02:30 in summer, Romania time)
 
 concurrency:
   group: server

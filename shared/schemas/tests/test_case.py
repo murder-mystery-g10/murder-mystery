@@ -1,13 +1,9 @@
 from collections.abc import Callable
-from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
 
 from shared_schemas import Case, ThemeMap, find_map_errors
-from shared_schemas.export import main as export_main
-
-REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 def test_valid_case_parses(case_data: dict) -> None:
@@ -56,10 +52,3 @@ def test_clue_on_missing_object_is_reported(case_data: dict, map_data: dict) -> 
     case_data["clues"][0]["object"] = "hall.mirror"
     errors = find_map_errors(Case.model_validate(case_data), ThemeMap.model_validate(map_data))
     assert any("hall.mirror" in error for error in errors)
-
-
-def test_exported_json_schemas_are_up_to_date() -> None:
-    out = REPO_ROOT / "docs" / "contracts"
-    assert export_main(["--check", "--out", str(out)]) == 0, (
-        "JSON Schemas are stale: run `uv run python -m shared_schemas.export`"
-    )

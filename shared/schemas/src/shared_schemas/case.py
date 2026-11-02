@@ -1,8 +1,8 @@
 """Case schema: the full truth of one mystery.
 
 A case lives only in the backend and the AI service; it never reaches the browser.
-The schema checks that references are consistent. Design rules from the case
-checklist (rule of two, nobody solves alone, ...) are checked by POST /validate.
+The schema checks that references are consistent. The design rules (rule of two,
+nobody solves alone, ...) are in docs/case-design.md and are checked by POST /validate.
 """
 
 from enum import StrEnum

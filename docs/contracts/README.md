@@ -1,4 +1,4 @@
-# contracts
+# Contracts
 
 Contracts between teams. The Pydantic models in `shared/schemas` are the source of truth;
 the JSON Schemas here are generated from them. Any change goes through a PR approved by both teams.
@@ -9,15 +9,13 @@ the JSON Schemas here are generated from them. Any change goes through a PR appr
 | `theme-map.schema.json` | Frontend/UI/UX + AI | `shared_schemas.theme_map.ThemeMap` |
 | `ai-api.schema.json` | AI + Backend | `shared_schemas.ai_api` |
 
-After changing a model, regenerate and commit the schemas:
-
-```bash
-uv run python -m shared_schemas.export
-```
-
-CI fails if they are out of date.
+After changing a model, regenerate the JSON Schemas and the TypeScript types and commit them with
+your change: see [Changing a contract](../development.md#5-changing-a-contract). CI fails if they
+are out of date.
 
 ## Case and map
+
+The design rules a case must follow are in [case-design.md](../case-design.md).
 
 - A case never reaches the browser; the frontend gets filtered views through the API.
 - The theme map (`themes/<theme>/map.json`) is fixed per theme; a case refers to its room and object ids.
@@ -60,10 +58,12 @@ REST (interactive docs: http://localhost:8000/api/docs):
 
 | Endpoint | Request | Response |
 |---|---|---|
+| `GET /api/health` | — | `HealthResponse` |
+| `GET /api/health/ready` | — | `ReadinessResponse` (`503` when the database or the AI service is down) |
 | `POST /api/lobbies` | `CreateLobbyRequest` | `201` + `LobbySession` |
 | `POST /api/lobbies/{code}/join` | `JoinLobbyRequest` | `LobbySession` |
 | `GET /api/cases` | — | `CaseSummary[]` |
 | `GET /api/themes/{theme_id}/map` | — | `ThemeMap` |
 
-The frontend's TypeScript types are generated: `cd frontend && npm run gen:contracts`.
-CI fails if `frontend/src/contracts/` is out of date.
+The frontend uses TypeScript types generated from these files (`frontend/src/contracts/`); see
+[Changing a contract](../development.md#5-changing-a-contract).

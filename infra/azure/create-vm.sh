@@ -18,7 +18,7 @@ RESOURCE_GROUP="${RESOURCE_GROUP:-murder-mystery-rg}"
 VM_NAME="${VM_NAME:-mm-server}"
 VM_SIZE="${VM_SIZE:-Standard_B2s_v2}"           # only size allowed + available on Azure for Students (UBB)
 IMAGE="${IMAGE:-Canonical:ubuntu-24_04-lts:server:latest}"
-OS_DISK_GB="${OS_DISK_GB:-64}"                     # 64 GiB Premium SSD = P6, inside the free tier
+OS_DISK_GB="${OS_DISK_GB:-64}"                     # 64 GiB Premium SSD = P6, free for 12 months on Azure for Students
 ADMIN_USER="${ADMIN_USER:-azureuser}"
 SSH_PUBLIC_KEY="${SSH_PUBLIC_KEY:-$HOME/.ssh/id_ed25519.pub}"
 DNS_LABEL="${DNS_LABEL:?Set DNS_LABEL, e.g. murder-mystery-g10 (lowercase, unique per region)}"

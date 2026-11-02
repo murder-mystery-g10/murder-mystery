@@ -19,6 +19,7 @@ coverage/
 .env
 .env.*
 !.env.example
+!.env.prod.example
 
 # Editors / OS
 .idea/
@@ -30,4 +31,3 @@ Thumbs.db
 
 # Misc
 *.log
-!.env.prod.example

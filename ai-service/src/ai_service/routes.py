@@ -1,4 +1,4 @@
-"""Endpoints of the AI service. Still stubs: they validate input, then answer 501."""
+"""AI service endpoints. Not implemented yet: they validate the request and return 501."""
 
 from fastapi import APIRouter, HTTPException, status
 
@@ -41,4 +41,5 @@ def get_generation(job_id: str) -> GenerationJob:
 
 @router.post("/validate", tags=["validation"], summary="Check a case against the checklist")
 def validate_case(request: ValidateRequest) -> ValidationReport:
+    """Rules and checklist: docs/case-design.md."""
     raise _not_implemented()

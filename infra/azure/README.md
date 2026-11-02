@@ -1,7 +1,7 @@
 # Azure infrastructure
 
 Scripts that create and configure the shared server. All are safe to re-run; settings are
-variables at the top of each script. Full guide: [docs/setup/server-admin.md](../../docs/setup/server-admin.md).
+variables at the top of each script. Full guide: [docs/server-admin.md](../../docs/server-admin.md).
 
 | Script | Runs | Does |
 |---|---|---|

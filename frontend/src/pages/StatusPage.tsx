@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { StatusRow } from '../components/StatusRow'
-import { fetchReadiness, type Readiness } from '../lib/api'
+import type { ReadinessResponse } from '../contracts/game-api'
+import { fetchReadiness } from '../lib/api'
 import { socket } from '../lib/socket'
 import { useConnectionStore } from '../stores/connectionStore'
 
 export function StatusPage() {
   // undefined = still loading, null = backend unreachable
-  const [readiness, setReadiness] = useState<Readiness | null | undefined>(undefined)
+  const [readiness, setReadiness] = useState<ReadinessResponse | null | undefined>(undefined)
   const [pong, setPong] = useState<boolean | null>(null)
   const setConnected = useConnectionStore((state) => state.setConnected)
 

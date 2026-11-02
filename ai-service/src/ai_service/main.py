@@ -1,13 +1,9 @@
-from importlib.metadata import version
-
 from fastapi import Depends, FastAPI
 
+from ai_service.meta import SERVICE_NAME, SERVICE_VERSION
 from ai_service.routes import router
 from ai_service.security import require_internal_key
 from shared_schemas import HealthResponse
-
-SERVICE_NAME = "ai-service"
-SERVICE_VERSION = version(SERVICE_NAME)
 
 
 def create_app() -> FastAPI:

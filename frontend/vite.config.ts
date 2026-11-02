@@ -2,8 +2,8 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-// The frontend always talks to the backend on its own origin (/api, /socket.io).
-// In development Vite proxies those paths; in production Caddy does.
+// The app calls the backend on its own origin (/api, /socket.io). In development Vite
+// proxies these paths; in Docker the frontend container's nginx does.
 const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:8000'
 
 export default defineConfig({

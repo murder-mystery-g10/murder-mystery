@@ -4,9 +4,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Service configuration, read from environment variables (or a local .env file)."""
-
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    # Environment variables win. Otherwise .env is read from the current folder, or from its
+    # parent when a command runs inside a service folder (e.g. alembic in backend/).
+    model_config = SettingsConfigDict(env_file=("../.env", ".env"), extra="ignore")
 
     database_url: str = "postgresql+asyncpg://murder:murder@localhost:5432/murder"
     ai_service_url: str = "http://localhost:8001"

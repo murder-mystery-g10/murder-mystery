@@ -2,7 +2,8 @@
 
 Called only by the backend, with the X-Internal-Key header. The service is
 stateless: every request carries everything it needs. Theme maps are read
-from themes/<theme>/map.json, by case.theme.
+from themes/<theme>/map.json, by case.theme. POST /validate checks the rules in
+docs/case-design.md.
 """
 
 from enum import StrEnum
@@ -11,6 +12,7 @@ from pydantic import BaseModel, Field
 
 from shared_schemas.base import Id, Schema
 from shared_schemas.case import Case, Difficulty
+from shared_schemas.health import HealthResponse
 
 MAX_QUESTION_LENGTH = 300
 
@@ -127,6 +129,7 @@ class ValidationReport(Schema):
 
 
 MODELS: list[type[BaseModel]] = [
+    HealthResponse,
     InterrogateRequest,
     InterrogateResponse,
     GenerateRequest,

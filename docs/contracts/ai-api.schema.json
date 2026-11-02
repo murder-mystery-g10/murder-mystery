@@ -654,6 +654,32 @@
       "title": "GenerationJob",
       "type": "object"
     },
+    "HealthResponse": {
+      "additionalProperties": false,
+      "description": "Response of every service's GET /health endpoint.",
+      "properties": {
+        "status": {
+          "const": "ok",
+          "default": "ok",
+          "title": "Status",
+          "type": "string"
+        },
+        "service": {
+          "title": "Service",
+          "type": "string"
+        },
+        "version": {
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "service",
+        "version"
+      ],
+      "title": "HealthResponse",
+      "type": "object"
+    },
     "InterrogateRequest": {
       "additionalProperties": false,
       "properties": {

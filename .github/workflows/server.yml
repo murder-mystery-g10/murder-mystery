@@ -1,0 +1,53 @@
+name: Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Start or stop the shared server
+        type: choice
+        options: [start, stop]
+        default: start
+  schedule:
+    - cron: "30 23 * * *"   # 01:30 Romania time (winter): nightly safety stop
+
+concurrency:
+  group: server
+
+jobs:
+  server:
+    name: ${{ inputs.action || 'stop' }} server
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://${{ vars.SERVER_HOST }}
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      HOST: ${{ vars.SERVER_HOST }}
+      RG: ${{ vars.AZURE_RESOURCE_GROUP }}
+      VM: ${{ vars.AZURE_VM_NAME }}
+      ACTION: ${{ inputs.action || 'stop' }}
+    steps:
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Start
+        if: env.ACTION == 'start'
+        run: |
+          az vm start -g "$RG" -n "$VM"
+          curl -fsS --retry 30 --retry-delay 5 --retry-all-errors "https://$HOST/api/health" > /dev/null || true
+          {
+            echo "### Server is running: https://$HOST"
+            echo "It stops by itself after 30 min without use, after 3 hours, or at night (01:00-07:00)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Stop
+        if: env.ACTION == 'stop'
+        run: |
+          az vm deallocate -g "$RG" -n "$VM"
+          echo "### Server stopped" >> "$GITHUB_STEP_SUMMARY"

@@ -25,6 +25,7 @@ DNS_LABEL="${DNS_LABEL:?Set DNS_LABEL, e.g. murder-mystery-g10 (lowercase, uniqu
 
 IP_NAME="${VM_NAME}-ip"
 NSG_NAME="${VM_NAME}-nsg"
+VM_SCOPE="/subscriptions/$(az account show --query id -o tsv)/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Compute/virtualMachines/$VM_NAME"
 TAGS="project=murder-mystery"
 
 log() { printf '\n==> %s\n' "$*"; }
@@ -65,6 +66,7 @@ if ! az vm show -g "$RESOURCE_GROUP" -n "$VM_NAME" &>/dev/null; then
     --image "$IMAGE" --size "$VM_SIZE" \
     --admin-username "$ADMIN_USER" --ssh-key-values "$SSH_PUBLIC_KEY" \
     --authentication-type ssh \
+    --assign-identity "[system]" --role "Virtual Machine Contributor" --scope "$VM_SCOPE" \
     --public-ip-address "$IP_NAME" --nsg "$NSG_NAME" \
     --os-disk-size-gb "$OS_DISK_GB" --storage-sku Premium_LRS \
     --os-disk-delete-option Delete --nic-delete-option Delete \

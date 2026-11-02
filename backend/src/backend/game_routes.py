@@ -1,4 +1,4 @@
-"""Game REST API. Stubs (501) until the backend team implements them."""
+"""Game REST API. Not implemented yet (the backend team owns these): every endpoint returns 501."""
 
 from fastapi import APIRouter, HTTPException, status
 

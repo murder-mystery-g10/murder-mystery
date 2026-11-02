@@ -15,9 +15,7 @@ from shared_schemas.ai_api import (
 class AIClient:
     """HTTP client for the internal AI service. Sends the shared key on every call.
 
-    Every method raises httpx.HTTPError when the service fails or is unreachable;
-    for /interrogate the backend then answers "the suspect refuses to talk" and
-    does not consume the question.
+    Every method raises httpx.HTTPError when the service fails or is unreachable.
     """
 
     def __init__(self, base_url: str, api_key: str, timeout: float = 30.0) -> None:

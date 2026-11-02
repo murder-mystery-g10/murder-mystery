@@ -5,7 +5,6 @@ on:
   push:
     branches: [main]
 
-# A new push to the same branch cancels the run still in progress.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true

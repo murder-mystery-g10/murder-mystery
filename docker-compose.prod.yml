@@ -1,7 +1,6 @@
 # Production overrides, used on the server together with docker-compose.yml:
 #   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 # Images are built by GitHub Actions and pulled from GHCR; nothing is built on the server.
-# Only Caddy publishes ports; every other service is reachable only inside the Docker network.
 
 x-restart: &restart
   restart: unless-stopped

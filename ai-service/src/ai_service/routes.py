@@ -1,4 +1,4 @@
-"""Endpoints of the AI service. Still stubs: they validate input, then answer 501."""
+"""AI service endpoints. Not implemented yet: they validate the request and return 501."""
 
 from fastapi import APIRouter, HTTPException, status
 

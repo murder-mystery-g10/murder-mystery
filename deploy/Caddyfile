@@ -1,4 +1,3 @@
-# HTTPS certificates are obtained and renewed automatically (Let's Encrypt).
 {$DOMAIN} {
 	# Container logs (Dozzle), behind a password
 	handle /logs* {

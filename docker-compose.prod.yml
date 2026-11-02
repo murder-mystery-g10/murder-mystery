@@ -3,7 +3,7 @@
 # Images are built by GitHub Actions and pulled from GHCR; nothing is built on the server.
 # Only Caddy publishes ports; every other service is reachable only inside the Docker network.
 
-x-app-image: &restart
+x-restart: &restart
   restart: unless-stopped
 
 services:

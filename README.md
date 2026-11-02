@@ -4,8 +4,6 @@ A multiplayer murder mystery game that runs in the browser. Players explore the 
 manor, collect clues, put them on a shared board and question suspects played by AI. The team
 wins by naming the culprit, the motive and the method.
 
-This is a university team project. The first playable version (the MVP) is due on
-**November 15, 2026**.
 
 ## Local vs. server: where you work
 

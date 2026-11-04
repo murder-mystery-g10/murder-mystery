@@ -6,4 +6,4 @@ and passes the checklist in [docs/case-design.md](../docs/case-design.md).
 
 The backend loads these cases, and the host picks one in the lobby.
 
-**Status:** empty for now. **Owner:** the AI team, which generates and validates the cases.
+**Status:** one case, [vornicu_1926.json](vornicu_1926.json) ("Moarte la Conacul Vornicu"). `ai-service/tests/test_cases.py` checks that every file here matches the schema. **Owner:** the AI team, which generates and validates the cases.

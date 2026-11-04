@@ -20,6 +20,13 @@ services:
     build: { context: ., dockerfile: ai-service/Dockerfile }
     environment:
       INTERNAL_API_KEY: ${INTERNAL_API_KEY}
+      AI_PROVIDER: ${AI_PROVIDER:-ollama}
+      AI_BASE_URL: ${AI_BASE_URL:-http://host.docker.internal:11434/v1}
+      AI_MODEL: ${AI_MODEL:-gemma3:4b}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_REASONING_EFFORT: ${AI_REASONING_EFFORT:-}
+      AI_TIMEOUT_SECONDS: ${AI_TIMEOUT_SECONDS:-20}
+    extra_hosts: ["host.docker.internal:host-gateway"]   # reach Ollama on the host
     ports: ["8001:8001"]
 
   backend:

@@ -7,7 +7,7 @@ follow them, and `POST /validate` on the AI service checks them (see
 The case schema (`shared_schemas.case`) already rejects broken references, such as a clue that
 points to an unknown room. The rules below go further: they check the design of the mystery.
 
-The reference case is "Moarte la Conacul Vornicu": 4 suspects, 6 rooms, 4 players.
+The reference case is "Death at Vornicu Manor": 4 suspects, 6 rooms, 4 players.
 
 ## Clue types
 

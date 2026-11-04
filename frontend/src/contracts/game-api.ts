@@ -196,7 +196,7 @@ export type PlayerToken1 = string
 export type Suspect3 = string
 export type Suspect4 = string
 /**
- * E.g. 'Suspectul refuză să vorbească momentan'
+ * E.g. 'The suspect refuses to speak for now'
  */
 export type Message1 = string
 export type Room5 = string

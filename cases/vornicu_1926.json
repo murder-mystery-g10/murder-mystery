@@ -1,222 +1,222 @@
 {
   "schema_version": 1,
   "case_id": "vornicu_1926",
-  "title": "Moarte la Conacul Vornicu",
+  "title": "Death at Vornicu Manor",
   "theme": "conac",
   "difficulty": "normal",
   "player_count": 4,
   "questions_per_suspect": 6,
 
   "briefing": {
-    "when": "Noaptea de 14 spre 15 noiembrie 1926, în timpul unei furtuni",
-    "where": "Conacul Vornicu, lângă Turda",
+    "when": "The night of November 14–15, 1926, during a storm",
+    "where": "Vornicu Manor, near Turda",
     "victim": {
       "name": "Matei Vornicu",
       "age": 64,
-      "description": "Proprietarul fabricii de cherestea Vornicu și patronul Spitalului de Caritate din Turda. Suferea de inimă și lua în fiecare seară picături de digitală."
+      "description": "Owner of the Vornicu lumber mill and patron of the Turda Charity Hospital. He had a heart condition and took digitalis drops every evening."
     },
-    "summary": "Matei Vornicu a murit în biblioteca conacului, în noaptea furtunii. Doctorul familiei a spus „infarct”, dar menajera a insistat să fie chemată poliția. Sunteți detectivii Poliției Turda și preluați cazul a doua zi dimineață. Toți cei patru suspecți au dormit la conac și așteaptă acum la secție.",
-    "discovery": "Menajera Ana Mureșan l-a găsit mort în fotoliul din bibliotecă la 23:30. Dr. Ilie Strat a constatat decesul la 23:35 și a spus că a fost un infarct. Ana a cerut să fie chemată poliția și a păstrat ceașca de ceai.",
+    "summary": "Matei Vornicu died in the manor library on the night of the storm. The family doctor said “heart attack,” but the housekeeper insisted that the police be called. You are Turda Police detectives and take over the case the next morning. All four suspects slept at the manor and are now waiting at the station.",
+    "discovery": "The housekeeper, Ana Mureșan, found him dead in the library armchair at 23:30. Dr. Ilie Strat pronounced him dead at 23:35 and said it was a heart attack. Ana asked for the police to be called and preserved the teacup.",
     "coroner_report": [
-      "Decesul a avut loc între 22:45 și 23:15, prin oprire cardiacă bruscă.",
-      "Nicio urmă de violență. Fără vărsături, stomacul fără leziuni.",
-      "Ceașca de ceai: un reziduu amar, o substanță necunoscută în concentrație foarte mare. Identificarea exactă durează trei zile, la laboratorul din Cluj.",
-      "Sticluța cu picături de inimă de pe birou: conținut și concentrație normale.",
-      "Concluzie: otrăvire probabilă, prin ceai."
+      "Death occurred between 22:45 and 23:15 due to sudden cardiac arrest.",
+      "No signs of violence. No vomiting and no stomach lesions.",
+      "Teacup: a bitter residue, an unknown substance in a very high concentration. Exact identification will take three days at the Cluj laboratory.",
+      "Heart-drop bottle on the desk: normal contents and concentration.",
+      "Conclusion: probable poisoning through the tea."
     ],
     "story_hooks": [
-      { "text": "Ana: „Stăpânul își scria jurnalul în fiecare seară, la birou.”", "points_to_room": "library" },
-      { "text": "Ana: „Ceașca am pus-o deoparte, în bucătărie. N-a spălat-o nimeni.”", "points_to_room": "kitchen" },
-      { "text": "Ana: „Cheile de rezervă de la camere stau la mine, în bucătărie.”", "points_to_room": "kitchen" },
-      { "text": "Doctorul și-a încuiat camera de oaspeți înainte să vină la secție.", "points_to_room": "guest_room_2" },
-      { "text": "Sera e a doamnei Elena și are un lacăt cu cifru.", "points_to_room": "greenhouse" }
+      { "text": "Ana: “The master wrote in his journal at the desk every evening.”", "points_to_room": "library" },
+      { "text": "Ana: “I set the cup aside in the kitchen. Nobody washed it.”", "points_to_room": "kitchen" },
+      { "text": "Ana: “I keep the spare room keys in the kitchen.”", "points_to_room": "kitchen" },
+      { "text": "The doctor locked his guest room before coming to the station.", "points_to_room": "guest_room_2" },
+      { "text": "The greenhouse belongs to Mrs. Elena and has a combination lock.", "points_to_room": "greenhouse" }
     ]
   },
 
   "truth": {
     "culprit": "strat",
-    "motive": "Dr. Strat a deturnat 400.000 de lei din fondurile Spitalului de Caritate, ca să-și acopere un împrumut de 350.000 de lei la Banca Someșul, scadent pe 20 noiembrie. Matei Vornicu aflase de la contabilul spitalului și urma să predea dosarul Parchetului luni, 17 noiembrie.",
-    "method": "Dr. Strat a cumpărat digitoxină pură și a pus-o într-o sticluță identică cu cea cu picăturile de inimă ale victimei, dar cu dop negru. La 21:45 a schimbat sticluțele în bibliotecă; la 22:00 victima și-a pus singură zece picături în ceai. La 23:35, rămas singur cu corpul, a pus la loc sticluța originală, cu dop alb.",
+    "motive": "Dr. Strat embezzled 400,000 lei from the Charity Hospital funds to cover a 350,000-lei loan from Someșul Bank, due on November 20. Matei Vornicu had learned about it from the hospital accountant and planned to hand the file to the Prosecutor’s Office on Monday, November 17.",
+    "method": "Dr. Strat bought pure digitoxin and put it in a bottle identical to the victim’s heart drops, but with a black stopper. At 21:45 he switched the bottles in the library; at 22:00 the victim put ten drops into his own tea. At 23:35, alone with the body, he restored the original white-stoppered bottle.",
     "timeline": [
       {
         "id": "ev_poison_bought",
         "time": "10 nov",
-        "event": "Dr. Strat cumpără 1 g de digitoxină pură de la Farmacia „Vulturul Negru” din Cluj.",
+        "event": "Dr. Strat buys 1 g of pure digitoxin from the Black Eagle Pharmacy in Cluj.",
         "proven_by": ["K5"],
         "witnessed_by": ["strat"]
       },
       {
         "id": "ev_accountant_letter",
         "time": "12 nov",
-        "event": "Matei primește scrisoarea contabilului Popescu despre cei 400.000 de lei lipsă de la spital și îi scrie avocatului Lazăr că luni predă dosarul Parchetului.",
+        "event": "Matei receives accountant Popescu’s letter about the 400,000 lei missing from the hospital and writes to attorney Lazăr that he will hand the file to the Prosecutor’s Office on Monday.",
         "proven_by": ["D1", "O4"],
         "witnessed_by": []
       },
       {
         "id": "ev_ana_reads",
         "time": "13 nov",
-        "event": "Ana citește pe ascuns scrisoarea lui Matei către avocatul Lazăr: e ceva cu banii spitalului, iar luni stăpânul merge la Parchet. Își notează plecarea în calendar.",
+        "event": "Ana secretly reads Matei’s letter to attorney Lazăr: it concerns the hospital money, and the master is going to the Prosecutor’s Office on Monday. She notes the departure in her calendar.",
         "proven_by": ["K4"],
         "witnessed_by": ["ana"]
       },
       {
         "id": "ev_arrival",
         "time": "14 nov, 18:00",
-        "event": "Dr. Strat sosește la conac și primește Camera de oaspeți 2.",
+        "event": "Dr. Strat arrives at the manor and is given Guest Room 2.",
         "proven_by": ["H4"],
         "witnessed_by": ["strat", "ana", "victor", "elena"]
       },
       {
         "id": "ev_money_drawer",
         "time": "18:00",
-        "event": "Matei pune 20.000 de lei, leafa muncitorilor, în sertarul biroului din bibliotecă.",
+        "event": "Matei puts 20,000 lei, the workers’ wages, in the library desk drawer.",
         "proven_by": ["B1"],
         "witnessed_by": ["victor"]
       },
       {
         "id": "ev_dinner",
         "time": "20:00",
-        "event": "La cină, Dr. Strat o întreabă discret pe Elena dacă Matei a primit în ultima vreme scrisori de la contabilul spitalului.",
+        "event": "At dinner, Dr. Strat discreetly asks Elena whether Matei has recently received letters from the hospital accountant.",
         "proven_by": [],
         "witnessed_by": ["strat", "elena"]
       },
       {
         "id": "ev_retire",
         "time": "21:00",
-        "event": "Matei se retrage în bibliotecă. Elena spune că urcă în dormitor, cu migrenă.",
+        "event": "Matei retires to the library. Elena says she is going upstairs to her bedroom with a migraine.",
         "proven_by": [],
         "witnessed_by": ["strat", "ana", "victor", "elena"]
       },
       {
         "id": "ev_quarrel",
         "time": "21:15",
-        "event": "Victor și Matei se ceartă aprins pe bani, în bibliotecă, până la 21:30.",
+        "event": "Victor and Matei argue heatedly about money in the library until 21:30.",
         "proven_by": ["B1"],
         "witnessed_by": ["victor", "ana"]
       },
       {
         "id": "ev_theft",
         "time": "21:25",
-        "event": "Cât unchiul caută ceva prin rafturi, Victor ia cei 20.000 de lei din sertarul biroului.",
+        "event": "While his uncle searches the shelves, Victor takes the 20,000 lei from the desk drawer.",
         "proven_by": ["B4"],
         "witnessed_by": ["victor"]
       },
       {
         "id": "ev_victor_leaves",
         "time": "21:30",
-        "event": "Victor iese din bibliotecă trântind ușa; unchiul strigă după el. Pe scări îl vede pe Dr. Strat coborând spre bibliotecă.",
+        "event": "Victor leaves the library, slamming the door; his uncle shouts after him. On the stairs he sees Dr. Strat heading down toward the library.",
         "proven_by": ["B1"],
         "witnessed_by": ["victor"]
       },
       {
         "id": "ev_elena_greenhouse",
         "time": "21:40",
-        "event": "Elena iese pe ușa din spate spre seră, cu o lampă.",
+        "event": "Elena leaves through the back door for the greenhouse, carrying a lamp.",
         "proven_by": ["H3"],
         "witnessed_by": ["elena", "ana"]
       },
       {
         "id": "ev_swap",
         "time": "21:45",
-        "event": "Dr. Strat intră în bibliotecă „să-i ia pulsul” lui Matei. Pe nevăzute, schimbă sticluța cu picături cu dop alb cu una identică, cu dop negru, plină cu digitoxină. Ia de pe birou scrisoarea către avocatul Lazăr.",
+        "event": "Dr. Strat enters the library “to take Matei’s pulse.” Unseen, he replaces the white-stoppered heart-drop bottle with an identical black-stoppered bottle full of digitoxin. He takes the letter to attorney Lazăr from the desk.",
         "proven_by": ["B1", "O1", "O4"],
         "witnessed_by": ["strat"]
       },
       {
         "id": "ev_strat_leaves",
         "time": "21:50",
-        "event": "Dr. Strat iese din bibliotecă; Ana îl vede pe hol.",
+        "event": "Dr. Strat leaves the library; Ana sees him in the hall.",
         "proven_by": ["B1"],
         "witnessed_by": ["strat", "ana"]
       },
       {
         "id": "ev_tea",
         "time": "22:00",
-        "event": "Ana aduce ceaiul în bibliotecă. Matei își pune singur zece picături dintr-o sticluță cu dop negru.",
+        "event": "Ana brings the tea to the library. Matei puts ten drops from a black-stoppered bottle into it himself.",
         "proven_by": ["D4"],
         "witnessed_by": ["ana"]
       },
       {
         "id": "ev_inn",
         "time": "22:10",
-        "event": "Victor ajunge la Hanul „La Răscruce” și joacă cărți.",
+        "event": "Victor arrives at the Crossroads Inn and plays cards.",
         "proven_by": ["H2"],
         "witnessed_by": ["victor"]
       },
       {
         "id": "ev_burn_letter",
         "time": "22:15",
-        "event": "Dr. Strat arde scrisoarea către avocat în soba din camera lui; un colț scapă nears.",
+        "event": "Dr. Strat burns the letter to the attorney in his room’s stove; one corner remains unburned.",
         "proven_by": ["O4"],
         "witnessed_by": ["strat"]
       },
       {
         "id": "ev_elena_waits",
         "time": "22:30",
-        "event": "Elena așteaptă în seră scrisoarea de la pictorul „R.”, care trece pe la geamul serei.",
+        "event": "Elena waits in the greenhouse for a letter from the painter “R.,” who passes by the greenhouse window.",
         "proven_by": ["S2", "S3"],
         "witnessed_by": ["elena"]
       },
       {
         "id": "ev_symptoms",
         "time": "22:45",
-        "event": "Matei vede totul gălbui, îi e greață, inima o ia razna; mâzgălește câteva cuvinte pe sugativă.",
+        "event": "Matei sees everything with a yellow tint, feels nauseated, and his heart races; he scrawls a few words on the blotter.",
         "proven_by": ["B2"],
         "witnessed_by": []
       },
       {
         "id": "ev_death",
         "time": "23:00",
-        "event": "Matei Vornicu moare în fotoliul din bibliotecă.",
+        "event": "Matei Vornicu dies in the library armchair.",
         "proven_by": [],
         "witnessed_by": []
       },
       {
         "id": "ev_found",
         "time": "23:30",
-        "event": "Ana îl găsește pe Matei mort și fuge după doctor.",
+        "event": "Ana finds Matei dead and runs for the doctor.",
         "proven_by": [],
         "witnessed_by": ["ana", "strat"]
       },
       {
         "id": "ev_alone",
         "time": "23:35",
-        "event": "Dr. Strat constată decesul și spune „infarct”. O trimite pe Ana după un pled și rămâne singur cu corpul cam cinci minute.",
+        "event": "Dr. Strat pronounces him dead and says “heart attack.” He sends Ana for a blanket and remains alone with the body for about five minutes.",
         "proven_by": [],
         "witnessed_by": ["strat", "ana"]
       },
       {
         "id": "ev_restore",
         "time": "23:36",
-        "event": "Rămas singur, Dr. Strat pune la loc pe birou sticluța originală, cu dop alb, și o ia pe cea cu dop negru.",
+        "event": "Left alone, Dr. Strat restores the original white-stoppered bottle to the desk and takes the black-stoppered one.",
         "proven_by": ["B3", "O1"],
         "witnessed_by": ["strat"]
       },
       {
         "id": "ev_elena_returns",
         "time": "23:40",
-        "event": "Elena se întoarce din seră pe ușa din spate, cu ghetele pline de noroi, și urcă în dormitor.",
+        "event": "Elena returns from the greenhouse through the back door, her boots covered in mud, and goes up to her bedroom.",
         "proven_by": ["H3"],
         "witnessed_by": ["elena"]
       },
       {
         "id": "ev_cup_kept",
         "time": "23:40",
-        "event": "Ana duce ceașca nespălată în bucătărie și lasă un bilet să n-o spele nimeni, apoi urcă să-i dea vestea doamnei.",
+        "event": "Ana takes the unwashed cup to the kitchen and leaves a note telling everyone not to wash it, then goes upstairs to tell the lady of the house.",
         "proven_by": ["K1"],
         "witnessed_by": ["ana"]
       },
       {
         "id": "ev_package",
         "time": "23:50",
-        "event": "Cât Ana e sus la doamna, Dr. Strat aruncă ambalajul de la farmacie în soba din bucătărie; arde doar pe jumătate.",
+        "event": "While Ana is upstairs with the lady of the house, Dr. Strat throws the pharmacy wrapper into the kitchen stove; it burns only halfway.",
         "proven_by": ["K5"],
         "witnessed_by": ["strat"]
       },
       {
         "id": "ev_victor_returns",
         "time": "00:40",
-        "event": "Victor pleacă de la han și ajunge la conac pe la ora unu.",
+        "event": "Victor leaves the inn and reaches the manor at about one o’clock.",
         "proven_by": ["H2"],
         "witnessed_by": ["victor"]
       }
@@ -228,34 +228,34 @@
       "id": "strat",
       "name": "Dr. Ilie Strat",
       "age": 52,
-      "role": "medicul familiei",
+      "role": "the family doctor",
       "archetype": "doctor",
-      "personality": "Calm, condescendent și foarte sigur pe el. Se ascunde în spatele termenilor medicali și îi tratează pe detectivi ca pe niște oameni care nu pricep medicina.",
-      "speech_style": "Politicos și rece, fraze lungi, mulți termeni medicali; zâmbește superior când e contrazis.",
-      "initial_statement": "După cină am stat cu Matei câteva minute. La 21:30 am urcat în cameră și am citit până m-a strigat Ana. Avea inima slabă, era de așteptat.",
+      "personality": "Calm, condescending, and extremely self-assured. He hides behind medical terminology and treats the detectives as people who cannot understand medicine.",
+      "speech_style": "Polite and cold, with long sentences and many medical terms; he smiles smugly when contradicted.",
+      "initial_statement": "After dinner I spent a few minutes with Matei. At 21:30 I went up to my room and read until Ana called me. His heart was weak; it was to be expected.",
       "secret": null,
       "lies_about": [
-        "vizita în bibliotecă de la 21:45 (susține că a stat în cameră și a citit de la 21:30)",
-        "banii spitalului („registrele sunt în regulă”)",
-        "orice legătură cu otrava, cu farmacia din Cluj sau cu sticluța de picături"
+        "his 21:45 visit to the library (he claims he stayed in his room reading from 21:30)",
+        "the hospital money (“the accounts are in order”)",
+        "any connection to the poison, the Cluj pharmacy, or the drop bottle"
       ],
       "deflects_to": [
-        { "suspect": "victor", "claim": "Victor avea datorii mari la jocuri și s-a certat cu unchiul pe bani chiar în seara aceea." },
-        { "suspect": "elena", "claim": "Doamna cultivă degetel în seră, știați? E o plantă foarte toxică, din ea se face digitala." }
+        { "suspect": "victor", "claim": "Victor had large gambling debts and argued with his uncle about money that very evening." },
+        { "suspect": "elena", "claim": "The lady grows foxglove in the greenhouse, you know. It is highly toxic; digitalis is made from it." }
       ],
       "testimonies": [],
       "break_stages": [
         {
           "triggers": [["B1"], ["ana_doctor_hall"], ["victor_stairs"]],
-          "admits": "Recunoaște că a intrat în bibliotecă pe la 21:45, dar susține că doar i-a luat pulsul lui Matei și a plecat după cinci minute."
+          "admits": "He admits entering the library at about 21:45, but claims he only took Matei’s pulse and left five minutes later."
         },
         {
           "triggers": [["D1"], ["O4"]],
-          "admits": "Recunoaște „unele nereguli” în conturile spitalului și spune că le-ar fi acoperit până la urmă, dar neagă orice legătură cu moartea lui Matei."
+          "admits": "He admits to “some irregularities” in the hospital accounts and says he would eventually have covered them, but denies any connection to Matei’s death."
         },
         {
           "triggers": [["O1", "K5"]],
-          "admits": "Se prăbușește și mărturisește: a cumpărat digitoxină pură, a schimbat sticluța cu dop alb cu una cu dop negru la 21:45 și a pus-o la loc pe cea bună la 23:35, ca moartea să pară un infarct. Matei urma să-l denunțe luni."
+          "admits": "He breaks down and confesses: he bought pure digitoxin, switched the white-stoppered bottle for a black-stoppered one at 21:45, and restored the proper bottle at 23:35 so the death would look like a heart attack. Matei was going to report him on Monday."
         }
       ]
     },
@@ -263,52 +263,52 @@
       "id": "ana",
       "name": "Ana Mureșan",
       "age": 51,
-      "role": "menajera conacului, de 30 de ani în casă",
+      "role": "the manor’s housekeeper, in the household for 30 years",
       "archetype": "housekeeper",
-      "personality": "Directă, loială familiei și suspicioasă față de „domnii de la oraș”. Ține la stăpân și vrea să se afle adevărul, dar nu-și recunoaște ușor greșelile.",
-      "speech_style": "Vorbă simplă, de la țară, propoziții scurte; se răstește când se simte acuzată.",
-      "initial_statement": "Am adus ceaiul la 22, l-am găsit mort la 23:30. Ceașca am păstrat-o eu.",
-      "secret": "Citește pe ascuns corespondența stăpânului. Din scrisoarea către avocat știa că luni urma să meargă la Parchet, pentru ceva legat de spital.",
+      "personality": "Direct, loyal to the family, and suspicious of “city gentlemen.” She cares for the master and wants the truth uncovered, but does not readily admit her mistakes.",
+      "speech_style": "Plain country speech and short sentences; she snaps when she feels accused.",
+      "initial_statement": "I brought the tea at 22:00 and found him dead at 23:30. I preserved the cup.",
+      "secret": "She secretly reads the master’s correspondence. From the letter to the attorney, she knew that he planned to go to the Prosecutor’s Office on Monday about something connected to the hospital.",
       "lies_about": [
-        "citirea scrisorilor („nu mă bag în treburile stăpânului”)"
+        "reading the letters (“I do not meddle in the master’s affairs”)"
       ],
       "deflects_to": [],
       "testimonies": [
         {
           "id": "ana_quarrel",
-          "fact": "Între 21:15 și 21:30 l-a auzit pe domnul Victor certându-se aprins cu stăpânul, pe bani; Victor a ieșit trântind ușa.",
-          "trigger": "ce s-a întâmplat în bibliotecă înainte de 21:30, sau despre Victor și stăpân",
+          "fact": "Between 21:15 and 21:30, she heard Mr. Victor arguing heatedly with the master about money; Victor left, slamming the door.",
+          "trigger": "what happened in the library before 21:30, or Victor and the master",
           "event": "ev_quarrel"
         },
         {
           "id": "ana_elena_out",
-          "fact": "Pe la 21:40 a văzut-o pe doamna Elena ieșind pe ușa din spate, spre seră, cu o lampă în mână.",
-          "trigger": "despre doamna Elena în seara aceea, sau dacă a văzut pe cineva ieșind din casă",
+          "fact": "At about 21:40, she saw Mrs. Elena leave through the back door toward the greenhouse with a lamp in her hand.",
+          "trigger": "Mrs. Elena that evening, or whether she saw anyone leave the house",
           "event": "ev_elena_greenhouse"
         },
         {
           "id": "ana_doctor_hall",
-          "fact": "Pe la 21:50 l-a văzut pe doctorul Strat ieșind din bibliotecă, pe hol.",
-          "trigger": "pe cine a văzut pe hol sau lângă bibliotecă între 21:30 și 22:00, sau ce a făcut doctorul în seara aceea",
+          "fact": "At about 21:50, she saw Dr. Strat leaving the library and entering the hall.",
+          "trigger": "whom she saw in the hall or near the library between 21:30 and 22:00, or what the doctor did that evening",
           "event": "ev_strat_leaves"
         },
         {
           "id": "ana_black_stopper",
-          "fact": "La 22:00 stăpânul și-a pus singur zece picături în ceai dintr-o sticluță cu dop negru. S-a mirat, pentru că sticluța lui avea dop alb.",
-          "trigger": "despre picăturile de inimă, medicamentul stăpânului sau ce a văzut când a adus ceaiul",
+          "fact": "At 22:00, the master put ten drops from a black-stoppered bottle into his tea himself. She was surprised because his bottle had a white stopper.",
+          "trigger": "the heart drops, the master’s medicine, or what she saw when she brought the tea",
           "event": "ev_tea"
         },
         {
           "id": "ana_alone",
-          "fact": "La 23:35 doctorul a trimis-o după un pled și a rămas singur cu stăpânul cam cinci minute.",
-          "trigger": "ce s-a întâmplat după ce a găsit corpul, sau ce a făcut doctorul lângă stăpân",
+          "fact": "At 23:35, the doctor sent her for a blanket and remained alone with the master for about five minutes.",
+          "trigger": "what happened after she found the body, or what the doctor did beside the master",
           "event": "ev_alone"
         }
       ],
       "break_stages": [
         {
           "triggers": [["K4"]],
-          "admits": "Recunoaște că a citit pe ascuns scrisoarea stăpânului către avocatul Lazăr: era ceva cu banii spitalului, iar luni stăpânul urma să meargă la Parchet."
+          "admits": "She admits secretly reading the master’s letter to attorney Lazăr: it concerned the hospital money, and the master planned to go to the Prosecutor’s Office on Monday."
         }
       ]
     },
@@ -316,29 +316,29 @@
       "id": "victor",
       "name": "Victor Vornicu",
       "age": 27,
-      "role": "nepotul și moștenitorul victimei",
+      "role": "the victim’s nephew and heir",
       "archetype": "heir",
-      "personality": "Fermecător, iritabil și obișnuit să scape cu vorba. Glumește când e încolțit și se enervează repede când e vorba de bani.",
-      "speech_style": "Familiar, ironic, cu glume și replici rapide; trece brusc de la farmec la iritare.",
-      "initial_statement": "Am vorbit cu unchiul despre afaceri, apoi am plecat în sat pe la 21:30. M-am întors după miezul nopții.",
-      "secret": "A furat 20.000 de lei din sertarul unchiului și a pierdut 15.000 la cărți, la Hanul „La Răscruce”.",
+      "personality": "Charming, irritable, and accustomed to talking his way out of trouble. He jokes when cornered and quickly becomes angry when money is mentioned.",
+      "speech_style": "Familiar and ironic, with jokes and quick retorts; he abruptly shifts from charm to irritation.",
+      "initial_statement": "I spoke with my uncle about business, then left for the village at about 21:30. I returned after midnight.",
+      "secret": "He stole 20,000 lei from his uncle’s drawer and lost 15,000 playing cards at the Crossroads Inn.",
       "lies_about": [
-        "cearta cu unchiul („a fost doar o discuție despre afaceri”)",
-        "banii („unchiul mi i-a dat”)"
+        "the argument with his uncle (“it was only a business discussion”)",
+        "the money (“my uncle gave it to me”)"
       ],
       "deflects_to": [],
       "testimonies": [
         {
           "id": "victor_stairs",
-          "fact": "Ieșind din bibliotecă la 21:30, l-a văzut pe Dr. Strat coborând scările spre bibliotecă.",
-          "trigger": "pe cine a văzut când a ieșit din bibliotecă sau din casă la 21:30",
+          "fact": "Leaving the library at 21:30, he saw Dr. Strat descending the stairs toward the library.",
+          "trigger": "whom he saw when leaving the library or the house at 21:30",
           "event": "ev_victor_leaves"
         }
       ],
       "break_stages": [
         {
           "triggers": [["B4", "H2"]],
-          "admits": "Recunoaște că a luat cei 20.000 de lei din sertar și că a pierdut 15.000 la cărți, la han. Jură că unchiul era viu când a plecat: a strigat după el.",
+          "admits": "He admits taking the 20,000 lei from the drawer and losing 15,000 at cards at the inn. He swears his uncle was alive when he left: he shouted after him.",
           "unlocks": ["victor_stairs"]
         }
       ]
@@ -347,35 +347,35 @@
       "id": "elena",
       "name": "Elena Vornicu",
       "age": 38,
-      "role": "soția victimei, a doua căsătorie",
+      "role": "the victim’s wife, his second marriage",
       "archetype": "lady",
-      "personality": "Rece, elegantă și mândră. Nu se lasă intimidată și dezvăluie cât mai puțin despre viața ei.",
-      "speech_style": "Răspunsuri scurte, politicoase și distante; evită detaliile și schimbă subiectul.",
-      "initial_statement": "Am avut migrenă, m-am retras la 21:00 și n-am ieșit din dormitorul meu.",
-      "secret": "Are o relație cu pictorul „R.” și plănuia să plece cu el în decembrie. În seara crimei l-a așteptat în seră de la 21:40 până la 23:40.",
+      "personality": "Cold, elegant, and proud. She refuses to be intimidated and reveals as little as possible about her life.",
+      "speech_style": "Short, polite, distant answers; she avoids details and changes the subject.",
+      "initial_statement": "I had a migraine, retired at 21:00, and did not leave my bedroom.",
+      "secret": "She is having an affair with the painter “R.” and planned to leave with him in December. On the night of the murder, she waited for him in the greenhouse from 21:40 until 23:40.",
       "lies_about": [
-        "unde a fost în seara crimei (susține că n-a ieșit din dormitor)",
-        "scrisorile de la „R.”"
+        "where she was on the night of the murder (she claims she did not leave her bedroom)",
+        "the letters from “R.”"
       ],
       "deflects_to": [],
       "testimonies": [
         {
           "id": "elena_foxglove",
-          "fact": "Degetelul din seră e doar decorativ; nu l-a atins de luni de zile.",
-          "trigger": "despre plantele din seră sau despre degetel",
+          "fact": "The foxglove in the greenhouse is merely decorative; she has not touched it in months.",
+          "trigger": "the greenhouse plants or the foxglove",
           "event": null
         },
         {
           "id": "elena_dinner",
-          "fact": "La cină, doctorul Strat a întrebat-o discret dacă Matei primise în ultima vreme scrisori de la contabilul spitalului.",
-          "trigger": "despre cină sau despre ce a vorbit cu doctorul Strat",
+          "fact": "At dinner, Dr. Strat discreetly asked whether Matei had recently received letters from the hospital accountant.",
+          "trigger": "dinner or what she discussed with Dr. Strat",
           "event": "ev_dinner"
         }
       ],
       "break_stages": [
         {
           "triggers": [["H3"], ["S2"]],
-          "admits": "Recunoaște că a stat în seră de la 21:40 până la 23:40, așteptând o scrisoare de la pictorul „R.”, cu care are o relație și cu care plănuia să plece în decembrie.",
+          "admits": "She admits staying in the greenhouse from 21:40 until 23:40, waiting for a letter from the painter “R.,” with whom she is having an affair and plans to leave in December.",
           "unlocks": ["elena_dinner"]
         }
       ]
@@ -404,9 +404,9 @@
       "object": "hall.coat_rack",
       "type": "F",
       "icon": "letter",
-      "title": "Scrisoare de la cazinou",
-      "player_text": "În buzunarul paltonului lui Victor: o scrisoare de la Cazinoul din Sinaia. „50.000 de lei până vineri, altfel aflăm unde locuiți.”",
-      "proves": "Victor avea nevoie disperată de bani."
+      "title": "Letter from the casino",
+      "player_text": "In Victor’s coat pocket: a letter from the Sinaia Casino. “50,000 lei by Friday, or people will learn where you live.”",
+      "proves": "Victor desperately needed money."
     },
     {
       "id": "H2",
@@ -414,9 +414,9 @@
       "type": "E",
       "also": ["P"],
       "icon": "document",
-      "title": "Nota de plată de la han",
-      "player_text": "În același palton: o notă de plată de la Hanul „La Răscruce”, 14 noiembrie, 22:10–00:40. „Pierdut la cărți: 15.000 lei.” Semnată de hangiu.",
-      "proves": "Victor era la han la 23:35, când s-a pus sticluța la loc; avea mulți bani cash în seara aceea.",
+      "title": "Inn bill",
+      "player_text": "In the same coat: a bill from the Crossroads Inn, November 14, 22:10–00:40. “Lost at cards: 15,000 lei.” Signed by the innkeeper.",
+      "proves": "Victor was at the inn at 23:35, when the bottle was restored; he had a large amount of cash that evening.",
       "refutes": ["H1"]
     },
     {
@@ -424,18 +424,18 @@
       "object": "hall.back_door",
       "type": "P",
       "icon": "item",
-      "title": "Ghetele doamnei",
-      "player_text": "Lângă ușa din spate: ghetele Elenei, cu noroi proaspăt și frunze ude lipite de tălpi.",
-      "proves": "Elena a ieșit afară în noaptea crimei; n-a stat în dormitor."
+      "title": "The lady’s boots",
+      "player_text": "Beside the back door: Elena’s boots, with fresh mud and wet leaves stuck to the soles.",
+      "proves": "Elena went outside on the night of the murder; she did not remain in her bedroom."
     },
     {
       "id": "H4",
       "object": "hall.guest_register",
       "type": "T",
       "icon": "document",
-      "title": "Registrul de oaspeți",
-      "player_text": "Registrul de pe consola din hol: „Dr. I. Strat – Camera de oaspeți 2, sosit 14 nov., ora 18:00.”",
-      "proves": "Doctorul stă în Camera de oaspeți 2; ce cheie trebuie căutată."
+      "title": "Guest register",
+      "player_text": "The register on the hall console: “Dr. I. Strat – Guest Room 2, arrived Nov. 14 at 18:00.”",
+      "proves": "The doctor is staying in Guest Room 2, indicating which key to find."
     },
     {
       "id": "B1",
@@ -444,9 +444,9 @@
       "pillar": "opportunity",
       "also": ["E"],
       "icon": "document",
-      "title": "Jurnalul lui Matei",
-      "player_text": "Jurnalul victimei, deschis pe birou. 18:00: „20.000 în sertar, leafa muncitorilor.” 21:30: „V. a plecat trântind ușa. Mereu bani.” 21:50: „Strat a venit să-mi ia pulsul. Prea insistent. Nu i-am zis nimic. Luni.”",
-      "proves": "Doctorul a fost la victimă după 21:30, contrar declarației lui; Victor plecase deja.",
+      "title": "Matei’s journal",
+      "player_text": "The victim’s journal, open on the desk. 18:00: “20,000 in the drawer, the workers’ wages.” 21:30: “V. left, slamming the door. Always money.” 21:50: “Strat came to take my pulse. Too insistent. I told him nothing. Monday.”",
+      "proves": "The doctor visited the victim after 21:30, contrary to his statement; Victor had already left.",
       "refutes": ["H1"]
     },
     {
@@ -455,9 +455,9 @@
       "type": "C",
       "pillar": "method",
       "icon": "document",
-      "title": "Sugativa",
-      "player_text": "Pe sugativa de pe birou, un scris tremurat: „lumina e galbenă… greață… inima o ia razna”.",
-      "proves": "Simptomele sunt de otrăvire cu digitală (vederea gălbuie)."
+      "title": "The blotter",
+      "player_text": "On the desk blotter, in a trembling hand: “the light is yellow… nausea… my heart is racing.”",
+      "proves": "These are symptoms of digitalis poisoning (yellow-tinted vision)."
     },
     {
       "id": "B3",
@@ -465,36 +465,36 @@
       "type": "C",
       "pillar": "method",
       "icon": "bottle",
-      "title": "Sticluța de pe birou",
-      "player_text": "Sticluța de pe birou: dop alb, aproape plină. Eticheta: „Tinctură de digitală”.",
-      "proves": "Sticluța de pe birou e cea bună; otrava a venit din altă sticluță."
+      "title": "Bottle on the desk",
+      "player_text": "The bottle on the desk: white stopper, almost full. Label: “Tincture of digitalis.”",
+      "proves": "The bottle on the desk is the proper one; the poison came from another bottle."
     },
     {
       "id": "B4",
       "object": "library.drawer",
       "type": "P",
       "icon": "item",
-      "title": "Sertarul gol",
-      "player_text": "Sertarul biroului e deschis și gol.",
-      "proves": "Banii puși acolo la 18:00 au dispărut."
+      "title": "Empty drawer",
+      "player_text": "The desk drawer is open and empty.",
+      "proves": "The money placed there at 18:00 has disappeared."
     },
     {
       "id": "B5",
       "object": "library.armchair",
       "type": "A",
       "icon": "key",
-      "title": "Legătura de chei a victimei",
-      "player_text": "Pe brațul fotoliului, lângă ceasul de buzunar al victimei: legătura lui de chei.",
-      "proves": "Deschide dormitorul stăpânului."
+      "title": "The victim’s key ring",
+      "player_text": "On the arm of the chair, beside the victim’s pocket watch: his key ring.",
+      "proves": "It opens the master bedroom."
     },
     {
       "id": "K1",
       "object": "kitchen.tea_tray",
       "type": "E",
       "icon": "item",
-      "title": "Ceașca nespălată",
-      "player_text": "Pe tavă, ceașca nespălată, cu un bilet de mâna Anei: „NU spălați – pentru domnii de la poliție.”",
-      "proves": "Ana a păstrat dovada; un făptaș ar fi spălat ceașca.",
+      "title": "The unwashed cup",
+      "player_text": "On the tray, the unwashed cup, with a note in Ana’s hand: “DO NOT wash – for the police gentlemen.”",
+      "proves": "Ana preserved the evidence; a culprit would have washed the cup.",
       "refutes": ["D2"]
     },
     {
@@ -502,27 +502,27 @@
       "object": "kitchen.key_board",
       "type": "A",
       "icon": "key",
-      "title": "Cheia „Oaspeți 2”",
-      "player_text": "Pe panoul cu chei de rezervă, o cheie cu eticheta „Oaspeți 2”.",
-      "proves": "Deschide camera doctorului."
+      "title": "“Guest Room 2” key",
+      "player_text": "On the spare-key board, a key labeled “Guest Room 2.”",
+      "proves": "It opens the doctor’s room."
     },
     {
       "id": "K3",
       "object": "kitchen.gardener_notebook",
       "type": "A",
       "icon": "document",
-      "title": "Carnetul grădinarului",
-      "player_text": "Carnetul grădinarului, uitat pe pervaz: „Lacătul serei: anul nunții stăpânilor, cum a vrut doamna.”",
-      "proves": "Regula cifrului de la seră."
+      "title": "The gardener’s notebook",
+      "player_text": "The gardener’s notebook, left on the windowsill: “Greenhouse lock: the year of the master and lady’s wedding, as the lady requested.”",
+      "proves": "The rule for the greenhouse combination."
     },
     {
       "id": "K4",
       "object": "kitchen.calendar",
       "type": "P",
       "icon": "document",
-      "title": "Calendarul Anei",
-      "player_text": "Calendarul Anei, la luni, 17 noiembrie: „7:00 trăsura – d-l M. la Parchet.”",
-      "proves": "Ana știa de denunț, deci îi citea scrisorile stăpânului."
+      "title": "Ana’s calendar",
+      "player_text": "Ana’s calendar, Monday, November 17: “7:00 carriage – Mr. M. to the Prosecutor’s Office.”",
+      "proves": "Ana knew about the report, so she had been reading the master’s letters."
     },
     {
       "id": "K5",
@@ -530,9 +530,9 @@
       "type": "C",
       "pillar": "means",
       "icon": "document",
-      "title": "Ambalaj ars pe jumătate",
-      "player_text": "În sobă: un ambalaj ars pe jumătate. „Farmacia Vulturul Negru, Cluj – Digitoxină pură 1 g – Dr. I. Str…”",
-      "proves": "Doctorul a cumpărat otrava."
+      "title": "Half-burned wrapper",
+      "player_text": "In the stove: a half-burned wrapper. “Black Eagle Pharmacy, Cluj – Pure digitoxin 1 g – Dr. I. Str…”",
+      "proves": "The doctor bought the poison."
     },
     {
       "id": "D1",
@@ -540,36 +540,36 @@
       "type": "C",
       "pillar": "motive",
       "icon": "letter",
-      "title": "Scrisoarea contabilului",
-      "player_text": "Pe biroul mic: o scrisoare de la contabilul Popescu. Din fondurile spitalului lipsesc 400.000 de lei; toate ordinele de plată sunt semnate de Dr. Strat.",
-      "proves": "Doctorul fura banii spitalului."
+      "title": "The accountant’s letter",
+      "player_text": "On the small desk: a letter from accountant Popescu. The hospital funds are short by 400,000 lei; every payment order is signed by Dr. Strat.",
+      "proves": "The doctor was stealing the hospital’s money."
     },
     {
       "id": "D2",
       "object": "master_bedroom.desk_drawer",
       "type": "F",
       "icon": "document",
-      "title": "Ciorna testamentului",
-      "player_text": "În sertarul biroului: ciorna unui nou testament. Fabrica – lui Victor. 30.000 de lei – Anei. Conacul – Elenei.",
-      "proves": "Toți cei din casă câștigă ceva din moartea lui Matei."
+      "title": "Draft will",
+      "player_text": "In the desk drawer: the draft of a new will. The factory – to Victor. 30,000 lei – to Ana. The manor – to Elena.",
+      "proves": "Everyone in the house stands to gain something from Matei’s death."
     },
     {
       "id": "D3",
       "object": "master_bedroom.wedding_photo",
       "type": "A",
       "icon": "photo",
-      "title": "Fotografia de nuntă",
-      "player_text": "Pe perete, fotografia de nuntă a lui Matei și a Elenei. Pe spate: „Sinaia, iunie 1919.”",
-      "proves": "Cifrul serei: 1919."
+      "title": "Wedding photograph",
+      "player_text": "On the wall, Matei and Elena’s wedding photograph. On the back: “Sinaia, June 1919.”",
+      "proves": "The greenhouse combination: 1919."
     },
     {
       "id": "D4",
       "object": "master_bedroom.nightstand",
       "type": "T",
       "icon": "document",
-      "title": "Rețeta de pe noptieră",
-      "player_text": "Pe noptieră, o rețetă: „Tinctură de digitală, 10 picături în ceaiul de la ora 22. Dr. I. Strat.”",
-      "proves": "Doctorul știa doza, ora și obiceiul victimei."
+      "title": "Prescription on the nightstand",
+      "player_text": "On the nightstand, a prescription: “Tincture of digitalis, 10 drops in the 22:00 tea. Dr. I. Strat.”",
+      "proves": "The doctor knew the victim’s dose, time, and habit."
     },
     {
       "id": "O1",
@@ -577,9 +577,9 @@
       "type": "C",
       "pillar": "means",
       "icon": "bottle",
-      "title": "Sticluța cu dop negru",
-      "player_text": "Ascunsă în căptușeala trusei medicale: o sticluță cu dop negru, goală, cu miros amar.",
-      "proves": "E sticluța văzută de Ana la 22:00; doctorul a avut-o la el."
+      "title": "Black-stoppered bottle",
+      "player_text": "Hidden in the lining of the medical bag: an empty black-stoppered bottle with a bitter smell.",
+      "proves": "It is the bottle Ana saw at 22:00; the doctor had it in his possession."
     },
     {
       "id": "O2",
@@ -587,9 +587,9 @@
       "type": "C",
       "pillar": "motive",
       "icon": "document",
-      "title": "Somația de la bancă",
-      "player_text": "În valiză: o somație de la Banca Someșul. Împrumut de 350.000 de lei, scadent pe 20 noiembrie, cu ipotecă pe casa doctorului.",
-      "proves": "De ce îi trebuiau doctorului banii spitalului."
+      "title": "Bank demand notice",
+      "player_text": "In the suitcase: a demand notice from Someșul Bank. A 350,000-lei loan due on November 20, secured by a mortgage on the doctor’s house.",
+      "proves": "Why the doctor needed the hospital’s money."
     },
     {
       "id": "O3",
@@ -598,9 +598,9 @@
       "pillar": "method",
       "also": ["E"],
       "icon": "document",
-      "title": "Tratatul de farmacologie",
-      "player_text": "Un tratat de farmacologie, cu pagina îndoită la „Digitala”: vedere gălbuie, greață, aritmie. „Moarte rapidă doar cu digitoxină purificată; frunzele de degetel dau intoxicații lente, cu vărsături.”",
-      "proves": "Otrava e de farmacie, nu din seră (legistul: fără vărsături).",
+      "title": "Pharmacology treatise",
+      "player_text": "A pharmacology treatise, its page folded at “Digitalis”: yellow-tinted vision, nausea, arrhythmia. “Rapid death only with purified digitoxin; foxglove leaves cause slow poisoning with vomiting.”",
+      "proves": "The poison came from a pharmacy, not the greenhouse (the coroner reported no vomiting).",
       "refutes": ["S1"]
     },
     {
@@ -609,56 +609,56 @@
       "type": "C",
       "pillar": "motive",
       "icon": "letter",
-      "title": "Colțul unei scrisori",
-      "player_text": "În soba mică: un colț nears dintr-o scrisoare a lui Matei către avocatul Lazăr. „…luni predau Parchetului dosarul Dr. S…”",
-      "proves": "Victima urma să-l denunțe pe doctor luni."
+      "title": "Corner of a letter",
+      "player_text": "In the small stove: an unburned corner of a letter from Matei to attorney Lazăr. “…on Monday I will hand the Prosecutor’s Office the file on Dr. S…”",
+      "proves": "The victim planned to report the doctor on Monday."
     },
     {
       "id": "S1",
       "object": "greenhouse.foxglove_pots",
       "type": "F",
       "icon": "item",
-      "title": "Degetel înflorit",
-      "player_text": "Ghivece cu degetel înflorit (Digitalis purpurea), etichetate de mâna Elenei.",
-      "proves": "Elena avea la îndemână o plantă din care se face aceeași otravă."
+      "title": "Blooming foxglove",
+      "player_text": "Pots of blooming foxglove (Digitalis purpurea), labeled in Elena’s hand.",
+      "proves": "Elena had access to a plant from which the same poison is made."
     },
     {
       "id": "S2",
       "object": "greenhouse.empty_pot",
       "type": "P",
       "icon": "letter",
-      "title": "Scrisorile lui „R.”",
-      "player_text": "Ascunse într-un ghiveci gol: scrisori semnate „R.”. Ultima: „La 22:30 trec pe la geamul serei. Plecăm în decembrie?”",
-      "proves": "Relația secretă a Elenei."
+      "title": "Letters from “R.”",
+      "player_text": "Hidden in an empty pot: letters signed “R.” The latest: “I will pass by the greenhouse window at 22:30. Shall we leave in December?”",
+      "proves": "Elena’s secret affair."
     },
     {
       "id": "S3",
       "object": "greenhouse.chair",
       "type": "E",
       "icon": "item",
-      "title": "Scaunul cu pled",
-      "player_text": "Un scaun cu pled, o lampă cu petrol aproape consumată și un pahar de vin pe jumătate băut.",
-      "proves": "Elena a stat ore întregi în seră.",
+      "title": "Blanketed chair",
+      "player_text": "A chair with a blanket, an almost-spent oil lamp, and a half-finished glass of wine.",
+      "proves": "Elena spent hours in the greenhouse.",
       "refutes": ["S1"]
     }
   ],
 
   "accusation": {
     "motive_options": [
-      { "id": "motive_hospital", "text": "Fura banii spitalului de caritate și urma să fie denunțat la Parchet." },
-      { "id": "motive_inheritance", "text": "Voia să moștenească fabrica și să-și plătească datoriile de joc." },
-      { "id": "motive_will", "text": "Voia cei 30.000 de lei lăsați prin noul testament." },
-      { "id": "motive_affair", "text": "Voia să fie liber să plece cu iubitul, fără scandal." }
+      { "id": "motive_hospital", "text": "He was stealing from the charity hospital and was about to be reported to the Prosecutor’s Office." },
+      { "id": "motive_inheritance", "text": "He wanted to inherit the factory and pay his gambling debts." },
+      { "id": "motive_will", "text": "She wanted the 30,000 lei left to her in the new will." },
+      { "id": "motive_affair", "text": "She wanted to be free to leave with her lover without a scandal." }
     ],
     "correct_motive": "motive_hospital",
     "method_options": [
-      { "id": "method_bottle_swap", "text": "Digitoxină pură într-o sticluță identică cu picăturile de inimă, schimbată înainte de ceai și pusă la loc după moarte." },
-      { "id": "method_tea_kitchen", "text": "Otravă pusă direct în ceai, în bucătărie, înainte ca ceaiul să fie adus." },
-      { "id": "method_foxglove", "text": "Frunze de degetel din seră, fierte și amestecate în ceai." },
-      { "id": "method_overdose", "text": "O doză prea mare din picăturile de inimă de pe birou." }
+      { "id": "method_bottle_swap", "text": "Pure digitoxin in a bottle identical to the heart drops, switched before tea and restored after death." },
+      { "id": "method_tea_kitchen", "text": "Poison placed directly in the tea in the kitchen before it was served." },
+      { "id": "method_foxglove", "text": "Foxglove leaves from the greenhouse, boiled and mixed into the tea." },
+      { "id": "method_overdose", "text": "An excessive dose from the heart-drop bottle on the desk." }
     ],
     "correct_method": "method_bottle_swap"
   },
 
-  "reveal": "Matei Vornicu a fost ucis de doctorul în care avea cea mai mare încredere. Dr. Ilie Strat furase 400.000 de lei din fondurile Spitalului de Caritate ca să-și acopere un împrumut la Banca Someșul, scadent pe 20 noiembrie. Pe 12 noiembrie, Matei a aflat totul de la contabilul spitalului și i-a scris avocatului că luni predă dosarul Parchetului.\n\nStrat se pregătise: pe 10 noiembrie cumpărase de la Cluj un gram de digitoxină pură și o turnase într-o sticluță identică cu cea cu picăturile de inimă ale lui Matei, dar cu dop negru. Seara crimei, la 21:45, a intrat în bibliotecă „să-i ia pulsul”, a schimbat sticluțele și a luat de pe birou scrisoarea către avocat, pe care a ars-o apoi în camera lui. La 22:00, Matei și-a pus singur zece picături în ceai, din sticluța cu dop negru. Ana a observat dopul, dar n-a bănuit nimic.\n\nPe la 22:45, Matei a văzut totul gălbui și abia a mai putut scrie câteva cuvinte pe sugativă. A murit în jurul orei 23:00. Când Ana l-a găsit, doctorul a trimis-o după un pled și, în cele cinci minute în care a rămas singur, a pus la loc sticluța bună. Ambalajul de la farmacie l-a aruncat în soba din bucătărie, dar a ars doar pe jumătate.\n\nCeilalți aveau și ei ce ascunde. Victor furase banii din sertar și îi pierduse la cărți, dar la ora morții era la han. Elena își aștepta iubitul în seră. Ana citea scrisorile stăpânului. Dar numai unul dintre ei avea și otrava, și ocazia, și un motiv care nu mai putea aștepta până luni."
+  "reveal": "Matei Vornicu was murdered by the doctor he trusted most. Dr. Ilie Strat had stolen 400,000 lei from the Charity Hospital funds to cover a Someșul Bank loan due on November 20. On November 12, Matei learned everything from the hospital accountant and wrote to his attorney that he would hand the file to the Prosecutor’s Office on Monday.\n\nStrat had prepared: on November 10, he bought one gram of pure digitoxin in Cluj and poured it into a bottle identical to Matei’s heart-drop bottle, but with a black stopper. On the night of the murder, at 21:45, he entered the library “to take his pulse,” switched the bottles, and took the letter to the attorney from the desk, later burning it in his room. At 22:00, Matei put ten drops from the black-stoppered bottle into his tea himself. Ana noticed the stopper but suspected nothing.\n\nAt about 22:45, Matei began seeing everything with a yellow tint and could barely write a few words on the blotter. He died at about 23:00. When Ana found him, the doctor sent her for a blanket and, during the five minutes he was alone, restored the proper bottle. He threw the pharmacy wrapper into the kitchen stove, but it burned only halfway.\n\nThe others also had secrets. Victor had stolen the money from the drawer and lost it at cards, but he was at the inn at the time of death. Elena was waiting for her lover in the greenhouse. Ana was reading the master’s letters. But only one of them had the poison, the opportunity, and a motive that could not wait until Monday."
 }

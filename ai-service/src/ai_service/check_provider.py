@@ -1,7 +1,7 @@
 """Send one message to the configured provider and print the answer and how long it took.
 
 Usage, from the repository root:
-uv run --package ai-service python -m ai_service.check_provider "Unde erai aseară la 22?"
+uv run --package ai-service python -m ai_service.check_provider "Where were you last night at 22:00?"
 """
 
 import asyncio
@@ -29,5 +29,5 @@ async def check(question: str) -> int:
 
 
 if __name__ == "__main__":
-    question = " ".join(sys.argv[1:]) or "Răspunde într-o propoziție, în română: ce oră e?"
+    question = " ".join(sys.argv[1:]) or "Answer in one sentence: what time is it?"
     sys.exit(asyncio.run(check(question)))

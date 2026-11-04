@@ -15,10 +15,10 @@ from ai_service.providers import (
     create_provider,
 )
 
-MESSAGES: list[Message] = [{"role": "user", "content": "Unde erai la 22?"}]
+MESSAGES: list[Message] = [{"role": "user", "content": "Where were you at 22:00?"}]
 
 
-def reply(content: str | None = "În bucătărie.", finish_reason: str = "stop") -> dict:
+def reply(content: str | None = "In the kitchen.", finish_reason: str = "stop") -> dict:
     return {"choices": [{"message": {"content": content}, "finish_reason": finish_reason}]}
 
 
@@ -49,7 +49,7 @@ def test_sends_a_chat_completions_request() -> None:
     )
     schema = {"type": "object", "properties": {}, "required": [], "additionalProperties": False}
 
-    assert generate(provider, json_schema=schema) == "În bucătărie."
+    assert generate(provider, json_schema=schema) == "In the kitchen."
     request = seen[0]
     assert str(request.url) == "https://example.test/openai/v1/chat/completions"
     assert request.headers["api-key"] == "secret"

@@ -1548,7 +1548,7 @@
           "type": "string"
         },
         "message": {
-          "description": "E.g. 'Suspectul refuză să vorbească momentan'",
+          "description": "E.g. 'The suspect refuses to speak for now'",
           "title": "Message",
           "type": "string"
         }

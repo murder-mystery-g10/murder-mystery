@@ -22,14 +22,14 @@ MAP = {
         },
         {
             "id": "library",
-            "name": "Bibliotecă",
+            "name": "Library",
             "image": "rooms/library.webp",
             "objects": [{"id": "library.desk", "name": "Birou", "zone": SQUARE}],
             "doors": [{"id": "library.to_hall", "to": "hall", "zone": SQUARE}],
         },
         {
             "id": "cellar",
-            "name": "Pivniță",
+            "name": "Cellar",
             "image": "rooms/cellar.webp",
             "objects": [{"id": "cellar.barrel", "name": "Butoi", "zone": SQUARE}],
             "doors": [{"id": "cellar.to_hall", "to": "hall", "zone": SQUARE}],
@@ -47,10 +47,10 @@ def _suspect(suspect_id: str, **overrides: object) -> dict:
         "archetype": "gentleman",
         "personality": "calm",
         "speech_style": "formal",
-        "initial_statement": "N-am văzut nimic.",
+        "initial_statement": "I did not see anything.",
         "secret": f"secretul lui {suspect_id}",
-        "lies_about": ["unde era"],
-        "break_stages": [{"triggers": [["letter"]], "admits": "recunoaște secretul"}],
+        "lies_about": ["where they were"],
+        "break_stages": [{"triggers": [["letter"]], "admits": "admits the secret"}],
     }
     data.update(overrides)
     return data
@@ -64,23 +64,23 @@ CASE = {
     "player_count": 3,
     "questions_per_suspect": 6,
     "briefing": {
-        "when": "noaptea de 14 noiembrie 1926",
-        "where": "Conacul de test",
-        "victim": {"name": "Victima", "age": 60, "description": "proprietarul"},
-        "summary": "Victima a fost otrăvită.",
-        "discovery": "Găsită la 23:30.",
-        "coroner_report": ["deces între 22:45 și 23:15"],
-        "story_hooks": [{"text": "Biroul e în bibliotecă.", "points_to_room": "library"}],
+        "when": "the night of November 14, 1926",
+        "where": "Test manor",
+        "victim": {"name": "Victim", "age": 60, "description": "the owner"},
+        "summary": "The victim was poisoned.",
+        "discovery": "Found at 23:30.",
+        "coroner_report": ["death between 22:45 and 23:15"],
+        "story_hooks": [{"text": "The desk is in the library.", "points_to_room": "library"}],
     },
     "truth": {
         "culprit": "c",
         "motive": "bani",
-        "method": "otravă",
+        "method": "poison",
         "timeline": [
             {
                 "id": "e1",
                 "time": "21:45",
-                "event": "c otrăvește ceaiul",
+                "event": "c poisons the tea",
                 "proven_by": ["poison"],
                 "witnessed_by": ["c", "i1"],
             }
@@ -91,14 +91,14 @@ CASE = {
             "c",
             secret=None,
             break_stages=[
-                {"triggers": [["poison"]], "admits": "recunoaște vizita"},
-                {"triggers": [["poison", "letter"]], "admits": "recunoaște tot"},
+                {"triggers": [["poison"]], "admits": "admits the visit"},
+                {"triggers": [["poison", "letter"]], "admits": "admits everything"},
             ],
         ),
         _suspect(
             "i1",
             testimonies=[
-                {"id": "t1", "fact": "l-am văzut pe c", "trigger": "ora 21:45", "event": "e1"}
+                {"id": "t1", "fact": "I saw c", "trigger": "at 21:45", "event": "e1"}
             ],
             break_stages=[{"triggers": [["letter"]], "admits": "secretul", "unlocks": ["t1"]}],
         ),
@@ -121,8 +121,8 @@ CASE = {
             "type": "A",
             "icon": "key",
             "title": "Cheie",
-            "player_text": "O cheie mică.",
-            "proves": "deschide biblioteca",
+            "player_text": "A small key.",
+            "proves": "opens the library",
         },
         {
             "id": "poison",
@@ -130,27 +130,27 @@ CASE = {
             "type": "C",
             "pillar": "method",
             "icon": "bottle",
-            "title": "Sticluță",
-            "player_text": "O sticluță goală.",
-            "proves": "otrava",
+            "title": "Bottle",
+            "player_text": "An empty bottle.",
+            "proves": "the poison",
         },
         {
             "id": "letter",
             "object": "cellar.barrel",
             "type": "P",
             "icon": "letter",
-            "title": "Scrisoare",
-            "player_text": "O scrisoare.",
+            "title": "Letter",
+            "player_text": "A letter.",
             "proves": "secretul lui i1",
         },
     ],
     "accusation": {
         "motive_options": [{"id": f"m{n}", "text": f"motiv {n}"} for n in range(1, 5)],
         "correct_motive": "m1",
-        "method_options": [{"id": f"x{n}", "text": f"metodă {n}"} for n in range(1, 5)],
+        "method_options": [{"id": f"x{n}", "text": f"method {n}"} for n in range(1, 5)],
         "correct_method": "x1",
     },
-    "reveal": "c a otrăvit ceaiul.",
+    "reveal": "c poisoned the tea.",
 }
 
 

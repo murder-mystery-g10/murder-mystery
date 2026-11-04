@@ -139,7 +139,7 @@ The AI service calls a language model through `ai_service/providers.py`. Which o
 Check that the model answers:
 
 ```bash
-uv run --package ai-service python -m ai_service.check_provider "Unde erai aseară la 22?"
+uv run --package ai-service python -m ai_service.check_provider "Where were you last night at 22:00?"
 ```
 
 When the model fails or is too slow (`AI_TIMEOUT_SECONDS`, 20 by default), the AI service

@@ -22,12 +22,12 @@ room), with ids of your choice in the same `<room>.<object>` format.
 
 | Room id | Name | Objects with clues |
 |---|---|---|
-| `hall` | Hol | `hall.coat_rack` (cuier cu paltoane), `hall.back_door` (ușa din spate), `hall.guest_register` (registrul de oaspeți) |
-| `library` | Bibliotecă | `library.journal` (jurnalul), `library.blotter` (sugativa), `library.medicine_bottle` (sticluța cu picături), `library.drawer` (sertarul biroului), `library.armchair` (fotoliul) |
-| `kitchen` | Bucătărie | `kitchen.tea_tray` (tava cu ceașca), `kitchen.key_board` (panoul cu chei), `kitchen.gardener_notebook` (carnetul grădinarului), `kitchen.calendar` (calendarul), `kitchen.stove` (soba) |
-| `master_bedroom` | Dormitorul stăpânului | `master_bedroom.desk` (biroul mic), `master_bedroom.desk_drawer` (sertarul biroului), `master_bedroom.wedding_photo` (fotografia de nuntă), `master_bedroom.nightstand` (noptiera) |
-| `guest_room_2` | Camera de oaspeți 2 | `guest_room_2.medical_bag` (trusa medicală), `guest_room_2.suitcase` (valiza), `guest_room_2.books` (cărțile), `guest_room_2.stove` (soba mică) |
-| `greenhouse` | Seră | `greenhouse.foxglove_pots` (ghivecele cu degetel), `greenhouse.empty_pot` (un ghiveci gol), `greenhouse.chair` (scaunul cu pled) |
+| `hall` | Hall | `hall.coat_rack` (coat rack), `hall.back_door` (back door), `hall.guest_register` (guest register) |
+| `library` | Library | `library.journal` (journal), `library.blotter` (blotter), `library.medicine_bottle` (drop bottle), `library.drawer` (desk drawer), `library.armchair` (armchair) |
+| `kitchen` | Kitchen | `kitchen.tea_tray` (tea tray), `kitchen.key_board` (key board), `kitchen.gardener_notebook` (gardener's notebook), `kitchen.calendar` (calendar), `kitchen.stove` (stove) |
+| `master_bedroom` | Master bedroom | `master_bedroom.desk` (small desk), `master_bedroom.desk_drawer` (desk drawer), `master_bedroom.wedding_photo` (wedding photograph), `master_bedroom.nightstand` (nightstand) |
+| `guest_room_2` | Guest Room 2 | `guest_room_2.medical_bag` (medical bag), `guest_room_2.suitcase` (suitcase), `guest_room_2.books` (books), `guest_room_2.stove` (small stove) |
+| `greenhouse` | Greenhouse | `greenhouse.foxglove_pots` (foxglove pots), `greenhouse.empty_pot` (empty pot), `greenhouse.chair` (blanketed chair) |
 
 Every room also needs a door to `station` (the police station).
 

@@ -251,7 +251,7 @@ class InterrogationAnswer(Schema):
 
 class SuspectUnavailable(Schema):
     suspect: Id
-    message: str = Field(description="E.g. 'Suspectul refuză să vorbească momentan'")
+    message: str = Field(description="E.g. 'The suspect refuses to speak for now'")
 
 
 class SuspectInterrogation(Schema):

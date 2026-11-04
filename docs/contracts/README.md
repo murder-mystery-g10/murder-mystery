@@ -42,7 +42,7 @@ Internal; only the backend calls it, with the `X-Internal-Key` header. Interacti
 - The reply comes back whole; the frontend shows it letter by letter.
 - Every reply carries the suspect's emotion (`calm`, `nervous`, `angry`, `sad`, `arrogant`,
   `broken`) and an intensity between 0 and 1. Emotion is not part of the case.
-- If the AI service fails, the backend shows "Suspectul refuză să vorbească momentan"
+- If the AI service fails, the backend shows "The suspect refuses to speak for now"
   and does not consume the question.
 - Theme maps for `/generate` and `/validate` are read from `themes/<theme>/map.json`.
 

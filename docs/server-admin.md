@@ -85,6 +85,27 @@ Workflows: `ci.yml` (checks on every PR), `deploy.yml` (deploy on `main` and `v*
 The GHCR packages (`ai-service`, `backend`, `frontend`) are public, so the server pulls them
 without logging in.
 
+## AI model
+
+The model runs on Azure OpenAI, on a **second Azure for Students subscription** (owner: Ioan;
+Contributor: David, Andrei), so it uses that subscription's credit, not the server's.
+
+| | |
+|---|---|
+| Resource group | `murder-mystery-ai` (francecentral) |
+| Resource | `mm-g10-openai`, endpoint `https://mm-g10-openai.openai.azure.com/openai/v1` |
+| Deployments | `gpt-5-mini`, `gpt-4.1-mini` (Global Standard) |
+| Budget | `murder-mystery-ai`, 15 USD per month, email alerts |
+
+The server's `.env` sets the `AI_*` variables (see `.env.prod.example`) with `key2` of the
+resource; `key1` is shared privately with the AI team for local work. If a key leaks, regenerate
+only that one:
+
+```bash
+az account set --subscription <second subscription id>
+az cognitiveservices account keys regenerate -g murder-mystery-ai -n mm-g10-openai --key-name key1
+```
+
 ## Costs
 
 Compute is billed only while the VM runs (~0.10 USD/hour, ~2.40 USD/day if left on). When

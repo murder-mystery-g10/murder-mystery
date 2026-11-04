@@ -126,6 +126,25 @@ Open http://localhost:8001/docs. Every endpoint except `/health` needs the `X-In
 header: in the docs page, fill it in with the `INTERNAL_API_KEY` value from `.env`
 (`dev-internal-key` by default).
 
+#### The AI model
+
+The AI service calls a language model through `ai_service/providers.py`. Which one is set in
+`.env` with the `AI_*` variables (all explained in `.env.example`):
+
+- **Ollama** (default, free, runs on your laptop): install it from https://ollama.com, then
+  `ollama pull gemma3:4b`. Slower and weaker in Romanian, but enough to try things.
+- **Azure OpenAI** (what the server uses): ask the AI team for the key, then uncomment the Azure
+  lines in `.env`.
+
+Check that the model answers:
+
+```bash
+uv run --package ai-service python -m ai_service.check_provider "Unde erai aseară la 22?"
+```
+
+When the model fails or is too slow (`AI_TIMEOUT_SECONDS`, 20 by default), the AI service
+answers `503` and the game shows that the suspect refuses to talk.
+
 ### If a port is already taken
 
 You get `port is already allocated` or `address already in use` when two programs want the same

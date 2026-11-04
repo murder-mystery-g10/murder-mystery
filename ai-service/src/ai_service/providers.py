@@ -123,11 +123,13 @@ class FakeProvider:
     def __init__(self, *replies: str | Exception) -> None:
         self.replies = list(replies)
         self.calls: list[list[Message]] = []
+        self.json_schemas: list[dict[str, Any] | None] = []
 
     async def generate(
         self, messages: list[Message], *, json_schema: dict[str, Any] | None = None
     ) -> str:
         self.calls.append(messages)
+        self.json_schemas.append(json_schema)
         if not self.replies:
             raise ProviderError("FakeProvider has no replies left")
         reply = self.replies.pop(0)

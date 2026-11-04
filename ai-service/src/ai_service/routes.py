@@ -1,7 +1,12 @@
-"""AI service endpoints. Not implemented yet: they validate the request and return 501."""
+"""AI service endpoints."""
 
-from fastapi import APIRouter, HTTPException, status
+from typing import Annotated
 
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from ai_service.interrogation import run_interrogation
+from ai_service.providers import LLMProvider, get_provider
+from ai_service.validation import build_validation_report
 from shared_schemas.ai_api import (
     GenerateRequest,
     GenerationAccepted,
@@ -20,8 +25,13 @@ def _not_implemented() -> HTTPException:
 
 
 @router.post("/interrogate", tags=["interrogation"], summary="Answer a question as a suspect")
-def interrogate(request: InterrogateRequest) -> InterrogateResponse:
-    raise _not_implemented()
+async def interrogate(
+    request: InterrogateRequest,
+    provider: Annotated[LLMProvider, Depends(get_provider)],
+) -> InterrogateResponse:
+    if not any(suspect.id == request.suspect_id for suspect in request.case.suspects):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Unknown suspect id")
+    return await run_interrogation(request, provider)
 
 
 @router.post(
@@ -42,4 +52,4 @@ def get_generation(job_id: str) -> GenerationJob:
 @router.post("/validate", tags=["validation"], summary="Check a case against the checklist")
 def validate_case(request: ValidateRequest) -> ValidationReport:
     """Rules and checklist: docs/case-design.md."""
-    raise _not_implemented()
+    return build_validation_report(request.case)

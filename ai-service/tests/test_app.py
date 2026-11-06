@@ -52,3 +52,10 @@ def test_openapi_exposes_the_contract_models(client: TestClient) -> None:
     schemas = client.get("/openapi.json").json()["components"]["schemas"]
     for name in ("InterrogateRequest", "InterrogateResponse", "GenerationJob", "ValidationReport"):
         assert name in schemas
+
+
+def test_tests_ignore_dotenv(tmp_path, monkeypatch) -> None:
+    # Guards the autouse fixture in conftest.py: a .env file must not change test settings.
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / ".env").write_text("AI_MODEL=from-dotenv\n", encoding="utf-8")
+    assert Settings().ai_model == "gemma3:4b"

@@ -3,6 +3,7 @@ from fastapi.testclient import TestClient
 
 from ai_service.config import Settings, get_settings
 from ai_service.main import app
+from ai_service.providers import FakeProvider, get_provider
 
 TEST_KEY = "test-key"
 AUTH = {"X-Internal-Key": TEST_KEY}
@@ -11,6 +12,9 @@ AUTH = {"X-Internal-Key": TEST_KEY}
 @pytest.fixture
 def client():
     app.dependency_overrides[get_settings] = lambda: Settings(internal_api_key=TEST_KEY)
+    # /interrogate needs a provider; without this override the real one reads INTERNAL_API_KEY
+    # from the environment, which is set in a developer's .env but not in CI.
+    app.dependency_overrides[get_provider] = FakeProvider
     yield TestClient(app)
     app.dependency_overrides.clear()
 

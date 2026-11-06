@@ -1,7 +1,7 @@
 """Send one message to the configured provider and print the answer and how long it took.
 
 Usage, from the repository root:
-uv run --package ai-service python -m ai_service.check_provider "Where were you last night at 22:00?"
+uv run --package ai-service python -m ai_service.check_provider "Where were you at 22:00?"
 """
 
 import asyncio

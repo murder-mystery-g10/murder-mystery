@@ -14,7 +14,7 @@ def client():
     app.dependency_overrides[get_settings] = lambda: Settings(internal_api_key=TEST_KEY)
     # /interrogate needs a provider; without this override the real one reads INTERNAL_API_KEY
     # from the environment, which is set in a developer's .env but not in CI.
-    app.dependency_overrides[get_provider] = FakeProvider
+    app.dependency_overrides[get_provider] = lambda: FakeProvider()
     yield TestClient(app)
     app.dependency_overrides.clear()
 

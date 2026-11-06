@@ -28,7 +28,7 @@ model (72 calls total):
 - 2 ordinary whereabouts questions.
 
 Each response was checked for strict-schema success, testimony IDs before and
-after server-side filtering, required or forbidden facts, Romanian output, and
+after server-side filtering, required or forbidden facts, English output, and
 the 1–4 sentence limit. Latency is wall-clock time around the production
 `run_interrogation` flow. This is a small deterministic regression set, not a
 statistically significant load test.

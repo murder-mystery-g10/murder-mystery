@@ -22,7 +22,7 @@ CASE = Case.model_validate_json(
 def request_for(
     suspect_id: str,
     *,
-    question: str = "Unde erați la ora 22?",
+    question: str = "Where were you at 22:00?",
     evidence: str | None = None,
     break_stage: int = 0,
     just_broke: bool = False,
@@ -49,7 +49,7 @@ def system_prompt(request: InterrogateRequest) -> str:
 def model_reply(*testimonies: str) -> str:
     return json.dumps(
         {
-            "answer": "Nu am nimic de adăugat.",
+            "answer": "I have nothing to add.",
             "emotion": "calm",
             "intensity": 0.2,
             "revealed_testimonies": list(testimonies),
@@ -106,13 +106,20 @@ def test_player_question_is_delimited_as_dialogue_not_an_instruction() -> None:
 
 
 def test_general_whereabouts_question_does_not_authorize_specific_testimony() -> None:
-    prompt = system_prompt(request_for("ana", question="Unde erați la ora 22?"))
+    prompt = system_prompt(request_for("ana", question="Where were you at 22:00?"))
 
     assert "Match triggers strictly" in prompt
     assert "a general question about whereabouts" in prompt
     assert "If uncertain, reveal no testimony" in prompt
     assert "state only the location or time" in prompt
     assert "omit both the fact and its ID" in prompt
+
+
+def test_prompt_asks_for_english_answers() -> None:
+    prompt = system_prompt(request_for("ana"))
+
+    assert "answer in English" in prompt
+    assert "Romanian" not in prompt
 
 
 def test_strict_model_schema_requires_every_field_and_forbids_extra_properties() -> None:
@@ -156,7 +163,7 @@ def test_interrogate_endpoint_uses_the_injected_fake_provider() -> None:
     response = client.post(
         "/interrogate",
         headers={"X-Internal-Key": "test-key"},
-        json=request_for("ana", question="Ce știți despre picăturile de inimă?").model_dump(
+        json=request_for("ana", question="What do you know about the heart drops?").model_dump(
             mode="json"
         ),
     )

@@ -97,9 +97,7 @@ CASE = {
         ),
         _suspect(
             "i1",
-            testimonies=[
-                {"id": "t1", "fact": "I saw c", "trigger": "at 21:45", "event": "e1"}
-            ],
+            testimonies=[{"id": "t1", "fact": "I saw c", "trigger": "at 21:45", "event": "e1"}],
             break_stages=[{"triggers": [["letter"]], "admits": "secretul", "unlocks": ["t1"]}],
         ),
         _suspect("i2"),

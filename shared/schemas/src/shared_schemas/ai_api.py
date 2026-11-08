@@ -65,7 +65,7 @@ class InterrogateRequest(Schema):
 
 
 class InterrogateResponse(Schema):
-    answer: str = Field(description="1-4 sentences, in character, in Romanian")
+    answer: str = Field(description="1-4 sentences, in character, in English")
     emotion: Emotion
     intensity: float = Field(ge=0, le=1)
     revealed_testimonies: list[Id] = Field(

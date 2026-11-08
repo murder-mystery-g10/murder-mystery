@@ -740,7 +740,7 @@
       "additionalProperties": false,
       "properties": {
         "answer": {
-          "description": "1-4 sentences, in character, in Romanian",
+          "description": "1-4 sentences, in character, in English",
           "title": "Answer",
           "type": "string"
         },

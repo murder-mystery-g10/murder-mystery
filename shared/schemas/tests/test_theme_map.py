@@ -15,6 +15,17 @@ def test_door_to_unknown_room_is_rejected(map_data: dict) -> None:
         ThemeMap.model_validate(map_data)
 
 
+def test_door_to_the_station_is_rejected(map_data: dict) -> None:
+    map_data["rooms"][0]["doors"][0]["to"] = "station"
+    with pytest.raises(ValidationError, match="reached from the interface"):
+        ThemeMap.model_validate(map_data)
+
+
+def test_doors_are_optional(map_data: dict) -> None:
+    del map_data["rooms"][1]["doors"]
+    assert ThemeMap.model_validate(map_data).rooms[1].doors == []
+
+
 def test_duplicate_object_id_is_rejected(map_data: dict) -> None:
     map_data["rooms"][1]["objects"][0]["id"] = "hall.coat_rack"
     with pytest.raises(ValidationError, match="duplicate object id"):

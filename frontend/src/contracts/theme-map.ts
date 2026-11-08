@@ -14,7 +14,7 @@ export type StationImage = string
 export type Rooms = [MapRoom, ...MapRoom[]]
 export type Id = string
 /**
- * Display name shown to players (Romanian)
+ * Display name shown to players
  */
 export type Name1 = string
 /**
@@ -41,13 +41,16 @@ export type Y = number
 export type Objects = MapObject[]
 export type Id2 = string
 /**
- * Target room id, or 'station' for the police station
+ * Target room id (never the police station)
  */
 export type To = string
 /**
  * @minItems 3
  */
 export type Zone1 = [Point, Point, Point, ...Point[]]
+/**
+ * Clickable doors to other rooms; optional, doors may be decoration only
+ */
 export type Doors = Door[]
 
 export interface ThemeMap {
@@ -66,7 +69,7 @@ export interface MapRoom {
   name: Name1
   image: Image
   objects: Objects
-  doors: Doors
+  doors?: Doors
 }
 /**
  * This interface was referenced by `ThemeMap`'s JSON-Schema

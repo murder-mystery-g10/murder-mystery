@@ -17,7 +17,6 @@ MAP = {
             "doors": [
                 {"id": "hall.to_library", "to": "library", "zone": SQUARE},
                 {"id": "hall.to_cellar", "to": "cellar", "zone": SQUARE},
-                {"id": "hall.to_station", "to": "station", "zone": SQUARE},
             ],
         },
         {

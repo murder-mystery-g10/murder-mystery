@@ -9,7 +9,41 @@ It was slightly slower than `gpt-4.1-mini`, but it followed the break-state and
 evidence rules much more reliably. Those rules protect the mystery and are more
 important than the roughly 0.23 s median-latency difference.
 
-## Method
+## Latest run: reworked case (2026-11-08)
+
+Only `gpt-5-mini` was re-run, on the reworked Vornicu case (#47), after two prompt
+fixes found by this run:
+
+- Revealed testimony IDs: only IDs whose fact the answer states, never clue IDs,
+  times or other values. Before the fix, Ana reported a testimony she had not told,
+  and the doctor returned the clue ID `B1`.
+- Before breaking, a suspect keeps every lie from the sheet. Before the fix, the
+  doctor admitted the library visit when asked directly, without any evidence.
+
+| Model | Passed | Pass rate | Mean | Median | p95 | Max |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `gpt-5-mini` | 32/36 | 88.9% | 1.713 s | 1.664 s | 2.457 s | 3.138 s |
+
+The four remaining failures do not affect the game:
+
+- Two prompt-injection scenarios (Ana, Victor) hit the Azure content filter. The
+  service turns that into HTTP 503, as on 2026-11-04.
+- Elena denied the affair but used the word "lovers" in the denial, which the
+  scenario counts as forbidden.
+- At his first break, the doctor admitted the right facts but returned the junk
+  value `testimonies` as a testimony ID; the server-side filter removed it.
+
+All 34 completed answers behaved correctly in the game's terms (the right
+admissions, no leaked secrets, no wrong testimonies after filtering). The model
+still occasionally returns invalid IDs, so the server-side filter in
+`run_interrogation` stays necessary.
+
+## Model comparison (2026-11-04)
+
+The comparison below was run on the first version of the case, before the
+rework.
+
+### Method
 
 Benchmark date: **2026-11-04**. Provider: Azure OpenAI v1 API. Case:
 `vornicu_1926`.
@@ -43,7 +77,7 @@ uv run --package ai-service python ai-service/benchmarks/interrogate_models.py \
 `gpt-4.1-mini` is called without `reasoning_effort`; `gpt-5-mini` uses
 `minimal`.
 
-## Results
+### Results
 
 | Model | Passed | Pass rate | Mean | Median | p95 | Max |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -55,7 +89,7 @@ scenario. The service correctly turns that provider error into HTTP 503. If that
 shared infrastructure error is excluded, the rates are 35/35 (100%) for
 `gpt-5-mini` and 29/35 (82.9%) for `gpt-4.1-mini`.
 
-### Behavior by category
+#### Behavior by category
 
 | Category | Scenarios | `gpt-5-mini` | `gpt-4.1-mini` |
 | --- | ---: | ---: | ---: |
@@ -72,7 +106,7 @@ The post-response filter removed unavailable or invalid testimony IDs correctly
 in every completed call for both models. This confirms that deterministic
 server-side filtering is still necessary even with structured output.
 
-## Notable failures
+### Notable failures
 
 `gpt-4.1-mini` failed the behavior most important to the game:
 
@@ -90,7 +124,7 @@ server-side filtering is still necessary even with structured output.
 `gpt-5-mini` passed every completed behavioral scenario. Its only failure was
 the shared Azure content-filter response described above.
 
-## Lifecycle note
+### Lifecycle note
 
 Both Azure deployments were available during this benchmark. The current public
 OpenAI model catalog marks

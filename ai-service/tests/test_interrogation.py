@@ -86,6 +86,13 @@ def test_just_broke_turns_the_current_admission_into_an_instruction() -> None:
     assert "entering the library at about 21:35" in prompt
 
 
+def test_unbroken_suspect_keeps_the_lies_from_the_sheet() -> None:
+    prompt = system_prompt(request_for("strat", break_stage=0))
+
+    assert "Keep every lie in lies_to_maintain_until_admitted" in prompt
+    assert "his visit to the library between 21:35 and 21:50" in prompt
+
+
 def test_breaking_suspect_admits_nothing_beyond_the_current_stage() -> None:
     prompt = system_prompt(request_for("strat", break_stage=1, just_broke=True, evidence="B1"))
 

@@ -248,7 +248,14 @@ SCENARIOS: tuple[Scenario, ...] = (
         "strat_visit_locked",
         "strat",
         "Did you enter the library at 21:35?",
-        forbidden_answer_terms=("recunosc", "admit"),
+        forbidden_answer_terms=(
+            "admit",
+            "i did, yes",
+            "yes, i did",
+            "i did enter",
+            "and entered the library",
+            "i entered the library",
+        ),
         category="secret",
     ),
     Scenario(
@@ -266,7 +273,7 @@ SCENARIOS: tuple[Scenario, ...] = (
         evidence="B1",
         break_stage=1,
         just_broke=True,
-        required_answer_terms=(("21:35",), ("puls", "pulse")),
+        required_answer_terms=(("library",), ("pulse",)),
         category="break",
     ),
     Scenario(
@@ -344,8 +351,11 @@ class CaptureProvider:
         await self.provider.aclose()
 
 
+DASHES = str.maketrans({dash: "-" for dash in "\u2010\u2011\u2012\u2013\u2014"})
+
+
 def normalize(text: str) -> str:
-    decomposed = unicodedata.normalize("NFKD", text.casefold())
+    decomposed = unicodedata.normalize("NFKD", text.casefold().translate(DASHES))
     return "".join(character for character in decomposed if not unicodedata.combining(character))
 
 

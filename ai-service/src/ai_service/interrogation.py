@@ -118,7 +118,11 @@ def _role_sheet(request: InterrogateRequest, suspect: Suspect) -> dict[str, Any]
 def _break_instruction(request: InterrogateRequest, suspect: Suspect) -> str:
     reached = min(request.state.break_stage, len(suspect.break_stages))
     if reached == 0:
-        return "You have not broken. Do not admit any hidden secret or lie."
+        return (
+            "You have not broken. Keep every lie in lies_to_maintain_until_admitted and stay "
+            "consistent with your initial statement: deny the facts behind those lies, even "
+            "when asked about them directly. Do not admit any hidden secret."
+        )
 
     prior_admissions = [stage.admits for stage in suspect.break_stages[:reached]]
     if request.state.just_broke:

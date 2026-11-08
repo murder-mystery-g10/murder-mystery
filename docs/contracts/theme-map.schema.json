@@ -11,7 +11,7 @@
           "type": "string"
         },
         "to": {
-          "description": "Target room id, or 'station' for the police station",
+          "description": "Target room id (never the police station)",
           "maxLength": 64,
           "minLength": 1,
           "pattern": "^[A-Za-z0-9_.-]+$",
@@ -78,7 +78,7 @@
           "type": "string"
         },
         "name": {
-          "description": "Display name shown to players (Romanian)",
+          "description": "Display name shown to players",
           "title": "Name",
           "type": "string"
         },
@@ -95,6 +95,7 @@
           "type": "array"
         },
         "doors": {
+          "description": "Clickable doors to other rooms; optional, doors may be decoration only",
           "items": {
             "$ref": "#/$defs/Door"
           },
@@ -106,8 +107,7 @@
         "id",
         "name",
         "image",
-        "objects",
-        "doors"
+        "objects"
       ],
       "title": "MapRoom",
       "type": "object"

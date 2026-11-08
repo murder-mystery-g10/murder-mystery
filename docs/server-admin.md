@@ -78,7 +78,7 @@ Environment **`production`** (Settings → Environments), usable only from `main
 | `SERVER_KNOWN_HOSTS` | variable | the server's SSH host keys (`ssh-keygen -F <host>` from a trusted `known_hosts`) |
 | `DEPLOY_SSH_KEY` | secret | private key `~/.ssh/mm-deploy` |
 
-Workflows: `ci.yml` (checks on every PR), `deploy.yml` (deploy on `main` and `v*` tags),
+Workflows: `ci.yml` (checks on every PR), `deploy.yml` (CI, then deploy, on `main` and `v*` tags),
 `server.yml` (start/stop buttons, nightly stop). See
 [What GitHub Actions does](shared-server.md#what-github-actions-does).
 

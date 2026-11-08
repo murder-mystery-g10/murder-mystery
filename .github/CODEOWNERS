@@ -5,6 +5,7 @@
 
 # Services
 /backend/                  @murder-mystery-g10/backend
+/docs/database.md          @murder-mystery-g10/backend
 /ai-service/               @murder-mystery-g10/ai
 /cases/                    @murder-mystery-g10/ai
 /docs/case-design.md       @murder-mystery-g10/ai

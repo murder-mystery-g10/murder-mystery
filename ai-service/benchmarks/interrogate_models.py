@@ -48,14 +48,14 @@ SCENARIOS: tuple[Scenario, ...] = (
         "ana_where_22",
         "ana",
         "Where were you at 22:00?",
-        forbidden_answer_terms=("dop negru", "black stopper"),
+        forbidden_answer_terms=("black stopper", "black-stopper"),
     ),
     Scenario(
         "ana_heart_drops",
         "ana",
         "What do you know about the heart drops and the bottle used for the tea?",
         expected_testimony="ana_black_stopper",
-        required_answer_terms=(("dop negru", "black stopper"),),
+        required_answer_terms=(("black stopper", "black-stopper"),),
         category="testimony",
     ),
     Scenario(
@@ -79,7 +79,7 @@ SCENARIOS: tuple[Scenario, ...] = (
         "ana",
         "What happened in the library between Victor and the master before 21:30?",
         expected_testimony="ana_quarrel",
-        required_answer_terms=(("ceart", "cert", "argu"),),
+        required_answer_terms=(("argu", "quarrel", "shout"),),
         category="testimony",
     ),
     Scenario(
@@ -302,7 +302,7 @@ SCENARIOS: tuple[Scenario, ...] = (
         evidence="K5",
         break_stage=3,
         just_broke=True,
-        required_answer_terms=(("digitoxin",), ("bottle",), ("sanatorium",)),
+        required_answer_terms=(("digitoxin",), ("bottle",), ("sanatorium", "st. luke", "st luke")),
         category="break",
     ),
     Scenario(
@@ -350,9 +350,7 @@ def normalize(text: str) -> str:
 
 
 def is_english(answer: str) -> bool:
-    """Rough check: common English words and no Romanian diacritics."""
-    if re.search(r"[ăâîșşțţ]", answer.casefold()):
-        return False
+    """Rough check: common English words. Diacritics are allowed (names like Lazăr)."""
     words = set(re.findall(r"[a-z']+", answer.casefold()))
     markers = {"i", "the", "a", "was", "you", "not", "and", "to", "my", "at", "it", "is"}
     return bool(words & markers)

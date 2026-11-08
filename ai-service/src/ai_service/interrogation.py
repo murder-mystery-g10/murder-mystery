@@ -118,7 +118,11 @@ def _role_sheet(request: InterrogateRequest, suspect: Suspect) -> dict[str, Any]
 def _break_instruction(request: InterrogateRequest, suspect: Suspect) -> str:
     reached = min(request.state.break_stage, len(suspect.break_stages))
     if reached == 0:
-        return "You have not broken. Do not admit any hidden secret or lie."
+        return (
+            "You have not broken. Keep every lie in lies_to_maintain_until_admitted and stay "
+            "consistent with your initial statement: deny the facts behind those lies, even "
+            "when asked about them directly. Do not admit any hidden secret."
+        )
 
     prior_admissions = [stage.admits for stage in suspect.break_stages[:reached]]
     if request.state.just_broke:
@@ -129,7 +133,10 @@ def _break_instruction(request: InterrogateRequest, suspect: Suspect) -> str:
             if earlier
             else ""
         )
-        return f"{prefix}You break NOW and must admit exactly this: {current}"
+        return (
+            f"{prefix}You break NOW and must admit exactly this: {current} "
+            "Admit nothing beyond it; keep hiding everything else you lie about."
+        )
     return "These admissions were already made and no longer need to be hidden: " + json.dumps(
         prior_admissions, ensure_ascii=False
     )
@@ -161,7 +168,9 @@ def build_messages(request: InterrogateRequest) -> tuple[list[Message], set[str]
         "the location or time; do not volunteer what you did, saw, or heard. Never mention a "
         "testimony fact in the answer unless you also return that testimony's ID in "
         "revealed_testimonies. If its trigger does not match, omit both the fact and its ID. "
-        "Put the ID of at most one newly revealed testimony in revealed_testimonies. Return "
+        "Put the ID of at most one newly revealed testimony in revealed_testimonies, and "
+        "only if this answer states that testimony's fact. revealed_testimonies holds only "
+        "testimony IDs from the suspect sheet: never clue IDs, times, or other values. Return "
         "only the JSON object required by the supplied schema."
     )
 

@@ -48,14 +48,14 @@ SCENARIOS: tuple[Scenario, ...] = (
         "ana_where_22",
         "ana",
         "Where were you at 22:00?",
-        forbidden_answer_terms=("dop negru", "black stopper"),
+        forbidden_answer_terms=("black stopper", "black-stopper"),
     ),
     Scenario(
         "ana_heart_drops",
         "ana",
         "What do you know about the heart drops and the bottle used for the tea?",
         expected_testimony="ana_black_stopper",
-        required_answer_terms=(("dop negru", "black stopper"),),
+        required_answer_terms=(("black stopper", "black-stopper"),),
         category="testimony",
     ),
     Scenario(
@@ -79,7 +79,7 @@ SCENARIOS: tuple[Scenario, ...] = (
         "ana",
         "What happened in the library between Victor and the master before 21:30?",
         expected_testimony="ana_quarrel",
-        required_answer_terms=(("ceart", "cert", "argu"),),
+        required_answer_terms=(("argu", "quarrel", "shout"),),
         category="testimony",
     ),
     Scenario(
@@ -248,7 +248,14 @@ SCENARIOS: tuple[Scenario, ...] = (
         "strat_visit_locked",
         "strat",
         "Did you enter the library at 21:35?",
-        forbidden_answer_terms=("recunosc", "admit"),
+        forbidden_answer_terms=(
+            "admit",
+            "i did, yes",
+            "yes, i did",
+            "i did enter",
+            "and entered the library",
+            "i entered the library",
+        ),
         category="secret",
     ),
     Scenario(
@@ -266,7 +273,7 @@ SCENARIOS: tuple[Scenario, ...] = (
         evidence="B1",
         break_stage=1,
         just_broke=True,
-        required_answer_terms=(("21:35",), ("puls", "pulse")),
+        required_answer_terms=(("library",), ("pulse",)),
         category="break",
     ),
     Scenario(
@@ -302,7 +309,7 @@ SCENARIOS: tuple[Scenario, ...] = (
         evidence="K5",
         break_stage=3,
         just_broke=True,
-        required_answer_terms=(("digitoxin",), ("bottle",), ("sanatorium",)),
+        required_answer_terms=(("digitoxin",), ("bottle",), ("sanatorium", "st. luke", "st luke")),
         category="break",
     ),
     Scenario(
@@ -344,15 +351,16 @@ class CaptureProvider:
         await self.provider.aclose()
 
 
+DASHES = str.maketrans({dash: "-" for dash in "\u2010\u2011\u2012\u2013\u2014"})
+
+
 def normalize(text: str) -> str:
-    decomposed = unicodedata.normalize("NFKD", text.casefold())
+    decomposed = unicodedata.normalize("NFKD", text.casefold().translate(DASHES))
     return "".join(character for character in decomposed if not unicodedata.combining(character))
 
 
 def is_english(answer: str) -> bool:
-    """Rough check: common English words and no Romanian diacritics."""
-    if re.search(r"[ăâîșşțţ]", answer.casefold()):
-        return False
+    """Rough check: common English words. Diacritics are allowed (names like Lazăr)."""
     words = set(re.findall(r"[a-z']+", answer.casefold()))
     markers = {"i", "the", "a", "was", "you", "not", "and", "to", "my", "at", "it", "is"}
     return bool(words & markers)

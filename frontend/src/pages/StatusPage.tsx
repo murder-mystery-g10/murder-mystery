@@ -43,7 +43,12 @@ export function StatusPage() {
 
   const loaded = readiness !== undefined
   return (
-    <main>
+    <main className="status-page">
+      <div style={{ marginBottom: '1.5rem' }}>
+        <a href="/" style={{ color: '#c29b38', textDecoration: 'none', fontSize: '0.9rem' }}>
+          ← Înapoi la joc
+        </a>
+      </div>
       <h1>System status</h1>
       <ul className="status-list">
         <StatusRow label="Backend" ok={loaded ? readiness !== null : null} />

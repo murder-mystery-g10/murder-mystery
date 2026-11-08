@@ -10,7 +10,10 @@ from pydantic import Field, model_validator
 from shared_schemas.base import Id, Schema, find_duplicates
 
 STATION = "station"
-"""Door target for the police station (interrogation + board). Not a room of the map."""
+"""Location id of the police station (interrogation + board).
+
+Not a room of the map: players reach it with a button in the interface, never through a door.
+"""
 
 
 class Point(Schema):
@@ -29,16 +32,19 @@ class MapObject(Schema):
 
 class Door(Schema):
     id: Id
-    to: Id = Field(description=f"Target room id, or '{STATION}' for the police station")
+    to: Id = Field(description="Target room id (never the police station)")
     zone: Polygon
 
 
 class MapRoom(Schema):
     id: Id
-    name: str = Field(description="Display name shown to players (Romanian)")
+    name: str = Field(description="Display name shown to players")
     image: str = Field(description="Background image path, relative to the theme folder")
     objects: list[MapObject]
-    doors: list[Door]
+    doors: list[Door] = Field(
+        default_factory=list,
+        description="Clickable doors to other rooms; optional, doors may be decoration only",
+    )
 
 
 class ThemeMap(Schema):
@@ -62,10 +68,15 @@ class ThemeMap(Schema):
         if STATION in room_ids:
             errors.append(f"'{STATION}' is reserved and cannot be a room id")
 
-        targets = set(room_ids) | {STATION}
+        targets = set(room_ids)
         for room in self.rooms:
             for door in room.doors:
-                if door.to not in targets:
+                if door.to == STATION:
+                    errors.append(
+                        f"door {door.id}: the police station is reached from the interface, "
+                        "not through a door"
+                    )
+                elif door.to not in targets:
                     errors.append(f"door {door.id}: unknown target '{door.to}'")
                 elif door.to == room.id:
                     errors.append(f"door {door.id}: leads to its own room")

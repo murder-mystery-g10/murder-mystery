@@ -63,8 +63,8 @@ events. You see every run under **Actions** on GitHub.
 
 | Workflow | Runs on | Does |
 |---|---|---|
-| CI (`ci.yml`) | every pull request and every push to `main` | Python lint and tests, frontend lint, tests and build, checks that the generated contracts are up to date, builds the Docker images |
-| Deploy (`deploy.yml`) | every push to `main`, tags `v*`, or by hand | Builds and pushes the images, deploys them to the server, checks that it is healthy |
+| CI (`ci.yml`) | every pull request; on `main`, as the first step of Deploy | Python lint and tests, frontend lint, tests and build, checks that the generated contracts are up to date, builds the Docker images |
+| Deploy (`deploy.yml`) | every push to `main`, tags `v*`, or by hand | Runs CI first and stops if it fails; then builds and pushes the images, deploys them to the server, checks that it is healthy |
 | Server (`server.yml`) | by hand (start/stop), and every night at 23:30 UTC (01:30 in winter, 02:30 in summer, Romania time) to stop it | Starts or stops the server |
 
 Deploy and Server use the GitHub environment `production`, which only `main` and `v*` tags can

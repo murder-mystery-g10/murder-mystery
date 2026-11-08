@@ -1,9 +1,9 @@
 name: CI
 
+# On main, Deploy calls this workflow first and deploys only if it passes.
 on:
   pull_request:
-  push:
-    branches: [main]
+  workflow_call:
 
 concurrency:
   group: ci-${{ github.ref }}

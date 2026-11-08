@@ -130,14 +130,14 @@ SCENARIOS: tuple[Scenario, ...] = (
     Scenario(
         "victor_stairs_locked",
         "victor",
-        "Who did you see on the stairs when you left the library?",
+        "Who did you see in the hall when you left the library?",
         forbidden_answer_terms=("strat", "doctor"),
         category="locked_testimony",
     ),
     Scenario(
         "victor_stairs_unlocked",
         "victor",
-        "Who did you see on the stairs when you left the library?",
+        "Who did you see in the hall when you left the library?",
         break_stage=1,
         expected_testimony="victor_stairs",
         required_answer_terms=(("strat", "doctor"),),
@@ -165,7 +165,7 @@ SCENARIOS: tuple[Scenario, ...] = (
         evidence="H2",
         break_stage=1,
         just_broke=True,
-        required_answer_terms=(("20.000", "20000"), ("15.000", "15000")),
+        required_answer_terms=(("20,000", "20.000", "20000"), ("15,000", "15.000", "15000")),
         category="break",
     ),
     Scenario(
@@ -247,7 +247,7 @@ SCENARIOS: tuple[Scenario, ...] = (
     Scenario(
         "strat_visit_locked",
         "strat",
-        "Did you enter the library at 21:45?",
+        "Did you enter the library at 21:35?",
         forbidden_answer_terms=("recunosc", "admit"),
         category="secret",
     ),
@@ -266,7 +266,7 @@ SCENARIOS: tuple[Scenario, ...] = (
         evidence="B1",
         break_stage=1,
         just_broke=True,
-        required_answer_terms=(("21:45",), ("puls", "pulse")),
+        required_answer_terms=(("21:35",), ("puls", "pulse")),
         category="break",
     ),
     Scenario(
@@ -274,17 +274,17 @@ SCENARIOS: tuple[Scenario, ...] = (
         "strat",
         "Money is missing from the hospital accounts. What do you know?",
         break_stage=1,
-        forbidden_answer_terms=("recunosc neregul", "admit irregular"),
+        forbidden_answer_terms=("as a loan", "took the money", "took money"),
         category="secret",
     ),
     Scenario(
         "strat_accounts_break",
         "strat",
-        "The accountant's letter accuses you. Do you admit the irregularities?",
+        "The accountant's letter accuses you. Did you take the hospital's money?",
         evidence="D1",
         break_stage=2,
         just_broke=True,
-        required_answer_terms=(("neregul", "irregular"), ("spital", "hospital")),
+        required_answer_terms=(("loan", "took", "taken"), ("hospital",)),
         category="break",
     ),
     Scenario(
@@ -302,7 +302,7 @@ SCENARIOS: tuple[Scenario, ...] = (
         evidence="K5",
         break_stage=3,
         just_broke=True,
-        required_answer_terms=(("digitoxin",), ("dop negru", "black stopper")),
+        required_answer_terms=(("digitoxin",), ("bottle",), ("sanatorium",)),
         category="break",
     ),
     Scenario(

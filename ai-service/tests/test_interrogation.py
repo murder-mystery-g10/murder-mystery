@@ -69,22 +69,21 @@ def test_locked_testimony_and_its_timeline_event_are_not_in_prompt() -> None:
     prompt = system_prompt(request_for("victor", break_stage=0))
 
     assert "victor_stairs" not in prompt
-    assert "descending the stairs toward the library" not in prompt
-    assert "heading down toward the library" not in prompt
+    assert "cross the hall toward the library" not in prompt
 
 
 def test_testimony_appears_after_its_unlock_stage() -> None:
     prompt = system_prompt(request_for("victor", break_stage=1))
 
     assert "victor_stairs" in prompt
-    assert "descending the stairs toward the library" in prompt
+    assert "cross the hall toward the library" in prompt
 
 
 def test_just_broke_turns_the_current_admission_into_an_instruction() -> None:
     prompt = system_prompt(request_for("strat", break_stage=1, just_broke=True, evidence="B1"))
 
     assert "You break NOW and must admit exactly this" in prompt
-    assert "entering the library at about 21:45" in prompt
+    assert "entering the library at about 21:35" in prompt
 
 
 def test_evidence_without_a_break_does_not_authorize_an_admission() -> None:

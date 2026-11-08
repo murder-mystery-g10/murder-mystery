@@ -8,75 +8,89 @@
   "questions_per_suspect": 6,
 
   "briefing": {
-    "when": "The night of November 14–15, 1926, during a storm",
+    "when": "The night of Sunday, November 14, to Monday, November 15, 1926, during a storm",
     "where": "Vornicu Manor, near Turda",
     "victim": {
       "name": "Matei Vornicu",
       "age": 64,
-      "description": "Owner of the Vornicu lumber mill and patron of the Turda Charity Hospital. He had a heart condition and took digitalis drops every evening."
+      "description": "Owner of the Vornicu lumber mill and patron of the Turda Charity Hospital. He had a heart condition and took digitalis drops in his tea every evening at ten."
     },
-    "summary": "Matei Vornicu died in the manor library on the night of the storm. The family doctor said “heart attack,” but the housekeeper insisted that the police be called. You are Turda Police detectives and take over the case the next morning. All four suspects slept at the manor and are now waiting at the station.",
-    "discovery": "The housekeeper, Ana Mureșan, found him dead in the library armchair at 23:30. Dr. Ilie Strat pronounced him dead at 23:35 and said it was a heart attack. Ana asked for the police to be called and preserved the teacup.",
+    "summary": "Matei Vornicu died in the manor library on the night of the storm. The family doctor said “heart attack,” but the housekeeper insisted that the police be called. The storm cut the telephone line, so the police only arrived at dawn. You are Turda Police detectives and take over the case this morning. All four suspects spent the night at the manor and are now waiting at the station. The house is searched by sectors: every room is searched by two detectives, so there is always a witness to the search, and each of you has three rooms. The prosecutor does not allow doors to be forced in the house of a family like the Vornicus: find the keys. The rest of the house was searched at dawn and nothing was found; you are responsible for the six key rooms.",
+    "discovery": "The housekeeper, Ana Mureșan, found him dead in the library armchair at 23:30, when she came to collect the tea tray. Dr. Ilie Strat, who had stayed the night because of the storm, pronounced him dead at 23:35 and said it was a heart attack. Ana asked for the police to be called and preserved the teacup.",
     "coroner_report": [
       "Death occurred between 22:45 and 23:15 due to sudden cardiac arrest.",
       "No signs of violence. No vomiting and no stomach lesions.",
       "Teacup: a bitter residue, an unknown substance in a very high concentration. Exact identification will take three days at the Cluj laboratory.",
-      "Heart-drop bottle on the desk: normal contents and concentration.",
+      "Heart-drop bottle on the desk: a sample was taken; normal contents and concentration. The bottle was left in place.",
       "Conclusion: probable poisoning through the tea."
     ],
     "story_hooks": [
       { "text": "Ana: “The master wrote in his journal at the desk every evening.”", "points_to_room": "library" },
       { "text": "Ana: “I set the cup aside in the kitchen. Nobody washed it.”", "points_to_room": "kitchen" },
       { "text": "Ana: “I keep the spare room keys in the kitchen.”", "points_to_room": "kitchen" },
-      { "text": "The doctor locked his guest room before coming to the station.", "points_to_room": "guest_room_2" },
+      { "text": "The doctor locked the guest room before coming to the station.", "points_to_room": "guest_room" },
       { "text": "The greenhouse belongs to Mrs. Elena and has a combination lock.", "points_to_room": "greenhouse" }
     ]
   },
 
   "truth": {
     "culprit": "strat",
-    "motive": "Dr. Strat embezzled 400,000 lei from the Charity Hospital funds to cover a 350,000-lei loan from Someșul Bank, due on November 20. Matei Vornicu had learned about it from the hospital accountant and planned to hand the file to the Prosecutor’s Office on Monday, November 17.",
-    "method": "Dr. Strat bought pure digitoxin and put it in a bottle identical to the victim’s heart drops, but with a black stopper. At 21:45 he switched the bottles in the library; at 22:00 the victim put ten drops into his own tea. At 23:35, alone with the body, he restored the original white-stoppered bottle.",
+    "motive": "Dr. Strat built the St. Luke tuberculosis sanatorium with a 350,000-lei loan from Someșul Bank, after Matei refused to fund it. The sanatorium made no money, so he covered the loan with 400,000 lei taken from the Charity Hospital funds, convinced he would pay it back. Matei learned about it from the hospital accountant and was going to the Prosecutor’s Office on Monday morning, November 15.",
+    "method": "Dr. Strat bought pure digitoxin and put it in a bottle identical to the victim’s heart drops, but with a black stopper. At about 21:35, after Matei refused to give him time, he switched the bottles in the library; at 22:00 the victim put ten drops into his own tea. At 23:35, alone with the body, he restored the original white-stoppered bottle.",
     "timeline": [
       {
-        "id": "ev_poison_bought",
-        "time": "10 nov",
-        "event": "Dr. Strat buys 1 g of pure digitoxin from the Black Eagle Pharmacy in Cluj.",
-        "proven_by": ["K5"],
+        "id": "ev_sanatorium_loan",
+        "time": "1925",
+        "event": "Matei refuses to fund Dr. Strat’s tuberculosis sanatorium. Strat builds it anyway, with a 350,000-lei loan from Someșul Bank secured by a mortgage on his house.",
+        "proven_by": ["O2"],
+        "witnessed_by": ["strat"]
+      },
+      {
+        "id": "ev_embezzlement",
+        "time": "1926",
+        "event": "The sanatorium makes no money. Dr. Strat covers the loan payments with 400,000 lei taken from the Charity Hospital funds; every payment order is signed by him.",
+        "proven_by": ["D1"],
         "witnessed_by": ["strat"]
       },
       {
         "id": "ev_accountant_letter",
-        "time": "12 nov",
-        "event": "Matei receives accountant Popescu’s letter about the 400,000 lei missing from the hospital and writes to attorney Lazăr that he will hand the file to the Prosecutor’s Office on Monday.",
-        "proven_by": ["D1", "O4"],
-        "witnessed_by": []
+        "time": "Fri, Nov 12",
+        "event": "Accountant Popescu writes to Matei about the 400,000 lei missing from the hospital, and sends Dr. Strat a note asking him to present the payment orders by Monday.",
+        "proven_by": ["D1", "H5"],
+        "witnessed_by": ["strat"]
       },
       {
-        "id": "ev_ana_reads",
-        "time": "13 nov",
-        "event": "Ana secretly reads Matei’s letter to attorney Lazăr: it concerns the hospital money, and the master is going to the Prosecutor’s Office on Monday. She notes the departure in her calendar.",
+        "id": "ev_lawyer_letter",
+        "time": "Fri, Nov 12",
+        "event": "Matei writes to attorney Lazăr that on Monday he will take the file to the Prosecutor’s Office. That evening Ana secretly reads the letter and notes the departure in her calendar. Matei posts it on Saturday.",
         "proven_by": ["K4"],
         "witnessed_by": ["ana"]
       },
       {
-        "id": "ev_arrival",
-        "time": "14 nov, 18:00",
-        "event": "Dr. Strat arrives at the manor and is given Guest Room 2.",
-        "proven_by": ["H4"],
-        "witnessed_by": ["strat", "ana", "victor", "elena"]
+        "id": "ev_poison_bought",
+        "time": "Sat, Nov 13",
+        "event": "Dr. Strat buys 1 g of pure digitoxin from the Black Eagle Pharmacy in Cluj and fills a bottle identical to Matei’s heart drops, but with a black stopper.",
+        "proven_by": ["K5", "O1"],
+        "witnessed_by": ["strat"]
       },
       {
         "id": "ev_money_drawer",
         "time": "18:00",
-        "event": "Matei puts 20,000 lei, the workers’ wages, in the library desk drawer.",
+        "event": "Matei puts 20,000 lei, Monday’s wages for the mill workers, in the library desk drawer.",
         "proven_by": ["B1"],
         "witnessed_by": ["victor"]
       },
       {
+        "id": "ev_arrival",
+        "time": "18:00",
+        "event": "Dr. Strat arrives for his usual dinner every other Sunday, with his medical bag and his briefcase. He is expected to leave at 22:00.",
+        "proven_by": [],
+        "witnessed_by": ["strat", "ana", "victor", "elena"]
+      },
+      {
         "id": "ev_dinner",
         "time": "20:00",
-        "event": "At dinner, Dr. Strat discreetly asks Elena whether Matei has recently received letters from the hospital accountant.",
+        "event": "At dinner in the dining room, Dr. Strat discreetly asks Elena whether Matei has recently received letters from the hospital accountant.",
         "proven_by": [],
         "witnessed_by": ["strat", "elena"]
       },
@@ -90,49 +104,56 @@
       {
         "id": "ev_quarrel",
         "time": "21:15",
-        "event": "Victor and Matei argue heatedly about money in the library until 21:30.",
+        "event": "Victor and Matei argue loudly about money in the library until 21:30. Ana hears them from the kitchen.",
         "proven_by": ["B1"],
         "witnessed_by": ["victor", "ana"]
       },
       {
         "id": "ev_theft",
         "time": "21:25",
-        "event": "While his uncle searches the shelves, Victor takes the 20,000 lei from the desk drawer.",
+        "event": "While his uncle searches the shelves for a ledger, Victor takes the 20,000 lei from the desk drawer and leaves it slightly open.",
         "proven_by": ["B4"],
         "witnessed_by": ["victor"]
       },
       {
         "id": "ev_victor_leaves",
         "time": "21:30",
-        "event": "Victor leaves the library, slamming the door; his uncle shouts after him. On the stairs he sees Dr. Strat heading down toward the library.",
+        "event": "Victor leaves the library, slamming the door; his uncle shouts after him. In the hall, taking his coat, he sees Dr. Strat come out of the dining room and cross the hall toward the library. He leaves through the front door for the village, before the storm.",
         "proven_by": ["B1"],
-        "witnessed_by": ["victor"]
+        "witnessed_by": ["victor", "strat"]
+      },
+      {
+        "id": "ev_strat_enters",
+        "time": "21:35",
+        "event": "Dr. Strat crosses the hall and enters the library “to take Matei’s pulse.” Ana sees him from the kitchen door.",
+        "proven_by": ["B1"],
+        "witnessed_by": ["strat", "ana"]
+      },
+      {
+        "id": "ev_swap",
+        "time": "21:40",
+        "event": "In the library, Dr. Strat shows Matei the sanatorium papers and begs him to wait. Matei refuses: theft is theft, and tomorrow he goes to the Prosecutor’s Office. Unseen, Strat replaces the white-stoppered heart-drop bottle on the desk with the black-stoppered bottle of digitoxin.",
+        "proven_by": ["B1", "O1"],
+        "witnessed_by": ["strat"]
       },
       {
         "id": "ev_elena_greenhouse",
         "time": "21:40",
-        "event": "Elena leaves through the back door for the greenhouse, carrying a lamp.",
+        "event": "Elena comes down the stairs and leaves through the back door for the greenhouse, carrying an oil lamp.",
         "proven_by": ["H3"],
         "witnessed_by": ["elena", "ana"]
       },
       {
-        "id": "ev_swap",
-        "time": "21:45",
-        "event": "Dr. Strat enters the library “to take Matei’s pulse.” Unseen, he replaces the white-stoppered heart-drop bottle with an identical black-stoppered bottle full of digitoxin. He takes the letter to attorney Lazăr from the desk.",
-        "proven_by": ["B1", "O1", "O4"],
-        "witnessed_by": ["strat"]
-      },
-      {
         "id": "ev_strat_leaves",
         "time": "21:50",
-        "event": "Dr. Strat leaves the library; Ana sees him in the hall.",
+        "event": "Dr. Strat leaves the library and crosses the hall to the dining room to wait for his departure. Ana sees him.",
         "proven_by": ["B1"],
         "witnessed_by": ["strat", "ana"]
       },
       {
         "id": "ev_tea",
         "time": "22:00",
-        "event": "Ana brings the tea to the library. Matei puts ten drops from a black-stoppered bottle into it himself.",
+        "event": "Ana brings the tea to the library. Matei puts ten drops from a black-stoppered bottle into it himself. Ana is surprised: his bottle had a white stopper.",
         "proven_by": ["D4"],
         "witnessed_by": ["ana"]
       },
@@ -144,79 +165,93 @@
         "witnessed_by": ["victor"]
       },
       {
-        "id": "ev_burn_letter",
+        "id": "ev_storm",
         "time": "22:15",
-        "event": "Dr. Strat burns the letter to the attorney in his room’s stove; one corner remains unburned.",
-        "proven_by": ["O4"],
-        "witnessed_by": ["strat"]
+        "event": "The storm breaks and the road to Turda becomes impassable. Dr. Strat stays the night; Ana prepares the guest room for him and writes him into the guest register. The telephone line goes dead.",
+        "proven_by": ["H4"],
+        "witnessed_by": ["strat", "ana"]
       },
       {
         "id": "ev_elena_waits",
         "time": "22:30",
-        "event": "Elena waits in the greenhouse for a letter from the painter “R.,” who passes by the greenhouse window.",
+        "event": "Elena waits in the greenhouse for the painter “R.,” who was to pass by the greenhouse window. Because of the storm, he never comes.",
         "proven_by": ["S2", "S3"],
         "witnessed_by": ["elena"]
       },
       {
         "id": "ev_symptoms",
         "time": "22:45",
-        "event": "Matei sees everything with a yellow tint, feels nauseated, and his heart races; he scrawls a few words on the blotter.",
+        "event": "Matei sees everything with a yellow tint, feels nauseated, and his heart races; he scrawls a few words directly on the blotter.",
         "proven_by": ["B2"],
         "witnessed_by": []
       },
       {
         "id": "ev_death",
         "time": "23:00",
-        "event": "Matei Vornicu dies in the library armchair.",
-        "proven_by": [],
+        "event": "Matei Vornicu dies in the library armchair. His key ring slips from his pocket to the floor.",
+        "proven_by": ["B5"],
         "witnessed_by": []
       },
       {
         "id": "ev_found",
         "time": "23:30",
-        "event": "Ana finds Matei dead and runs for the doctor.",
+        "event": "Ana comes to collect the tea tray, as every night, finds Matei dead, and runs upstairs to the guest room for the doctor.",
         "proven_by": [],
         "witnessed_by": ["ana", "strat"]
       },
       {
         "id": "ev_alone",
         "time": "23:35",
-        "event": "Dr. Strat pronounces him dead and says “heart attack.” He sends Ana for a blanket and remains alone with the body for about five minutes.",
+        "event": "Dr. Strat pronounces him dead and says “heart attack.” He sends Ana upstairs to fetch the blanket from his bed and remains alone with the body for about five minutes.",
         "proven_by": [],
         "witnessed_by": ["strat", "ana"]
       },
       {
         "id": "ev_restore",
         "time": "23:36",
-        "event": "Left alone, Dr. Strat restores the original white-stoppered bottle to the desk and takes the black-stoppered one.",
+        "event": "Left alone, Dr. Strat puts the original white-stoppered bottle back on the desk and pockets the black-stoppered one.",
         "proven_by": ["B3", "O1"],
         "witnessed_by": ["strat"]
       },
       {
         "id": "ev_elena_returns",
-        "time": "23:40",
-        "event": "Elena returns from the greenhouse through the back door, her boots covered in mud, and goes up to her bedroom.",
+        "time": "23:38",
+        "event": "Elena returns from the greenhouse through the back door, leaves her muddy boots by the door, and goes up to her bedroom unseen: Ana is in the guest room and the doctor is in the library.",
         "proven_by": ["H3"],
         "witnessed_by": ["elena"]
       },
       {
         "id": "ev_cup_kept",
         "time": "23:40",
-        "event": "Ana takes the unwashed cup to the kitchen and leaves a note telling everyone not to wash it, then goes upstairs to tell the lady of the house.",
+        "event": "Ana comes down with the blanket, takes the unwashed cup to the kitchen, and leaves a note telling everyone not to wash it.",
         "proven_by": ["K1"],
-        "witnessed_by": ["ana"]
+        "witnessed_by": ["ana", "strat"]
+      },
+      {
+        "id": "ev_ana_tells_elena",
+        "time": "23:50",
+        "event": "Ana goes upstairs to tell the lady of the house. Elena appears to have just woken up.",
+        "proven_by": [],
+        "witnessed_by": ["ana", "elena"]
       },
       {
         "id": "ev_package",
         "time": "23:50",
-        "event": "While Ana is upstairs with the lady of the house, Dr. Strat throws the pharmacy wrapper into the kitchen stove; it burns only halfway.",
+        "event": "While Ana is upstairs, Dr. Strat throws the pharmacy wrapper he had kept in his pocket into the kitchen stove; the fire is nearly out and it burns only halfway.",
         "proven_by": ["K5"],
+        "witnessed_by": ["strat"]
+      },
+      {
+        "id": "ev_bottle_hidden",
+        "time": "00:00",
+        "event": "In the guest room, Dr. Strat empties the black-stoppered bottle into the washbasin, rinses it, and hides it in the lining of his medical bag.",
+        "proven_by": ["O1"],
         "witnessed_by": ["strat"]
       },
       {
         "id": "ev_victor_returns",
         "time": "00:40",
-        "event": "Victor leaves the inn and reaches the manor at about one o’clock.",
+        "event": "Victor leaves the inn and reaches the manor at about one o’clock; he hangs his coat on the hall coat rack.",
         "proven_by": ["H2"],
         "witnessed_by": ["victor"]
       }
@@ -228,14 +263,14 @@
       "id": "strat",
       "name": "Dr. Ilie Strat",
       "age": 52,
-      "role": "the family doctor",
+      "role": "the family doctor, founder of the St. Luke tuberculosis sanatorium",
       "archetype": "doctor",
-      "personality": "Calm, condescending, and extremely self-assured. He hides behind medical terminology and treats the detectives as people who cannot understand medicine.",
-      "speech_style": "Polite and cold, with long sentences and many medical terms; he smiles smugly when contradicted.",
-      "initial_statement": "After dinner I spent a few minutes with Matei. At 21:30 I went up to my room and read until Ana called me. His heart was weak; it was to be expected.",
+      "personality": "Calm, condescending, and extremely self-assured. He hides behind medical terminology, treats the detectives as people who cannot understand medicine, and sees himself as a benefactor who saves lives, not as a thief.",
+      "speech_style": "Polite and cold, with long sentences and many medical terms; he smiles smugly when contradicted and becomes self-righteous when his sanatorium is mentioned.",
+      "initial_statement": "After dinner I waited in the dining room to leave. Then the storm came and Ana gave me the guest room; I read there until she called me. His heart was weak; it was to be expected.",
       "secret": null,
       "lies_about": [
-        "his 21:45 visit to the library (he claims he stayed in his room reading from 21:30)",
+        "his visit to the library between 21:35 and 21:50 (he claims he stayed in the dining room)",
         "the hospital money (“the accounts are in order”)",
         "any connection to the poison, the Cluj pharmacy, or the drop bottle"
       ],
@@ -247,15 +282,15 @@
       "break_stages": [
         {
           "triggers": [["B1"], ["ana_doctor_hall"], ["victor_stairs"]],
-          "admits": "He admits entering the library at about 21:45, but claims he only took Matei’s pulse and left five minutes later."
+          "admits": "He admits entering the library at about 21:35, but claims he only took Matei’s pulse and talked with him about the hospital for a few minutes."
         },
         {
-          "triggers": [["D1"], ["O4"]],
-          "admits": "He admits to “some irregularities” in the hospital accounts and says he would eventually have covered them, but denies any connection to Matei’s death."
+          "triggers": [["D1"], ["H5"]],
+          "admits": "He admits taking money from the hospital “as a loan” to keep the St. Luke sanatorium open, and says he saved lives with it and would have paid every leu back. He denies any connection to Matei’s death."
         },
         {
           "triggers": [["O1", "K5"]],
-          "admits": "He breaks down and confesses: he bought pure digitoxin, switched the white-stoppered bottle for a black-stoppered one at 21:45, and restored the proper bottle at 23:35 so the death would look like a heart attack. Matei was going to report him on Monday."
+          "admits": "He breaks down and confesses: he bought pure digitoxin, switched the bottles after Matei refused to give him time, and restored the proper bottle at 23:35. Then he loses control and begs the detectives not to close the sanatorium: if it closes, dozens of patients will die, and Matei will have died for nothing."
         }
       ]
     },
@@ -265,10 +300,10 @@
       "age": 51,
       "role": "the manor’s housekeeper, in the household for 30 years",
       "archetype": "housekeeper",
-      "personality": "Direct, loyal to the family, and suspicious of “city gentlemen.” She cares for the master and wants the truth uncovered, but does not readily admit her mistakes.",
+      "personality": "Direct, loyal to the family, and suspicious of “city gentlemen.” She cared for the master and wants the truth uncovered, but does not readily admit her mistakes.",
       "speech_style": "Plain country speech and short sentences; she snaps when she feels accused.",
-      "initial_statement": "I brought the tea at 22:00 and found him dead at 23:30. I preserved the cup.",
-      "secret": "She secretly reads the master’s correspondence. From the letter to the attorney, she knew that he planned to go to the Prosecutor’s Office on Monday about something connected to the hospital.",
+      "initial_statement": "I brought the tea at 22:00 and found him dead at 23:30, when I came for the tray. I kept the cup for you.",
+      "secret": "She secretly reads the master’s correspondence. On Friday she read his letter to attorney Lazăr and knew he would go to the Prosecutor’s Office on Monday about the hospital money.",
       "lies_about": [
         "reading the letters (“I do not meddle in the master’s affairs”)"
       ],
@@ -276,21 +311,21 @@
       "testimonies": [
         {
           "id": "ana_quarrel",
-          "fact": "Between 21:15 and 21:30, she heard Mr. Victor arguing heatedly with the master about money; Victor left, slamming the door.",
+          "fact": "Between 21:15 and 21:30, from the kitchen, she heard Mr. Victor arguing loudly with the master about money; Victor left, slamming the door.",
           "trigger": "what happened in the library before 21:30, or Victor and the master",
           "event": "ev_quarrel"
         },
         {
           "id": "ana_elena_out",
-          "fact": "At about 21:40, she saw Mrs. Elena leave through the back door toward the greenhouse with a lamp in her hand.",
+          "fact": "At about 21:40, she saw Mrs. Elena come down the stairs and leave through the back door toward the greenhouse with a lamp in her hand.",
           "trigger": "Mrs. Elena that evening, or whether she saw anyone leave the house",
           "event": "ev_elena_greenhouse"
         },
         {
           "id": "ana_doctor_hall",
-          "fact": "At about 21:50, she saw Dr. Strat leaving the library and entering the hall.",
+          "fact": "Just after Mr. Victor left, at about 21:35, she saw Dr. Strat go into the library; he came out at about 21:50 and went into the dining room.",
           "trigger": "whom she saw in the hall or near the library between 21:30 and 22:00, or what the doctor did that evening",
-          "event": "ev_strat_leaves"
+          "event": "ev_strat_enters"
         },
         {
           "id": "ana_black_stopper",
@@ -299,8 +334,14 @@
           "event": "ev_tea"
         },
         {
+          "id": "ana_storm",
+          "fact": "The doctor was supposed to leave at ten; when the storm broke, she prepared the guest room for him.",
+          "trigger": "why the doctor stayed the night",
+          "event": "ev_storm"
+        },
+        {
           "id": "ana_alone",
-          "fact": "At 23:35, the doctor sent her for a blanket and remained alone with the master for about five minutes.",
+          "fact": "At 23:35, the doctor sent her upstairs to fetch the blanket from his bed and remained alone with the master for about five minutes.",
           "trigger": "what happened after she found the body, or what the doctor did beside the master",
           "event": "ev_alone"
         }
@@ -308,7 +349,7 @@
       "break_stages": [
         {
           "triggers": [["K4"]],
-          "admits": "She admits secretly reading the master’s letter to attorney Lazăr: it concerned the hospital money, and the master planned to go to the Prosecutor’s Office on Monday."
+          "admits": "She admits secretly reading the master’s letter to attorney Lazăr: it concerned the hospital money, and the master planned to go to the Prosecutor’s Office on Monday morning."
         }
       ]
     },
@@ -318,10 +359,10 @@
       "age": 27,
       "role": "the victim’s nephew and heir",
       "archetype": "heir",
-      "personality": "Charming, irritable, and accustomed to talking his way out of trouble. He jokes when cornered and quickly becomes angry when money is mentioned.",
+      "personality": "Charming, irritable, and used to talking his way out of trouble. He jokes when cornered and quickly becomes angry when money is mentioned.",
       "speech_style": "Familiar and ironic, with jokes and quick retorts; he abruptly shifts from charm to irritation.",
-      "initial_statement": "I spoke with my uncle about business, then left for the village at about 21:30. I returned after midnight.",
-      "secret": "He stole 20,000 lei from his uncle’s drawer and lost 15,000 playing cards at the Crossroads Inn.",
+      "initial_statement": "I spoke with my uncle about business, then left for the village at about 21:30, before the storm. I returned after midnight.",
+      "secret": "He stole 20,000 lei from his uncle’s desk drawer and lost 15,000 playing cards at the Crossroads Inn.",
       "lies_about": [
         "the argument with his uncle (“it was only a business discussion”)",
         "the money (“my uncle gave it to me”)"
@@ -330,7 +371,7 @@
       "testimonies": [
         {
           "id": "victor_stairs",
-          "fact": "Leaving the library at 21:30, he saw Dr. Strat descending the stairs toward the library.",
+          "fact": "At 21:30, taking his coat in the hall, he saw Dr. Strat come out of the dining room and cross the hall toward the library.",
           "trigger": "whom he saw when leaving the library or the house at 21:30",
           "event": "ev_victor_leaves"
         }
@@ -351,8 +392,8 @@
       "archetype": "lady",
       "personality": "Cold, elegant, and proud. She refuses to be intimidated and reveals as little as possible about her life.",
       "speech_style": "Short, polite, distant answers; she avoids details and changes the subject.",
-      "initial_statement": "I had a migraine, retired at 21:00, and did not leave my bedroom.",
-      "secret": "She is having an affair with the painter “R.” and planned to leave with him in December. On the night of the murder, she waited for him in the greenhouse from 21:40 until 23:40.",
+      "initial_statement": "I had a migraine, retired to my bedroom at 21:00, and did not leave it until Ana woke me.",
+      "secret": "She is having an affair with the painter “R.” and planned to leave with him in December. On the night of the murder, she waited for him in the greenhouse from 21:40 until about 23:38, but because of the storm he never came.",
       "lies_about": [
         "where she was on the night of the murder (she claims she did not leave her bedroom)",
         "the letters from “R.”"
@@ -375,7 +416,7 @@
       "break_stages": [
         {
           "triggers": [["H3"], ["S2"]],
-          "admits": "She admits staying in the greenhouse from 21:40 until 23:40, waiting for a letter from the painter “R.,” with whom she is having an affair and plans to leave in December.",
+          "admits": "She admits staying in the greenhouse from 21:40 until almost midnight, waiting for the painter “R.,” with whom she is having an affair and planned to leave in December. He never came because of the storm.",
           "unlocks": ["elena_dinner"]
         }
       ]
@@ -387,35 +428,35 @@
     { "room": "library" },
     { "room": "kitchen" },
     { "room": "master_bedroom", "lock": { "type": "key", "key_clue": "B5" } },
-    { "room": "guest_room_2", "lock": { "type": "key", "key_clue": "K2" } },
+    { "room": "guest_room", "lock": { "type": "key", "key_clue": "K2" } },
     { "room": "greenhouse", "lock": { "type": "code", "code": "1919", "hint_clues": ["K3", "D3"] } }
   ],
 
   "players": [
     { "id": "J1", "rooms": ["hall", "library", "master_bedroom"] },
     { "id": "J2", "rooms": ["library", "kitchen", "greenhouse"] },
-    { "id": "J3", "rooms": ["hall", "guest_room_2", "greenhouse"] },
-    { "id": "J4", "rooms": ["kitchen", "master_bedroom", "guest_room_2"] }
+    { "id": "J3", "rooms": ["hall", "guest_room", "greenhouse"] },
+    { "id": "J4", "rooms": ["kitchen", "master_bedroom", "guest_room"] }
   ],
 
   "clues": [
     {
       "id": "H1",
-      "object": "hall.coat_rack",
+      "object": "hall.mail_tray",
       "type": "F",
       "icon": "letter",
       "title": "Letter from the casino",
-      "player_text": "In Victor’s coat pocket: a letter from the Sinaia Casino. “50,000 lei by Friday, or people will learn where you live.”",
+      "player_text": "On the silver mail tray, an opened letter addressed to Victor, from the Sinaia Casino: “50,000 lei by Friday, or people will learn where you live.”",
       "proves": "Victor desperately needed money."
     },
     {
       "id": "H2",
-      "object": "hall.coat_rack",
+      "object": "hall.victor_coat",
       "type": "E",
       "also": ["P"],
       "icon": "document",
       "title": "Inn bill",
-      "player_text": "In the same coat: a bill from the Crossroads Inn, November 14, 22:10–00:40. “Lost at cards: 15,000 lei.” Signed by the innkeeper.",
+      "player_text": "In Victor’s coat on the coat rack: a bill from the Crossroads Inn, November 14, 22:10–00:40. “Lost at cards: 15,000 lei.” Signed by the innkeeper.",
       "proves": "Victor was at the inn at 23:35, when the bottle was restored; he had a large amount of cash that evening.",
       "refutes": ["H1"]
     },
@@ -426,7 +467,7 @@
       "icon": "item",
       "title": "The lady’s boots",
       "player_text": "Beside the back door: Elena’s boots, with fresh mud and wet leaves stuck to the soles.",
-      "proves": "Elena went outside on the night of the murder; she did not remain in her bedroom."
+      "proves": "Elena went outside on the night of the murder; she did not stay in her bedroom."
     },
     {
       "id": "H4",
@@ -434,8 +475,18 @@
       "type": "T",
       "icon": "document",
       "title": "Guest register",
-      "player_text": "The register on the hall console: “Dr. I. Strat – Guest Room 2, arrived Nov. 14 at 18:00.”",
-      "proves": "The doctor is staying in Guest Room 2, indicating which key to find."
+      "player_text": "The register on the hall console, in Ana’s hand: “Dr. I. Strat – Guest Room, Nov. 14, stayed because of the storm.”",
+      "proves": "The doctor slept in the guest room, so that is the key to find; he had not planned to stay."
+    },
+    {
+      "id": "H5",
+      "object": "hall.doctor_coat",
+      "type": "C",
+      "pillar": "motive",
+      "icon": "letter",
+      "title": "The accountant’s note",
+      "player_text": "In the pocket of Dr. Strat’s coat on the coat rack: a note from accountant Popescu, dated Friday, November 12. “Please present the hospital payment orders by Monday.”",
+      "proves": "The doctor knew his theft had been discovered and would come out on Monday."
     },
     {
       "id": "B1",
@@ -445,8 +496,8 @@
       "also": ["E"],
       "icon": "document",
       "title": "Matei’s journal",
-      "player_text": "The victim’s journal, open on the desk. 18:00: “20,000 in the drawer, the workers’ wages.” 21:30: “V. left, slamming the door. Always money.” 21:50: “Strat came to take my pulse. Too insistent. I told him nothing. Monday.”",
-      "proves": "The doctor visited the victim after 21:30, contrary to his statement; Victor had already left.",
+      "player_text": "Among the account ledgers on the desk, a closed leather journal. 18:00: “20,000 in the drawer, the workers’ wages.” 21:30: “V. left, slamming the door. Always money.” 21:50: “Strat, on the pretext of my pulse. Showed me the sanatorium papers, begged me to wait. Theft is theft. Tomorrow.”",
+      "proves": "The doctor was with the victim after 21:30, contrary to his statement, and knew he would be reported; Victor had already left.",
       "refutes": ["H1"]
     },
     {
@@ -456,7 +507,7 @@
       "pillar": "method",
       "icon": "document",
       "title": "The blotter",
-      "player_text": "On the desk blotter, in a trembling hand: “the light is yellow… nausea… my heart is racing.”",
+      "player_text": "Written directly on the green blotter, in a trembling hand: “the light is yellow… nausea… my heart is racing.”",
       "proves": "These are symptoms of digitalis poisoning (yellow-tinted vision)."
     },
     {
@@ -466,7 +517,7 @@
       "pillar": "method",
       "icon": "bottle",
       "title": "Bottle on the desk",
-      "player_text": "The bottle on the desk: white stopper, almost full. Label: “Tincture of digitalis.”",
+      "player_text": "The heart-drop bottle on the desk: white stopper, almost full, label “Tincture of digitalis.” A police tag on its neck: “Sample taken – normal contents.”",
       "proves": "The bottle on the desk is the proper one; the poison came from another bottle."
     },
     {
@@ -475,7 +526,7 @@
       "type": "P",
       "icon": "item",
       "title": "Empty drawer",
-      "player_text": "The desk drawer is open and empty.",
+      "player_text": "One desk drawer is slightly open. It is empty.",
       "proves": "The money placed there at 18:00 has disappeared."
     },
     {
@@ -484,7 +535,7 @@
       "type": "A",
       "icon": "key",
       "title": "The victim’s key ring",
-      "player_text": "On the arm of the chair, beside the victim’s pocket watch: his key ring.",
+      "player_text": "On the floor, half hidden in the shadow under the armchair: Matei’s key ring.",
       "proves": "It opens the master bedroom."
     },
     {
@@ -502,8 +553,8 @@
       "object": "kitchen.key_board",
       "type": "A",
       "icon": "key",
-      "title": "“Guest Room 2” key",
-      "player_text": "On the spare-key board, a key labeled “Guest Room 2.”",
+      "title": "“Guest Room” key",
+      "player_text": "On the spare-key board, a key labeled “Guest Room.”",
       "proves": "It opens the doctor’s room."
     },
     {
@@ -521,8 +572,8 @@
       "type": "P",
       "icon": "document",
       "title": "Ana’s calendar",
-      "player_text": "Ana’s calendar, Monday, November 17: “7:00 carriage – Mr. M. to the Prosecutor’s Office.”",
-      "proves": "Ana knew about the report, so she had been reading the master’s letters."
+      "player_text": "Ana’s calendar, Monday, November 15: “7:00 carriage – Mr. M. to the Prosecutor’s Office.”",
+      "proves": "Ana knew where the master was going, so she had been reading his letters."
     },
     {
       "id": "K5",
@@ -531,7 +582,7 @@
       "pillar": "means",
       "icon": "document",
       "title": "Half-burned wrapper",
-      "player_text": "In the stove: a half-burned wrapper. “Black Eagle Pharmacy, Cluj – Pure digitoxin 1 g – Dr. I. Str…”",
+      "player_text": "In the cold kitchen stove: a half-burned wrapper. “Black Eagle Pharmacy, Cluj – Pure digitoxin 1 g – Dr. I. Str…”",
       "proves": "The doctor bought the poison."
     },
     {
@@ -542,7 +593,7 @@
       "icon": "letter",
       "title": "The accountant’s letter",
       "player_text": "On the small desk: a letter from accountant Popescu. The hospital funds are short by 400,000 lei; every payment order is signed by Dr. Strat.",
-      "proves": "The doctor was stealing the hospital’s money."
+      "proves": "The doctor was taking the hospital’s money."
     },
     {
       "id": "D2",
@@ -550,7 +601,7 @@
       "type": "F",
       "icon": "document",
       "title": "Draft will",
-      "player_text": "In the desk drawer: the draft of a new will. The factory – to Victor. 30,000 lei – to Ana. The manor – to Elena.",
+      "player_text": "In the desk drawer: the draft of a new will. The mill – to Victor. 30,000 lei – to Ana. The manor – to Elena.",
       "proves": "Everyone in the house stands to gain something from Matei’s death."
     },
     {
@@ -573,45 +624,35 @@
     },
     {
       "id": "O1",
-      "object": "guest_room_2.medical_bag",
+      "object": "guest_room.medical_bag",
       "type": "C",
       "pillar": "means",
       "icon": "bottle",
       "title": "Black-stoppered bottle",
-      "player_text": "Hidden in the lining of the medical bag: an empty black-stoppered bottle with a bitter smell.",
+      "player_text": "Hidden in the lining of the doctor’s medical bag: an empty black-stoppered bottle, rinsed, still with a faint bitter smell.",
       "proves": "It is the bottle Ana saw at 22:00; the doctor had it in his possession."
     },
     {
       "id": "O2",
-      "object": "guest_room_2.suitcase",
+      "object": "guest_room.briefcase",
       "type": "C",
       "pillar": "motive",
       "icon": "document",
       "title": "Bank demand notice",
-      "player_text": "In the suitcase: a demand notice from Someșul Bank. A 350,000-lei loan due on November 20, secured by a mortgage on the doctor’s house.",
+      "player_text": "In the doctor’s briefcase: a demand notice from Someșul Bank. A 350,000-lei loan for the construction of the St. Luke Sanatorium, due on November 20, secured by a mortgage on the doctor’s house. Under it, the sanatorium plans.",
       "proves": "Why the doctor needed the hospital’s money."
     },
     {
       "id": "O3",
-      "object": "guest_room_2.books",
+      "object": "guest_room.nightstand",
       "type": "C",
       "pillar": "method",
       "also": ["E"],
       "icon": "document",
-      "title": "Pharmacology treatise",
-      "player_text": "A pharmacology treatise, its page folded at “Digitalis”: yellow-tinted vision, nausea, arrhythmia. “Rapid death only with purified digitoxin; foxglove leaves cause slow poisoning with vomiting.”",
+      "title": "The doctor’s vademecum",
+      "player_text": "On the nightstand, the doctor’s pocket medical handbook, its page folded at “Digitalis”: yellow-tinted vision, nausea, arrhythmia. “Rapid death only with purified digitoxin; foxglove leaves cause slow poisoning with vomiting.”",
       "proves": "The poison came from a pharmacy, not the greenhouse (the coroner reported no vomiting).",
       "refutes": ["S1"]
-    },
-    {
-      "id": "O4",
-      "object": "guest_room_2.stove",
-      "type": "C",
-      "pillar": "motive",
-      "icon": "letter",
-      "title": "Corner of a letter",
-      "player_text": "In the small stove: an unburned corner of a letter from Matei to attorney Lazăr. “…on Monday I will hand the Prosecutor’s Office the file on Dr. S…”",
-      "proves": "The victim planned to report the doctor on Monday."
     },
     {
       "id": "S1",
@@ -628,7 +669,7 @@
       "type": "P",
       "icon": "letter",
       "title": "Letters from “R.”",
-      "player_text": "Hidden in an empty pot: letters signed “R.” The latest: “I will pass by the greenhouse window at 22:30. Shall we leave in December?”",
+      "player_text": "Hidden in an empty pot: letters signed “R.” The latest: “On Sunday at 22:30 I will pass by the greenhouse window. Shall we leave in December?”",
       "proves": "Elena’s secret affair."
     },
     {
@@ -645,8 +686,8 @@
 
   "accusation": {
     "motive_options": [
-      { "id": "motive_hospital", "text": "He was stealing from the charity hospital and was about to be reported to the Prosecutor’s Office." },
-      { "id": "motive_inheritance", "text": "He wanted to inherit the factory and pay his gambling debts." },
+      { "id": "motive_hospital", "text": "He was taking money from the charity hospital to save his sanatorium and was about to be reported to the Prosecutor’s Office." },
+      { "id": "motive_inheritance", "text": "He wanted to inherit the mill and pay his gambling debts." },
       { "id": "motive_will", "text": "She wanted the 30,000 lei left to her in the new will." },
       { "id": "motive_affair", "text": "She wanted to be free to leave with her lover without a scandal." }
     ],
@@ -660,5 +701,5 @@
     "correct_method": "method_bottle_swap"
   },
 
-  "reveal": "Matei Vornicu was murdered by the doctor he trusted most. Dr. Ilie Strat had stolen 400,000 lei from the Charity Hospital funds to cover a Someșul Bank loan due on November 20. On November 12, Matei learned everything from the hospital accountant and wrote to his attorney that he would hand the file to the Prosecutor’s Office on Monday.\n\nStrat had prepared: on November 10, he bought one gram of pure digitoxin in Cluj and poured it into a bottle identical to Matei’s heart-drop bottle, but with a black stopper. On the night of the murder, at 21:45, he entered the library “to take his pulse,” switched the bottles, and took the letter to the attorney from the desk, later burning it in his room. At 22:00, Matei put ten drops from the black-stoppered bottle into his tea himself. Ana noticed the stopper but suspected nothing.\n\nAt about 22:45, Matei began seeing everything with a yellow tint and could barely write a few words on the blotter. He died at about 23:00. When Ana found him, the doctor sent her for a blanket and, during the five minutes he was alone, restored the proper bottle. He threw the pharmacy wrapper into the kitchen stove, but it burned only halfway.\n\nThe others also had secrets. Victor had stolen the money from the drawer and lost it at cards, but he was at the inn at the time of death. Elena was waiting for her lover in the greenhouse. Ana was reading the master’s letters. But only one of them had the poison, the opportunity, and a motive that could not wait until Monday."
+  "reveal": "Matei Vornicu was murdered by the doctor he had trusted for years. Dr. Ilie Strat had built the St. Luke tuberculosis sanatorium with a bank loan after Matei refused to fund it. When the sanatorium could not pay its way, Strat covered the loan with 400,000 lei from the Charity Hospital, telling himself it was only a loan. On Friday, the hospital accountant discovered everything, and Matei decided to go to the Prosecutor’s Office on Monday morning.\n\nOn Saturday, Strat bought pure digitoxin in Cluj and poured it into a bottle identical to Matei’s heart drops, but with a black stopper. On Sunday he came to his usual dinner with the sanatorium papers in his briefcase. At 21:35 he entered the library “to take Matei’s pulse” and begged him for time. Matei refused, and Strat switched the bottles. At 22:00, Matei put ten drops from the black-stoppered bottle into his tea himself. Ana noticed the stopper but suspected nothing.\n\nThe storm kept the doctor at the manor. At about 22:45, Matei began seeing everything with a yellow tint and scrawled a few words on the blotter. He died at about 23:00. When Ana found him, the doctor sent her upstairs for a blanket and, in the five minutes he was alone, restored the proper bottle. Later he threw the pharmacy wrapper into the dying kitchen fire, but it burned only halfway.\n\nThe others had secrets too. Victor had stolen the wages from the drawer and lost them at cards, but he was at the inn when the bottle was restored. Elena was waiting in the greenhouse for a lover who never came. Ana was reading the master’s letters. But only one of them had the poison, the opportunity, and a motive that could not wait until Monday. Even in his confession, Strat begged for only one thing: that his sanatorium stay open."
 }

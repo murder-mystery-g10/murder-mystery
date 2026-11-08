@@ -17,7 +17,7 @@ BOARD_EVENTS = {
 
 def test_board_events_are_registered() -> None:
     sio = create_socket_server(cors_origins=[])
-    assert BOARD_EVENTS <= set(sio.handlers["/"])
+    assert set(sio.handlers["/"]) >= BOARD_EVENTS
 
 
 def test_an_id_that_is_not_a_uuid_is_rejected() -> None:

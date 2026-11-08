@@ -62,9 +62,7 @@ def create_socket_server(
             if player is None:
                 return False
             state = await board.load_board(db, player.lobby_id)
-        await sio.save_session(
-            sid, {"player_id": str(player.id), "lobby_id": str(player.lobby_id)}
-        )
+        await sio.save_session(sid, {"player_id": str(player.id), "lobby_id": str(player.lobby_id)})
         await sio.enter_room(sid, str(player.lobby_id))
         # Temporary until game:snapshot (which includes the board) is sent on connect.
         await sio.emit("board:state", state.model_dump(mode="json"), to=sid)

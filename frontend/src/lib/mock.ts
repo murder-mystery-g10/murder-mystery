@@ -1,4 +1,4 @@
-import type { Briefing } from '../contracts/game-api'
+import type { Briefing, GameSnapshot, LobbyState } from '../contracts/game-api'
 
 /**
  * Mock mode: the frontend fakes the lobby REST and Socket.IO calls so it can be developed before
@@ -12,8 +12,7 @@ export function isMockMode(): boolean {
 }
 
 /**
- * Briefing used in mock mode, where no server sends game:snapshot. Copied from the briefing of
- * cases/vornicu_1926.json; the real game always uses the briefing from the snapshot.
+ * Briefing copied from cases/vornicu_1926.json for local mock games.
  */
 export const MOCK_BRIEFING: Briefing = {
   when: 'The night of Sunday, November 14, to Monday, November 15, 1926, during a storm',
@@ -54,4 +53,30 @@ export const MOCK_BRIEFING: Briefing = {
       points_to_room: 'greenhouse',
     },
   ],
+}
+
+/** Starts a local exploration preview using the host's three manor rooms. */
+export function makeMockSnapshot(lobby: LobbyState, playerId: string): GameSnapshot {
+  return {
+    lobby: {
+      ...lobby,
+      players: lobby.players.map((player) =>
+        player.id === playerId ? { ...player, location: 'library' } : player,
+      ),
+    },
+    you: playerId,
+    theme: 'conac',
+    started_at: new Date().toISOString(),
+    briefing: MOCK_BRIEFING,
+    rooms: [
+      { room: 'hall', yours: true, unlocked: true },
+      { room: 'library', yours: true, unlocked: true },
+      { room: 'master_bedroom', yours: true, unlocked: false, lock: 'key' },
+    ],
+    notebook: [],
+    board: { items: [], links: [] },
+    suspects: [],
+    interrogations: [],
+    accusation_options: { motive_options: [], method_options: [] },
+  }
 }

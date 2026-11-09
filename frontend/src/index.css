@@ -1267,6 +1267,94 @@ main.status-page {
   margin: 0 0 0.45rem;
 }
 
+/* --- Room view --- */
+
+.room-view-header {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.room-view-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.room-view-nav [aria-current='location'] {
+  border-color: var(--brass-accent);
+  color: var(--brass-accent);
+}
+
+.room-view-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 280px);
+  gap: 1rem;
+  align-items: start;
+}
+
+.room-view-scene {
+  border: 1px solid var(--border-rule-strong);
+  background: var(--docket-bg);
+}
+
+.room-view-scene img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.room-view-scene p {
+  margin: 0;
+  padding: 1.5rem;
+  color: var(--ink-secondary);
+}
+
+@media (max-width: 760px) {
+  .room-view-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* --- Investigation notebook --- */
+
+.notebook {
+  padding: 1.5rem;
+  background: var(--docket-bg);
+  border: 1px solid var(--border-rule-strong);
+  border-top: 3px solid var(--brass-accent);
+  font-family: var(--font-serif);
+  overflow-wrap: anywhere;
+}
+
+.notebook-title {
+  margin: 0 0 1rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+
+.notebook-clues {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notebook-clue + .notebook-clue {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-rule);
+}
+
+.notebook-clue p,
+.notebook-empty {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.notebook-empty {
+  color: var(--ink-secondary);
+}
+
 .casefile-report,
 .casefile-leads {
   margin: 0;

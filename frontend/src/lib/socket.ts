@@ -1,5 +1,5 @@
 import { io, type Socket } from 'socket.io-client'
-import type { Ack, SelectCase, SocketAuth, StartGame } from '../contracts/game-api'
+import type { Ack, EnterRoom, SelectCase, SocketAuth, StartGame } from '../contracts/game-api'
 import type { ClientToServerEvents, ServerToClientEvents } from '../contracts/socket-events'
 import { isMockMode } from './mock'
 
@@ -46,6 +46,16 @@ export async function emitStartGame(payload: StartGame = {}, timeoutMs = 4000): 
   if (!socket.connected) return { ok: false, error: NOT_CONNECTED }
   try {
     return await socket.timeout(timeoutMs).emitWithAck('lobby:start', payload)
+  } catch {
+    return { ok: false, error: NO_ANSWER }
+  }
+}
+
+export async function emitEnterRoom(payload: EnterRoom, timeoutMs = 4000): Promise<Ack> {
+  if (isMockMode()) return { ok: true }
+  if (!socket.connected) return { ok: false, error: NOT_CONNECTED }
+  try {
+    return await socket.timeout(timeoutMs).emitWithAck('room:enter', payload)
   } catch {
     return { ok: false, error: NO_ANSWER }
   }

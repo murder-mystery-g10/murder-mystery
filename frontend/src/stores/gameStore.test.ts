@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import * as socketLib from '../lib/socket'
 import { MOCK_BRIEFING } from '../lib/mock'
-import { BRIEFING, makeSnapshot } from '../test/fixtures'
+import { BRIEFING, GAME_RESULT, makeSnapshot } from '../test/fixtures'
 import { useGameStore } from './gameStore'
 import { useLobbyStore } from './lobbyStore'
 
@@ -8,6 +9,7 @@ describe('gameStore', () => {
   beforeEach(() => {
     useLobbyStore.getState().leaveLobby()
     useGameStore.getState().reset()
+    vi.clearAllMocks()
   })
 
   afterEach(() => {
@@ -20,6 +22,28 @@ describe('gameStore', () => {
 
     expect(useGameStore.getState().briefing).toEqual(BRIEFING)
     expect(useLobbyStore.getState().lobby?.status).toBe('playing')
+  })
+
+  it('populates gameResult if snapshot has result and resets active accusation', () => {
+    vi.stubEnv('VITE_USE_MOCK', 'false')
+    useGameStore.setState({
+      accusationModalOpen: true,
+      accusation: {
+        id: 'prop-1',
+        proposed_by: 'p1',
+        choices: { culprit: 'strat', motive: 'motive_hospital', method: 'method_bottle_swap' },
+        votes: {},
+      },
+    })
+
+    useGameStore.getState().applySnapshot({
+      ...makeSnapshot(),
+      result: GAME_RESULT,
+    })
+
+    expect(useGameStore.getState().gameResult).toEqual(GAME_RESULT)
+    expect(useGameStore.getState().accusationModalOpen).toBe(false)
+    expect(useGameStore.getState().accusation).toBeNull()
   })
 
   it('opens the case file only once the briefing has arrived', () => {
@@ -65,5 +89,72 @@ describe('gameStore', () => {
     useLobbyStore.getState().setLobbyState({ ...makeSnapshot().lobby })
 
     expect(useGameStore.getState().briefing).toBeNull()
+  })
+
+  it('opens and closes accusation modal', () => {
+    useGameStore.getState().openAccusationModal()
+    expect(useGameStore.getState().accusationModalOpen).toBe(true)
+
+    useGameStore.getState().closeAccusationModal()
+    expect(useGameStore.getState().accusationModalOpen).toBe(false)
+  })
+
+  it('proposes accusation via emitProposeAccusation', async () => {
+    const emitSpy = vi.spyOn(socketLib, 'emitProposeAccusation').mockResolvedValue({ ok: true })
+
+    const success = await useGameStore.getState().proposeAccusation({
+      culprit: 'strat',
+      motive: 'motive_hospital',
+      method: 'method_bottle_swap',
+    })
+
+    expect(success).toBe(true)
+    expect(emitSpy).toHaveBeenCalledWith({
+      culprit: 'strat',
+      motive: 'motive_hospital',
+      method: 'method_bottle_swap',
+    })
+    expect(useGameStore.getState().accusationError).toBeNull()
+  })
+
+  it('sets accusationError when proposeAccusation fails', async () => {
+    vi.spyOn(socketLib, 'emitProposeAccusation').mockResolvedValue({
+      ok: false,
+      error: 'Not allowed to propose now',
+    })
+
+    const success = await useGameStore.getState().proposeAccusation({
+      culprit: 'strat',
+      motive: 'motive_hospital',
+      method: 'method_bottle_swap',
+    })
+
+    expect(success).toBe(false)
+    expect(useGameStore.getState().accusationError).toBe('Not allowed to propose now')
+  })
+
+  it('votes on active accusation via emitVoteAccusation', async () => {
+    const emitSpy = vi.spyOn(socketLib, 'emitVoteAccusation').mockResolvedValue({ ok: true })
+
+    useGameStore.setState({
+      accusation: {
+        id: 'prop-123',
+        proposed_by: 'p1',
+        choices: { culprit: 'strat', motive: 'motive_hospital', method: 'method_bottle_swap' },
+        votes: {},
+      },
+    })
+
+    const success = await useGameStore.getState().voteAccusation(true)
+    expect(success).toBe(true)
+    expect(emitSpy).toHaveBeenCalledWith({ proposal: 'prop-123', accept: true })
+  })
+
+  it('stores game result and dismisses it', () => {
+    useGameStore.setState({ gameResult: GAME_RESULT })
+    expect(useGameStore.getState().gameResult).toEqual(GAME_RESULT)
+
+    useGameStore.getState().dismissGameResult()
+    expect(useGameStore.getState().gameResult).toBeNull()
   })
 })

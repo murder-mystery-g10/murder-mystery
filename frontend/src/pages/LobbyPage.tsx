@@ -1,7 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router'
+import { AccusationDialog } from '../components/AccusationDialog'
 import { CasePicker } from '../components/CasePicker'
 import { DevBanner } from '../components/DevBanner'
+import { EndScreen } from '../components/EndScreen'
 import { LobbyCodeBadge } from '../components/LobbyCodeBadge'
 import { Navbar } from '../components/Navbar'
 import { PlayerList } from '../components/PlayerList'
@@ -22,6 +24,9 @@ export function LobbyPage() {
   const joinLobby = useLobbyStore((s) => s.joinLobby)
   const briefing = useGameStore((s) => s.briefing)
   const openCaseFile = useGameStore((s) => s.openCaseFile)
+  const gameResult = useGameStore((s) => s.gameResult)
+  const accusation = useGameStore((s) => s.accusation)
+  const openAccusationModal = useGameStore((s) => s.openAccusationModal)
 
   const [directJoinName, setDirectJoinName] = useState('')
 
@@ -113,12 +118,48 @@ export function LobbyPage() {
     )
   }
 
+  // If the game has ended / result is available, show the end screen immediately
+  if (gameResult) {
+    return (
+      <div className="page-wrapper">
+        <Navbar />
+        <main className="desk-container">
+          <EndScreen />
+        </main>
+      </div>
+    )
+  }
+
   // If game has started
   if (lobby.status === 'playing') {
     return (
       <div className="page-wrapper">
         <Navbar />
         <main className="desk-container">
+          <AccusationDialog />
+
+          {accusation && (
+            <div
+              className="dispatch-alert"
+              role="alert"
+              style={{
+                marginBottom: '1.5rem',
+                border: '1px solid var(--brass-accent)',
+                background: 'rgba(194, 159, 85, 0.12)',
+              }}
+            >
+              <span>⚖️ A final accusation has been proposed and is awaiting your vote!</span>
+              <button
+                type="button"
+                className="btn-order btn-order-primary"
+                style={{ padding: '0.35rem 0.75rem', fontSize: '0.85rem' }}
+                onClick={openAccusationModal}
+              >
+                Review & Vote
+              </button>
+            </div>
+          )}
+
           <div className="dispatch-warrant-card">
             <span className="warrant-seal">ENFORCEABLE JUDICIAL WARRANT</span>
             <h1 className="warrant-title">The investigation has begun!</h1>
@@ -132,16 +173,31 @@ export function LobbyPage() {
                 The manor has been sealed. Begin searching the rooms and questioning the suspects.
               </span>
             </div>
-            {briefing && (
+            <div
+              style={{
+                display: 'flex',
+                gap: '1rem',
+                marginTop: '1.75rem',
+                flexWrap: 'wrap',
+              }}
+            >
+              {briefing && (
+                <button
+                  type="button"
+                  className="btn-order btn-order-secondary"
+                  onClick={openCaseFile}
+                >
+                  Read the case file
+                </button>
+              )}
               <button
                 type="button"
                 className="btn-order btn-order-primary"
-                style={{ marginTop: '1.75rem' }}
-                onClick={openCaseFile}
+                onClick={openAccusationModal}
               >
-                Read the case file
+                ⚖️ Formulate Accusation
               </button>
-            )}
+            </div>
           </div>
         </main>
       </div>

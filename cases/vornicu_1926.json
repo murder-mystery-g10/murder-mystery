@@ -97,7 +97,7 @@
       {
         "id": "ev_retire",
         "time": "21:00",
-        "event": "Matei retires to the library. Elena says she is going upstairs to her bedroom with a migraine.",
+        "event": "Matei goes up to his bedroom, lights the night lamp, locks the door behind him and retires to the library. Elena says she is going upstairs to her bedroom with a migraine.",
         "proven_by": [],
         "witnessed_by": ["strat", "ana", "victor", "elena"]
       },
@@ -216,7 +216,7 @@
       {
         "id": "ev_elena_returns",
         "time": "23:38",
-        "event": "Elena returns from the greenhouse through the back door, leaves her muddy boots by the door, and goes up to her bedroom unseen: Ana is in the guest room and the doctor is in the library.",
+        "event": "Elena returns from the greenhouse through the back door, leaves her muddy boots by the door, leaving the lamp burning in the greenhouse, and goes up to her bedroom unseen: Ana is in the guest room and the doctor is in the library.",
         "proven_by": ["H3"],
         "witnessed_by": ["elena"]
       },
@@ -251,7 +251,7 @@
       {
         "id": "ev_victor_returns",
         "time": "00:40",
-        "event": "Victor leaves the inn and reaches the manor at about one o’clock; he hangs his coat on the hall coat rack.",
+        "event": "Victor leaves the inn and reaches the manor at about one o’clock; he throws his coat over the hall bench.",
         "proven_by": ["H2"],
         "witnessed_by": ["victor"]
       }
@@ -446,7 +446,7 @@
       "type": "F",
       "icon": "letter",
       "title": "Letter from the casino",
-      "player_text": "On the silver mail tray, an opened letter addressed to Victor, from the Sinaia Casino: “50,000 lei by Friday, or people will learn where you live.”",
+      "player_text": "On the mail tray, an opened letter addressed to Victor, from the Sinaia Casino: “50,000 lei by Friday, or people will learn where you live.”",
       "proves": "Victor desperately needed money."
     },
     {
@@ -456,7 +456,7 @@
       "also": ["P"],
       "icon": "document",
       "title": "Inn bill",
-      "player_text": "In Victor’s coat on the coat rack: a bill from the Crossroads Inn, November 14, 22:10–00:40. “Lost at cards: 15,000 lei.” Signed by the innkeeper.",
+      "player_text": "In Victor’s coat, thrown over the hall bench: a bill from the Crossroads Inn, November 14, 22:10–00:40. “Lost at cards: 15,000 lei.” Signed by the innkeeper.",
       "proves": "Victor was at the inn at 23:35, when the bottle was restored; he had a large amount of cash that evening.",
       "refutes": ["H1"]
     },
@@ -563,7 +563,7 @@
       "type": "A",
       "icon": "document",
       "title": "The gardener’s notebook",
-      "player_text": "The gardener’s notebook, left on the windowsill: “Greenhouse lock: the year of the master and lady’s wedding, as the lady requested.”",
+      "player_text": "The gardener’s notebook, left on the kitchen table: “Greenhouse lock: the year of the master and lady’s wedding, as the lady requested.”",
       "proves": "The rule for the greenhouse combination."
     },
     {
@@ -610,7 +610,7 @@
       "type": "A",
       "icon": "photo",
       "title": "Wedding photograph",
-      "player_text": "On the wall, Matei and Elena’s wedding photograph. On the back: “Sinaia, June 1919.”",
+      "player_text": "On the wall, Matei and Elena’s wedding photograph, with a small plate: 1919. On the back: “Sinaia, June 1919.”",
       "proves": "The greenhouse combination: 1919."
     },
     {
@@ -629,7 +629,7 @@
       "pillar": "means",
       "icon": "bottle",
       "title": "Black-stoppered bottle",
-      "player_text": "Hidden in the lining of the doctor’s medical bag: an empty black-stoppered bottle, rinsed, still with a faint bitter smell.",
+      "player_text": "The medical bag stands open: instruments, bandages, a full bottle of iodine. Hidden in its lining: an empty black-stoppered bottle, rinsed, still with a faint bitter smell.",
       "proves": "It is the bottle Ana saw at 22:00; the doctor had it in his possession."
     },
     {
@@ -649,8 +649,8 @@
       "pillar": "method",
       "also": ["E"],
       "icon": "document",
-      "title": "The doctor’s vademecum",
-      "player_text": "On the nightstand, the doctor’s pocket medical handbook, its page folded at “Digitalis”: yellow-tinted vision, nausea, arrhythmia. “Rapid death only with purified digitoxin; foxglove leaves cause slow poisoning with vomiting.”",
+      "title": "The doctor’s medical handbook",
+      "player_text": "On the table, the doctor’s medical handbook, open at “Digitalis”: yellow-tinted vision, nausea, arrhythmia. “Rapid death only with purified digitoxin; foxglove leaves cause slow poisoning with vomiting.”",
       "proves": "The poison came from a pharmacy, not the greenhouse (the coroner reported no vomiting).",
       "refutes": ["S1"]
     },
@@ -669,7 +669,7 @@
       "type": "P",
       "icon": "letter",
       "title": "Letters from “R.”",
-      "player_text": "Hidden in an empty pot: letters signed “R.” The latest: “On Sunday at 22:30 I will pass by the greenhouse window. Shall we leave in December?”",
+      "player_text": "On the workbench, an overturned pot and spilled soil. The letters hidden inside it lie open, signed “R.” The latest: “On Sunday at 22:30 I will pass by the greenhouse window. Shall we leave in December?”",
       "proves": "Elena’s secret affair."
     },
     {
@@ -678,10 +678,37 @@
       "type": "E",
       "icon": "item",
       "title": "Blanketed chair",
-      "player_text": "A chair with a blanket, an almost-spent oil lamp, and a half-finished glass of wine.",
+      "player_text": "A chair with a blanket. Beside it, an oil lamp still burning low, its oil almost spent, and a half-finished glass of wine.",
       "proves": "Elena spent hours in the greenhouse.",
       "refutes": ["S1"]
     }
+  ],
+
+  "object_texts": [
+    { "object": "library.cabinet", "text": "Six identical heart-drop bottles with white stoppers, sealed and untouched. The box is labeled “Dr. I. Strat.”" },
+    { "object": "library.cigar_box", "text": "Cuban cigars. Two are missing, although the doctor had forbidden them." },
+    { "object": "library.window", "text": "Grey morning light. Two constables keep watch in the yard. The latch is closed from the inside." },
+    { "object": "library.telephone", "text": "The line is dead. The storm brought it down." },
+    { "object": "library.clock", "text": "It ticks on and shows the right time. Nothing is hidden in the case." },
+    { "object": "library.fireplace", "text": "The fire burned out during the night. Only wood ash; no paper was burned here. The mantel clock ticks on." },
+    { "object": "hall.floor", "text": "The constables’ boots, in and out since dawn. Too many prints to read anything from them." },
+    { "object": "hall.stairs", "text": "From here you can see the whole hall, down to the kitchen door." },
+    { "object": "kitchen.top_shelf", "text": "A tin of rat poison, full, with undisturbed dust on the lid." },
+    { "object": "kitchen.bell_board", "text": "The servants’ bell board. The library bell did not ring all evening." },
+    { "object": "kitchen.sink", "text": "The dinner dishes, washed and stacked to dry. The only unwashed cup is the one on the tray." },
+    { "object": "master_bedroom.photo_frame", "text": "A photograph of a gentle woman: Maria, Matei’s first wife." },
+    { "object": "master_bedroom.bed", "text": "Untouched. Matei never went to bed. The night lamp he lit before going down to the library has burned all night." },
+    { "object": "master_bedroom.stove", "text": "Cold. The logs were laid for the night but never lit. Nothing was burned here." },
+    { "object": "master_bedroom.washstand", "text": "Clean and dry. Nobody washed here last night." },
+    { "object": "guest_room.washbasin", "text": "The basin has been rinsed. The towel is damp." },
+    { "object": "guest_room.bed", "text": "Made up in a hurry: sheets thrown over a summer bedspread. The blanket is missing; Ana took it down to the library." },
+    { "object": "guest_room.stove", "text": "Cold. Only old coal ash; no paper was burned here." },
+    { "object": "guest_room.lantern", "text": "A storm lantern, turned low. Ana left it for the doctor when she made up the room." },
+    { "object": "guest_room.window", "text": "The garden is flooded; the road to Turda is full of puddles." },
+    { "object": "greenhouse.workbench", "text": "Gardening gloves, pruning shears, a watering can." },
+    { "object": "greenhouse.road_window", "text": "Misted on the inside, no marks on the outside. Nobody came to this window." },
+    { "object": "greenhouse.ferns", "text": "Wet ferns under a cracked roof pane, dripping since the storm." },
+    { "object": "greenhouse.stacked_pots", "text": "Clean empty pots, stacked. Nothing hidden inside." }
   ],
 
   "accusation": {

@@ -134,7 +134,11 @@ class InspectObject(Schema):
 
 
 class InspectAck(Ack):
-    clues: list[ClueCard] = Field(default_factory=list, description="Empty: 'Nimic interesant'")
+    clues: list[ClueCard] = Field(default_factory=list, description="Clues found on the object")
+    text: str | None = Field(
+        default=None,
+        description="Object without clues: what the player reads; None: 'Nothing of interest.'",
+    )
 
 
 class UnlockRoom(Schema):

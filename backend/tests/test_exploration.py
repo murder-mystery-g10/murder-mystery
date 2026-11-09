@@ -3,7 +3,7 @@
 import json
 from pathlib import Path
 
-from backend.exploration import Game, findable_clues, object_room, player_rooms
+from backend.exploration import Game, findable_clues, object_room, object_text, player_rooms
 from backend.models import Lobby, Player
 from backend.sockets import create_socket_server
 from shared_schemas.case import Case
@@ -55,3 +55,10 @@ def test_other_clues_are_found_by_anyone_in_the_room() -> None:
 
 def test_an_object_without_clues_holds_nothing() -> None:
     assert _clue_ids(_game(), "J2", "kitchen.sink") == []
+
+
+def test_an_object_without_clues_has_its_text_from_the_case() -> None:
+    case = _game().case
+    assert object_text(case, "kitchen.sink") is not None
+    assert object_text(case, "kitchen.tea_tray") is None
+    assert object_text(case, "kitchen.nowhere") is None

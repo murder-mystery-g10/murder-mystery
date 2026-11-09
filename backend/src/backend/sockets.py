@@ -233,10 +233,10 @@ def create_socket_server(
     @sio.on("object:inspect")
     async def object_inspect(sid: str, data: object = None) -> dict:
         try:
-            _, clues = await _apply(sid, data, InspectObject, exploration.inspect_object)
+            _, (clues, text) = await _apply(sid, data, InspectObject, exploration.inspect_object)
         except Refused as refused:
             return InspectAck(ok=False, error=str(refused)).model_dump(mode="json")
-        return InspectAck(ok=True, clues=clues).model_dump(mode="json")
+        return InspectAck(ok=True, clues=clues, text=text).model_dump(mode="json")
 
     @sio.on("room:unlock")
     async def room_unlock(sid: str, data: object = None) -> dict:

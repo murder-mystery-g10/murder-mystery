@@ -37,62 +37,78 @@ GROUND FLOOR                              UPPER FLOOR
 
 ## Images
 
-- Perspective: top-down, walls folded slightly outward, the same for every room. 16:9.
-- Keep the original PNG. Upscale with Upscayl 2× (4× if the original is small); target at least
-  1920×1080, ideally 2560×1440. Export to WebP (quality 85–90) once, from the upscaled PNG.
-- The bottom-right corner carries the Gemini logo: no clickable objects there.
+- The room images in this folder are the ones used for the MVP; they are not regenerated. The case
+  text follows what they show. Romanian text painted in the images (labels, notes) belongs to the
+  game world; the player reads the English text of each clue.
+- Portraits: in `portraits/`, one folder per suspect and one file per emotion, on a green background.
+- The bottom-right corner may carry the Gemini logo: no clickable objects there.
 
-## Ids the cases need
+## Clickable objects
 
-`map.json` must contain at least these rooms and objects, with exactly these ids, because
-[cases/vornicu_1926.json](../../cases/vornicu_1926.json) puts its clues on them. Display names are
-suggestions.
+`map.json` must contain these rooms and objects, with exactly these ids:
+[cases/vornicu_1926.json](../../cases/vornicu_1926.json) puts its clues on them, and its
+`object_texts` hold what the player reads on the objects without clues. The list follows what the
+current images show (the images are not regenerated).
 
-| Room id | Name | Objects with clues |
-|---|---|---|
-| `hall` | Hall | `hall.mail_tray` (silver mail tray), `hall.victor_coat` (Victor's coat on the coat rack), `hall.doctor_coat` (the doctor's coat on the coat rack), `hall.back_door` (back door, boots beside it), `hall.guest_register` (guest register on the console) |
-| `library` | Library | `library.journal` (stack of closed ledgers on the desk), `library.blotter` (blotter), `library.medicine_bottle` (drop bottle with police tag), `library.drawer` (desk drawer, slightly open), `library.armchair` (armchair; the keys lie on the floor under it) |
-| `kitchen` | Kitchen | `kitchen.tea_tray` (tea tray), `kitchen.key_board` (key board), `kitchen.gardener_notebook` (gardener's notebook on the windowsill), `kitchen.calendar` (calendar), `kitchen.stove` (stove, cold, door open) |
-| `master_bedroom` | Master bedroom | `master_bedroom.desk` (small desk), `master_bedroom.desk_drawer` (desk drawer), `master_bedroom.wedding_photo` (wedding photograph on the wall), `master_bedroom.nightstand` (nightstand) |
-| `guest_room` | Guest room | `guest_room.medical_bag` (medical bag, closed), `guest_room.briefcase` (briefcase), `guest_room.nightstand` (nightstand with a small book) |
-| `greenhouse` | Greenhouse | `greenhouse.foxglove_pots` (foxglove pots), `greenhouse.empty_pot` (empty pot), `greenhouse.chair` (blanketed chair with lamp and glass of wine) |
+Positions are approximate, as x, y, width, height in percent of the room image; use them as a
+starting point when drawing the polygons.
+
+| Object id | Room | Clue | Position |
+|---|---|---|---|
+| `library.journal` | `library` | B1 | 37, 30, 11, 13 |
+| `library.blotter` | `library` | B2 | 34, 40, 14, 17 |
+| `library.medicine_bottle` | `library` | B3 | 30, 35, 4, 14 |
+| `library.drawer` | `library` | B4 | 49, 41, 4, 6 |
+| `library.armchair` | `library` | B5 | 52, 16, 13, 40 (armchair and the keys below it) |
+| `library.cabinet` | `library` | — | 41, 9, 6, 32 |
+| `library.cigar_box` | `library` | — | 25, 39, 6, 10 |
+| `library.window` | `library` | — | 30, 0, 11, 38 |
+| `library.telephone` | `library` | — | 90, 29, 4, 13 |
+| `library.clock` | `library` | — | 67, 8, 7, 49 |
+| `library.fireplace` | `library` | — | 71, 28, 20, 36 |
+| `hall.doctor_coat` | `hall` | H5 | 19, 30, 5, 22 (dark coat on the coat rack) |
+| `hall.victor_coat` | `hall` | H2 | 25, 58, 6, 20 (light coat thrown over the bench) |
+| `hall.back_door` | `hall` | H3 | 26, 12, 16, 40 (door and boots) |
+| `hall.mail_tray` | `hall` | H1 | 72, 39, 5, 9 |
+| `hall.guest_register` | `hall` | H4 | 73, 44, 8, 8 |
+| `hall.floor` | `hall` | — | 29, 42, 26, 30 |
+| `hall.stairs` | `hall` | — | 60, 4, 36, 40 |
+| `kitchen.tea_tray` | `kitchen` | K1 | 39, 39, 13, 15 |
+| `kitchen.key_board` | `kitchen` | K2 | 10, 29, 14, 26 |
+| `kitchen.gardener_notebook` | `kitchen` | K3 | 51, 37, 9, 10 (on the table) |
+| `kitchen.calendar` | `kitchen` | K4 | 22, 30, 10, 13 (both calendars) |
+| `kitchen.stove` | `kitchen` | K5 | 66, 18, 16, 50 |
+| `kitchen.top_shelf` | `kitchen` | — | 8, 12, 12, 17 |
+| `kitchen.bell_board` | `kitchen` | — | 47, 14, 8, 14 |
+| `kitchen.sink` | `kitchen` | — | 74, 75, 22, 25 |
+| `master_bedroom.desk` | `master_bedroom` | D1 | 13, 36, 11, 10 |
+| `master_bedroom.desk_drawer` | `master_bedroom` | D2 | 15, 49, 9, 7 |
+| `master_bedroom.wedding_photo` | `master_bedroom` | D3 | 10, 18, 9, 20 (with the plate) |
+| `master_bedroom.nightstand` | `master_bedroom` | D4 | 55, 27, 9, 12 |
+| `master_bedroom.photo_frame` | `master_bedroom` | — | 6, 43, 4, 9 |
+| `master_bedroom.bed` | `master_bedroom` | — | 47, 25, 36, 38 |
+| `master_bedroom.stove` | `master_bedroom` | — | 22, 0, 20, 55 |
+| `master_bedroom.washstand` | `master_bedroom` | — | 80, 63, 17, 23 |
+| `guest_room.medical_bag` | `guest_room` | O1 | 36, 37, 16, 27 |
+| `guest_room.briefcase` | `guest_room` | O2 | 46, 56, 19, 33 |
+| `guest_room.nightstand` | `guest_room` | O3 | 8, 64, 32, 29 (the table with the open book) |
+| `guest_room.washbasin` | `guest_room` | — | 71, 64, 22, 30 |
+| `guest_room.bed` | `guest_room` | — | 8, 8, 29, 51 |
+| `guest_room.stove` | `guest_room` | — | 57, 22, 13, 33 |
+| `guest_room.lantern` | `guest_room` | — | 50, 33, 3, 12 |
+| `guest_room.window` | `guest_room` | — | 48, 0, 11, 21 |
+| `greenhouse.foxglove_pots` | `greenhouse` | S1 | 0, 22, 38, 58 |
+| `greenhouse.empty_pot` | `greenhouse` | S2 | 32, 63, 27, 26 (overturned pot and the letters) |
+| `greenhouse.chair` | `greenhouse` | S3 | 72, 55, 23, 40 (chair and the side table with the lamp and wine) |
+| `greenhouse.workbench` | `greenhouse` | — | 57, 58, 15, 25 |
+| `greenhouse.road_window` | `greenhouse` | — | 82, 14, 18, 33 |
+| `greenhouse.ferns` | `greenhouse` | — | 43, 21, 22, 39 |
+| `greenhouse.stacked_pots` | `greenhouse` | — | 12, 86, 7, 14 |
 
 The police station is not a room of the house: players go there with a button in the interface,
-not through a door in the room images. Room doors in the images are decoration only.
-
-## Objects without clues
-
-Clickable objects that hold no clue, so the search is not too easy. Up to 10–11 clickable objects
-in the library, 7–8 in the other rooms. Large furniture and wall decoration that is not listed
-here is not clickable. Suggested ids and the text the player sees:
-
-| Object id | Text |
-|---|---|
-| `library.cabinet` | Six identical heart-drop bottles with white stoppers, sealed and untouched. The box is labeled “Dr. I. Strat.” |
-| `library.window` | Rain streaks on the glass. The latch is closed from the inside. |
-| `library.telephone` | The line is dead. The storm brought it down. |
-| `library.portrait` | “Matei Vornicu, 1920.” A stern gaze, one hand on a ledger. |
-| `library.cigar_box` | Cuban cigars. Two are missing, although the doctor had forbidden them. |
-| `library.bookshelf` | One ledger sticks out a little from its row. |
-| `hall.umbrella_stand` | The umbrellas are dry. Nobody went out through the front door after the storm. |
-| `hall.stairs` | From here you can see the whole hall, down to the kitchen door. |
-| `hall.bench` | A folded blanket and a pair of men's driving gloves. |
-| `kitchen.top_shelf` | A tin of rat poison, full, with undisturbed dust on the lid. |
-| `kitchen.bell_board` | The servants' bell board. The library bell did not ring all evening. |
-| `kitchen.sink` | The dinner dishes are washed. The only unwashed cup is on the tray. |
-| `master_bedroom.photo_frame` | A photograph of a gentle woman: Maria, Matei's first wife. |
-| `master_bedroom.bed` | Untouched. Matei never went to bed. |
-| `master_bedroom.wardrobe` | Dark suits and a walking stick. Nothing hidden. |
-| `guest_room.washbasin` | The basin has been rinsed. The towel is damp. |
-| `guest_room.bed` | Made up in a hurry: sheets thrown over a summer bedspread. |
-| `guest_room.stove` | Cold and clean. Nothing was burned here. |
-| `guest_room.window` | The garden is flooded; the road to Turda is full of puddles. |
-| `greenhouse.road_window` | Misted on the inside, no marks on the outside. Nobody came to this window. |
-| `greenhouse.workbench` | Gardening gloves, seed packets, a watering can. |
-| `greenhouse.ferns` | Wet ferns, flattened by the wind through a cracked roof pane. |
-
-These texts are case-specific. If the theme map schema has no field for an object's text, we
-need one (on the object in `map.json`, or a list of “empty object” texts in the case).
+not through a door in the room images. Room doors in the images are decoration only. In the
+interrogation room nothing is clickable; the suspect portrait goes over the chair behind the table
+(about 54, 42, 7, 19).
 
 ## Suspect portraits
 

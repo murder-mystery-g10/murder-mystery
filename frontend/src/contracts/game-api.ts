@@ -172,9 +172,13 @@ export type Ok1 = boolean
  */
 export type Error1 = string | null
 /**
- * Empty: 'Nimic interesant'
+ * Clues found on the object
  */
 export type Clues = ClueCard[]
+/**
+ * Object without clues: what the player reads; None: 'Nothing of interest.'
+ */
+export type Text7 = string | null
 export type Object = string
 export type QuestionsLeft1 = number
 export type PlayerName1 = string
@@ -577,6 +581,7 @@ export interface InspectAck {
   ok: Ok1
   error?: Error1
   clues?: Clues
+  text?: Text7
 }
 /**
  * This interface was referenced by `GameApi`'s JSON-Schema

@@ -23,7 +23,8 @@ COPY --from=builder /app/.venv /app/.venv
 COPY backend/alembic.ini /app/backend/alembic.ini
 COPY backend/alembic /app/backend/alembic
 COPY cases /app/cases
-ENV PATH="/app/.venv/bin:$PATH" CASES_DIR=/app/cases
+COPY themes /app/themes
+ENV PATH="/app/.venv/bin:$PATH" CASES_DIR=/app/cases THEMES_DIR=/app/themes
 WORKDIR /app/backend
 USER app
 EXPOSE 8000

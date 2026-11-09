@@ -201,7 +201,9 @@ def create_socket_server(
         sids.discard(sid)
         if not sids:
             online.pop(player_id, None)
-            await _announce(uuid.UUID(session["lobby_id"]))
+            lobby_id = uuid.UUID(session["lobby_id"])
+            await _announce(lobby_id)
+            await _recount_votes(lobby_id)
 
     @sio.on("system:ping")
     async def ping(sid: str, data: object = None) -> dict[str, str]:
@@ -321,13 +323,8 @@ def create_socket_server(
         await _send_accusation_state(proposal)
         return _ok()
 
-    @sio.on("accusation:vote")
-    async def accusation_vote(sid: str, data: object = None) -> dict:
-        """Send the new accusation:state; when everyone accepted, also game:ended."""
-        try:
-            _, outcome = await _apply(sid, data, VoteAccusation, accusation.vote)
-        except Refused as refused:
-            return _error(str(refused))
+    async def _send_vote_outcome(outcome: accusation.VoteOutcome) -> None:
+        """The new accusation:state; when the game ended, also game:ended."""
         await _send_accusation_state(outcome.accusation)
         if outcome.result is not None:
             await sio.emit(
@@ -335,7 +332,30 @@ def create_socket_server(
                 outcome.result.model_dump(mode="json"),
                 room=lobby_room(outcome.accusation.lobby_id),
             )
+
+    @sio.on("accusation:vote")
+    async def accusation_vote(sid: str, data: object = None) -> dict:
+        """Send the new accusation:state; when everyone online accepted, also game:ended."""
+
+        async def vote(
+            db: AsyncSession, player: Player, payload: VoteAccusation
+        ) -> accusation.VoteOutcome:
+            return await accusation.vote(db, player, payload, _connected())
+
+        try:
+            _, outcome = await _apply(sid, data, VoteAccusation, vote)
+        except Refused as refused:
+            return _error(str(refused))
+        await _send_vote_outcome(outcome)
         return _ok()
+
+    async def _recount_votes(lobby_id: uuid.UUID) -> None:
+        """A player left: if everyone still online already accepted, the game ends now."""
+        async with _db() as db:
+            outcome = await accusation.recount(db, lobby_id, _connected())
+            await db.commit()
+        if outcome is not None:
+            await _send_vote_outcome(outcome)
 
     # --- interrogation ------------------------------------------------------------------
 

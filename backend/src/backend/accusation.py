@@ -1,7 +1,8 @@
 """Final accusation: a proposal, a unanimous vote, then the score and the end of the game.
 
 Rules (issue #20, docs/database.md):
-- One proposal waits for votes at a time. Every player of the lobby must accept it.
+- One proposal waits for votes at a time. Every player online must accept it: a player who left
+  does not block the end of the game, and when one leaves, the votes are counted again.
 - One rejection rejects the proposal; the team can propose again.
 - An accepted proposal is the team's only attempt: the game ends and is scored.
 - Score: 50 culprit + 25 motive + 25 method; time bonus +20 under 35 min, down to 0 at 55 min,
@@ -9,6 +10,7 @@ Rules (issue #20, docs/database.md):
 """
 
 import uuid
+from collections.abc import Collection
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
@@ -77,9 +79,16 @@ def correct_choices(case: Case) -> AccusationChoices:
     )
 
 
-def everyone_accepted(players: list[uuid.UUID], accepted: set[uuid.UUID]) -> bool:
-    """The vote is unanimous: every player of the lobby accepted, offline players included."""
-    return all(player_id in accepted for player_id in players)
+def everyone_accepted(
+    players: list[uuid.UUID], accepted: set[uuid.UUID], online: Collection[uuid.UUID]
+) -> bool:
+    """The vote is unanimous: every player of the lobby who is online accepted.
+
+    Offline players do not count, so one who left does not block the end of the game. With
+    nobody online there is no one to decide, so the proposal keeps waiting.
+    """
+    voters = [player_id for player_id in players if player_id in online]
+    return bool(voters) and all(player_id in accepted for player_id in voters)
 
 
 def time_bonus(elapsed_seconds: int) -> int:
@@ -180,8 +189,10 @@ async def propose(db: AsyncSession, player: Player, data: AccusationChoices) -> 
     return accusation
 
 
-async def vote(db: AsyncSession, player: Player, data: VoteAccusation) -> VoteOutcome:
-    """accusation:vote: one rejection rejects the proposal; all accepting ends the game."""
+async def vote(
+    db: AsyncSession, player: Player, data: VoteAccusation, online: Collection[uuid.UUID]
+) -> VoteOutcome:
+    """accusation:vote: one rejection rejects the proposal; everyone online accepting ends it."""
     game = await exploration.load_game(db, player)
     try:
         accusation_id = uuid.UUID(data.proposal)
@@ -202,7 +213,43 @@ async def vote(db: AsyncSession, player: Player, data: VoteAccusation) -> VoteOu
         accusation.status = AccusationStatus.REJECTED
         return VoteOutcome(accusation)
     await db.flush()
+    return await _count_votes(db, game, accusation, online)
 
+
+async def recount(
+    db: AsyncSession, lobby_id: uuid.UUID, online: Collection[uuid.UUID]
+) -> VoteOutcome | None:
+    """After a player left: the pending proposal may now have every vote it needs.
+
+    Returns the outcome only when it ended the game; None if nothing changed.
+    """
+    accusation = await db.scalar(
+        select(AccusationRow)
+        .where(
+            AccusationRow.lobby_id == lobby_id,
+            AccusationRow.status == AccusationStatus.PENDING,
+        )
+        .with_for_update()
+    )
+    if accusation is None:
+        return None
+    player = await db.scalar(select(Player).where(Player.lobby_id == lobby_id).limit(1))
+    assert player is not None, "a lobby with a proposal has players"
+    try:
+        game = await exploration.load_game(db, player)
+    except exploration.ExplorationError:
+        return None
+    outcome = await _count_votes(db, game, accusation, online)
+    return outcome if outcome.result is not None else None
+
+
+async def _count_votes(
+    db: AsyncSession,
+    game: exploration.Game,
+    accusation: AccusationRow,
+    online: Collection[uuid.UUID],
+) -> VoteOutcome:
+    """End the game if every player online accepted the proposal."""
     accepted = set(
         await db.scalars(
             select(AccusationVote.player_id).where(
@@ -210,8 +257,8 @@ async def vote(db: AsyncSession, player: Player, data: VoteAccusation) -> VoteOu
             )
         )
     )
-    players = await db.scalars(select(Player.id).where(Player.lobby_id == player.lobby_id))
-    if not everyone_accepted(list(players), accepted):
+    players = await db.scalars(select(Player.id).where(Player.lobby_id == game.lobby.id))
+    if not everyone_accepted(list(players), accepted, online):
         return VoteOutcome(accusation)
     return VoteOutcome(accusation, await _end_game(db, game, accusation))
 

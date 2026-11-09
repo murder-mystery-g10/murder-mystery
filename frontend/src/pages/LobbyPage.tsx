@@ -5,7 +5,7 @@ import { DevBanner } from '../components/DevBanner'
 import { LobbyCodeBadge } from '../components/LobbyCodeBadge'
 import { Navbar } from '../components/Navbar'
 import { PlayerList } from '../components/PlayerList'
-import { useGameStore } from '../stores/gameStore'
+import { RoomView } from '../components/RoomView'
 import { useCanStartGame, useIsHost, useLobbyStore } from '../stores/lobbyStore'
 
 export function LobbyPage() {
@@ -20,9 +20,6 @@ export function LobbyPage() {
   const selectCase = useLobbyStore((s) => s.selectCase)
   const startGame = useLobbyStore((s) => s.startGame)
   const joinLobby = useLobbyStore((s) => s.joinLobby)
-  const briefing = useGameStore((s) => s.briefing)
-  const openCaseFile = useGameStore((s) => s.openCaseFile)
-
   const [directJoinName, setDirectJoinName] = useState('')
 
   const isHost = useIsHost()
@@ -119,30 +116,7 @@ export function LobbyPage() {
       <div className="page-wrapper">
         <Navbar />
         <main className="desk-container">
-          <div className="dispatch-warrant-card">
-            <span className="warrant-seal">ENFORCEABLE JUDICIAL WARRANT</span>
-            <h1 className="warrant-title">The investigation has begun!</h1>
-            <p className="warrant-desc">
-              The team of {lobby.players.length} detectives has left the police station and arrived
-              at Vornicu Manor. Case file:{' '}
-              <strong className="text-cream">{lobby.case?.title ?? 'Active case'}</strong>.
-            </p>
-            <div className="warrant-meta">
-              <span className="warrant-note">
-                The manor has been sealed. Begin searching the rooms and questioning the suspects.
-              </span>
-            </div>
-            {briefing && (
-              <button
-                type="button"
-                className="btn-order btn-order-primary"
-                style={{ marginTop: '1.75rem' }}
-                onClick={openCaseFile}
-              >
-                Read the case file
-              </button>
-            )}
-          </div>
+          <RoomView />
         </main>
       </div>
     )

@@ -126,17 +126,31 @@ def test_a_stored_score_reads_back_unchanged() -> None:
 # --- unanimous vote, one accusation ------------------------------------------------------
 
 
-def test_the_vote_needs_every_player() -> None:
+def test_the_vote_needs_every_player_online() -> None:
     players = [uuid.uuid4() for _ in range(4)]
-    assert accusation.everyone_accepted(players, set(players))
-    # One player has not voted yet (or is offline): the proposal keeps waiting.
-    assert not accusation.everyone_accepted(players, set(players[:3]))
-    assert not accusation.everyone_accepted(players, set())
+    online = set(players)
+    assert accusation.everyone_accepted(players, set(players), online)
+    # One player online has not voted yet: the proposal keeps waiting.
+    assert not accusation.everyone_accepted(players, set(players[:3]), online)
+    assert not accusation.everyone_accepted(players, set(), online)
+
+
+def test_a_player_who_left_does_not_block_the_vote() -> None:
+    players = [uuid.uuid4() for _ in range(4)]
+    online = set(players[:3])
+    assert accusation.everyone_accepted(players, set(players[:3]), online)
+    assert not accusation.everyone_accepted(players, set(players[:2]), online)
+
+
+def test_with_nobody_online_the_proposal_keeps_waiting() -> None:
+    players = [uuid.uuid4() for _ in range(4)]
+    assert not accusation.everyone_accepted(players, set(players), set())
 
 
 def test_votes_from_outside_the_lobby_do_not_count() -> None:
     players = [uuid.uuid4() for _ in range(3)]
-    assert not accusation.everyone_accepted(players, {uuid.uuid4() for _ in range(3)})
+    outsiders = {uuid.uuid4() for _ in range(3)}
+    assert not accusation.everyone_accepted(players, outsiders, set(players) | outsiders)
 
 
 def test_only_one_proposal_waits_for_votes() -> None:

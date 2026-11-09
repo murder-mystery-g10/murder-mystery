@@ -22,7 +22,8 @@ RUN useradd --create-home app
 COPY --from=builder /app/.venv /app/.venv
 COPY backend/alembic.ini /app/backend/alembic.ini
 COPY backend/alembic /app/backend/alembic
-ENV PATH="/app/.venv/bin:$PATH"
+COPY cases /app/cases
+ENV PATH="/app/.venv/bin:$PATH" CASES_DIR=/app/cases
 WORKDIR /app/backend
 USER app
 EXPOSE 8000

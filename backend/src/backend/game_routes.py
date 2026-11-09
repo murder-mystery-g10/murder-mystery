@@ -1,7 +1,11 @@
-"""Game REST API. Not implemented yet (the backend team owns these): every endpoint returns 501."""
+"""Game REST API. Endpoints that are not implemented yet return 501."""
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Request, status
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.lobby import case_summary
+from backend.models import CaseRecord, CaseSource
 from shared_schemas import ThemeMap
 from shared_schemas.game_api import (
     CaseSummary,
@@ -33,8 +37,15 @@ def join_lobby(code: str, request: JoinLobbyRequest) -> LobbySession:
 
 
 @router.get("/cases", tags=["cases"], summary="Cases in the library")
-def list_cases() -> list[CaseSummary]:
-    raise _not_implemented()
+async def list_cases(request: Request) -> list[CaseSummary]:
+    """Only cases that were validated and stored at startup (backend.library)."""
+    async with AsyncSession(request.app.state.engine) as db:
+        records = await db.scalars(
+            select(CaseRecord)
+            .where(CaseRecord.source == CaseSource.LIBRARY)
+            .order_by(CaseRecord.title)
+        )
+        return [case_summary(record) for record in records]
 
 
 @router.get("/themes/{theme_id}/map", tags=["themes"], summary="Rooms, objects and doors")

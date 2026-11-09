@@ -1,5 +1,6 @@
+import asyncio
 from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 
 import socketio
 from fastapi import FastAPI
@@ -9,6 +10,7 @@ from backend.ai_client import AIClient
 from backend.config import Settings, get_settings
 from backend.db import create_engine
 from backend.game_routes import router as game_router
+from backend.library import load_library_in_background
 from backend.meta import SERVICE_VERSION
 from backend.routes import router
 from backend.sockets import create_socket_server
@@ -25,7 +27,13 @@ def create_app(settings: Settings | None = None) -> socketio.ASGIApp:
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         app.state.engine = create_engine(settings.database_url)
         app.state.ai_client = AIClient(settings.ai_service_url, settings.internal_api_key)
+        library = asyncio.create_task(
+            load_library_in_background(app.state.engine, app.state.ai_client, settings.cases_dir)
+        )
         yield
+        library.cancel()
+        with suppress(asyncio.CancelledError):
+            await library
         await app.state.ai_client.aclose()
         await app.state.engine.dispose()
 

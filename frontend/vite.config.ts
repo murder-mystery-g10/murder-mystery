@@ -8,6 +8,9 @@ const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:8000'
 
 export default defineConfig({
   plugins: [react()],
+  // Read VITE_* variables from the repository-root .env (shared with Docker Compose). Vite only
+  // exposes variables prefixed with VITE_ to the app, so the other secrets stay out of the bundle.
+  envDir: '..',
   server: {
     proxy: {
       '/api': backendUrl,

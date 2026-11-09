@@ -77,6 +77,11 @@ def correct_choices(case: Case) -> AccusationChoices:
     )
 
 
+def everyone_accepted(players: list[uuid.UUID], accepted: set[uuid.UUID]) -> bool:
+    """The vote is unanimous: every player of the lobby accepted, offline players included."""
+    return all(player_id in accepted for player_id in players)
+
+
 def time_bonus(elapsed_seconds: int) -> int:
     """Whole minutes count: 35 min 50 s is 35 minutes."""
     minutes = elapsed_seconds // 60
@@ -206,7 +211,7 @@ async def vote(db: AsyncSession, player: Player, data: VoteAccusation) -> VoteOu
         )
     )
     players = await db.scalars(select(Player.id).where(Player.lobby_id == player.lobby_id))
-    if any(player_id not in accepted for player_id in players):
+    if not everyone_accepted(list(players), accepted):
         return VoteOutcome(accusation)
     return VoteOutcome(accusation, await _end_game(db, game, accusation))
 

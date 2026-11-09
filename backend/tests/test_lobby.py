@@ -136,3 +136,42 @@ def test_after_the_end_the_snapshot_has_the_result() -> None:
     breakdown = accusation.score(case, chosen, 30 * 60, unused=0)
     result = accusation.game_result(case, chosen, breakdown, found=set())
     assert _snapshot(case, result=result).result == result
+
+
+# --- each player sees only what they may -------------------------------------------------
+
+
+def test_each_player_snapshot_has_only_their_own_notebook() -> None:
+    case = _case()
+    ana, dan = uuid.uuid4(), uuid.uuid4()
+    for_ana = _snapshot(case, you=ana, found_clue_ids=["K1"])
+    for_dan = _snapshot(case, you=dan, found_clue_ids=["B1"])
+    assert [card.id for card in for_ana.notebook] == ["K1"]
+    assert [card.id for card in for_dan.notebook] == ["B1"]
+    k1 = next(clue for clue in case.clues if clue.id == "K1")
+    assert k1.player_text not in for_dan.model_dump_json()
+    assert (for_ana.you, for_dan.you) == (str(ana), str(dan))
+
+
+def test_the_snapshot_hides_how_suspects_break_and_how_doors_open() -> None:
+    case = _case()
+    sent = _snapshot(case).model_dump_json()
+    for suspect in case.suspects:
+        for lie in suspect.lies_about:
+            assert lie not in sent
+        for testimony in suspect.testimonies:
+            assert testimony.fact not in sent
+        for stage in suspect.break_stages:
+            assert stage.admits not in sent
+    assert "1919" not in sent  # the greenhouse code ("code" itself is the lobby code's key)
+    for key in ("break_stages", "testimonies", "lies_about", "evidence_shown", "hint_clues"):
+        assert f'"{key}"' not in sent
+
+
+def test_every_player_sees_the_whole_team_dialogue() -> None:
+    case = _case()
+    entries = [_entry("victor"), _entry("strat")]
+    for you in (uuid.uuid4(), uuid.uuid4()):
+        snapshot = _snapshot(case, you=you, entries=entries)
+        shown = [entry.id for item in snapshot.interrogations for entry in item.entries]
+        assert sorted(shown) == sorted(str(entry.id) for entry in entries)

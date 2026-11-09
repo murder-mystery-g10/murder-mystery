@@ -2,9 +2,13 @@ import { io, type Socket } from 'socket.io-client'
 import type {
   AccusationChoices,
   Ack,
+  EnterRoom,
+  InspectAck,
+  InspectObject,
   SelectCase,
   SocketAuth,
   StartGame,
+  UnlockRoom,
   VoteAccusation,
 } from '../contracts/game-api'
 import type { ClientToServerEvents, ServerToClientEvents } from '../contracts/socket-events'
@@ -53,6 +57,37 @@ export async function emitStartGame(payload: StartGame = {}, timeoutMs = 4000): 
   if (!socket.connected) return { ok: false, error: NOT_CONNECTED }
   try {
     return await socket.timeout(timeoutMs).emitWithAck('lobby:start', payload)
+  } catch {
+    return { ok: false, error: NO_ANSWER }
+  }
+}
+
+export async function emitEnterRoom(payload: EnterRoom, timeoutMs = 4000): Promise<Ack> {
+  if (isMockMode()) return { ok: true }
+  if (!socket.connected) return { ok: false, error: NOT_CONNECTED }
+  try {
+    return await socket.timeout(timeoutMs).emitWithAck('room:enter', payload)
+  } catch {
+    return { ok: false, error: NO_ANSWER }
+  }
+}
+
+export async function emitInspectObject(
+  payload: InspectObject,
+  timeoutMs = 4000,
+): Promise<InspectAck> {
+  if (!socket.connected) return { ok: false, error: NOT_CONNECTED }
+  try {
+    return await socket.timeout(timeoutMs).emitWithAck('object:inspect', payload)
+  } catch {
+    return { ok: false, error: NO_ANSWER }
+  }
+}
+
+export async function emitUnlockRoom(payload: UnlockRoom, timeoutMs = 4000): Promise<Ack> {
+  if (!socket.connected) return { ok: false, error: NOT_CONNECTED }
+  try {
+    return await socket.timeout(timeoutMs).emitWithAck('room:unlock', payload)
   } catch {
     return { ok: false, error: NO_ANSWER }
   }

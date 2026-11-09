@@ -4,17 +4,20 @@ import uuid
 from collections.abc import Awaitable, Callable
 from typing import Any
 
+import httpx
 import socketio
 from pydantic import BaseModel, ValidationError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
-from backend import accusation, board, exploration, lobby
+from backend import accusation, board, exploration, interrogation, lobby
+from backend.ai_client import AIClient
 from backend.models import Accusation, AccusationStatus, AccusationVote, Lobby, Player
 from shared_schemas.game_api import (
     AccusationChoices,
     AccusationState,
     Ack,
+    Ask,
     BoardAddNote,
     BoardConnect,
     BoardEditNote,
@@ -24,10 +27,13 @@ from shared_schemas.game_api import (
     EnterRoom,
     InspectAck,
     InspectObject,
+    InterrogationAnswer,
     LobbyStatus,
     RoomUnlocked,
     SelectCase,
     StartGame,
+    SuspectRef,
+    SuspectUnavailable,
     UnlockRoom,
     VoteAccusation,
 )
@@ -40,6 +46,7 @@ GAME_ERRORS = (
     exploration.ExplorationError,
     lobby.LobbyError,
     accusation.AccusationError,
+    interrogation.InterrogationError,
 )
 
 
@@ -58,12 +65,14 @@ def player_room(player_id: uuid.UUID) -> str:
 
 
 def create_socket_server(
-    cors_origins: list[str], get_engine: Callable[[], AsyncEngine] | None = None
+    cors_origins: list[str],
+    get_engine: Callable[[], AsyncEngine] | None = None,
+    get_ai_client: Callable[[], AIClient] | None = None,
 ) -> socketio.AsyncServer:
     """Socket.IO server. Event names follow the `domain:action` convention.
 
-    `get_engine` returns the database engine; it is a callable because the engine is created
-    in the app's lifespan, after this server is built.
+    `get_engine` and `get_ai_client` return the database engine and the AI service client; they
+    are callables because both are created in the app's lifespan, after this server is built.
     """
     sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins=cors_origins)
 
@@ -326,6 +335,63 @@ def create_socket_server(
                 outcome.result.model_dump(mode="json"),
                 room=lobby_room(outcome.accusation.lobby_id),
             )
+        return _ok()
+
+    # --- interrogation ------------------------------------------------------------------
+
+    # (lobby id, suspect id) pairs answering a question right now. One question at a time per
+    # suspect, so two players cannot both use the last question during the AI call. In memory:
+    # the backend runs a single process.
+    answering: set[tuple[str, str]] = set()
+
+    @sio.on("interrogation:ask")
+    async def interrogation_ask(sid: str, data: object = None) -> dict:
+        """interrogation:thinking, the AI call, then interrogation:answer to the whole lobby.
+
+        If the AI does not answer, interrogation:unavailable instead; nothing is saved, so the
+        question is not used.
+        """
+        try:
+            ask = Ask.model_validate(data or {})
+        except ValidationError:
+            return _error("Invalid data.")
+        lobby_id = (await sio.get_session(sid)).get("lobby_id")
+        if lobby_id is None:
+            return _error("You are not in a game.")
+        busy = (lobby_id, ask.suspect)
+        if busy in answering:
+            return _error("The suspect is still answering another question.")
+        answering.add(busy)
+        try:
+            return await _interrogate(sid, ask)
+        finally:
+            answering.discard(busy)
+
+    async def _interrogate(sid: str, ask: Ask) -> dict:
+        try:
+            player, prepared = await _apply(sid, ask, Ask, interrogation.prepare)
+        except Refused as refused:
+            return _error(str(refused))
+        room = lobby_room(player.lobby_id)
+        suspect = SuspectRef(suspect=ask.suspect).model_dump(mode="json")
+        await sio.emit("interrogation:thinking", suspect, room=room)
+
+        async def save(db: AsyncSession, player: Player, _: Ask) -> InterrogationAnswer:
+            return await interrogation.save(db, player, prepared, response)
+
+        try:
+            assert get_ai_client is not None, "create_socket_server needs get_ai_client"
+            response = await get_ai_client().interrogate(prepared.request)
+            _, answer = await _apply(sid, ask, Ask, save)
+        except (httpx.HTTPError, ValueError, Refused) as error:
+            logger.warning("suspect %s did not answer: %s", ask.suspect, error)
+            message = str(error) if isinstance(error, Refused) else interrogation.UNAVAILABLE
+            unavailable = SuspectUnavailable(suspect=ask.suspect, message=message)
+            await sio.emit(
+                "interrogation:unavailable", unavailable.model_dump(mode="json"), room=room
+            )
+            return _error(message)
+        await sio.emit("interrogation:answer", answer.model_dump(mode="json"), room=room)
         return _ok()
 
     return sio

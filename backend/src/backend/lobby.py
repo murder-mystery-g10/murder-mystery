@@ -16,7 +16,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend import accusation as accusation_rules
-from backend import board, exploration
+from backend import board, exploration, interrogation
 from backend.models import Accusation as AccusationRow
 from backend.models import (
     AccusationStatus,
@@ -46,7 +46,6 @@ from shared_schemas.game_api import (
     SuspectCard,
     SuspectInterrogation,
 )
-from shared_schemas.game_api import InterrogationEntry as InterrogationEntryOut
 from shared_schemas.game_api import Player as PlayerOut
 
 
@@ -204,20 +203,8 @@ def interrogations(case: Case, entries: list[InterrogationEntry]) -> list[Suspec
         result.append(
             SuspectInterrogation(
                 suspect=suspect.id,
-                questions_left=max(case.questions_per_suspect - len(asked), 0),
-                entries=[
-                    InterrogationEntryOut(
-                        id=str(entry.id),
-                        suspect=entry.suspect,
-                        asked_by=str(entry.asked_by),
-                        question=entry.question,
-                        evidence=entry.evidence,
-                        answer=entry.answer,
-                        emotion=entry.emotion,
-                        intensity=entry.intensity,
-                    )
-                    for entry in asked
-                ],
+                questions_left=interrogation.questions_left(case, len(asked)),
+                entries=[interrogation.entry_out(entry) for entry in asked],
             )
         )
     return result

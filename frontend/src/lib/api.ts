@@ -5,6 +5,7 @@ import type {
   LobbySession,
   ReadinessResponse,
 } from '../contracts/game-api'
+import type { ThemeMap } from '../contracts/theme-map'
 import { isMockMode } from './mock'
 
 /**
@@ -141,4 +142,21 @@ export async function fetchCases(): Promise<CaseSummary[]> {
     throw new ApiError(`Could not load the case library. ${error.message}`, error.status)
   }
   return (await response.json()) as CaseSummary[]
+}
+
+const bundledThemeMaps = import.meta.glob<ThemeMap>('../../../themes/*/map.json', {
+  import: 'default',
+})
+
+export async function fetchThemeMap(theme: string, signal: AbortSignal): Promise<ThemeMap> {
+  if (isMockMode()) {
+    // The offline lobby uses the same authored map as the backend.
+    const loadMap = bundledThemeMaps[`../../../themes/${theme}/map.json`]
+    if (!loadMap) throw new ApiError('No map for this theme.', 404)
+    return loadMap()
+  }
+
+  const response = await request(`/api/themes/${encodeURIComponent(theme)}/map`, { signal })
+  if (!response.ok) throw await toApiError(response, {})
+  return (await response.json()) as ThemeMap
 }

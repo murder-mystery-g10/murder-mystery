@@ -1,11 +1,13 @@
 """Accusation and score checks that need no database (CI has no Postgres)."""
 
 import json
+import uuid
 from pathlib import Path
 
 import pytest
 
 from backend import accusation
+from backend.models import GameResult as GameResultRow
 from backend.sockets import create_socket_server
 from shared_schemas.case import Case
 from shared_schemas.game_api import AccusationChoices
@@ -87,3 +89,33 @@ def test_missed_clues_are_the_ones_nobody_found() -> None:
     assert missed.id == case.clues[0].id
     assert missed.text == case.clues[0].player_text
     assert missed.room == case.clues[0].object.split(".", 1)[0]
+
+
+def test_the_result_has_the_answers_the_reveal_and_the_missed_clues() -> None:
+    case = _case()
+    chosen = _wrong(case)
+    breakdown = accusation.score(case, chosen, 40 * 60, unused=1)
+    found = {clue.id for clue in case.clues[1:]}
+    result = accusation.game_result(case, chosen, breakdown, found)
+    assert result.chosen == chosen
+    assert result.correct == accusation.correct_choices(case)
+    assert result.score == breakdown
+    assert result.reveal == case.reveal
+    assert [clue.id for clue in result.missed_clues] == [case.clues[0].id]
+
+
+def test_a_stored_score_reads_back_unchanged() -> None:
+    case = _case()
+    breakdown = accusation.score(case, accusation.correct_choices(case), 50 * 60, unused=4)
+    row = GameResultRow(
+        lobby_id=uuid.uuid4(),
+        accusation_id=uuid.uuid4(),
+        culprit_points=breakdown.culprit,
+        motive_points=breakdown.motive,
+        method_points=breakdown.method,
+        time_bonus=breakdown.time_bonus,
+        unused_questions_bonus=breakdown.unused_questions,
+        total=breakdown.total,
+        elapsed_seconds=breakdown.elapsed_seconds,
+    )
+    assert accusation.stored_score(row) == breakdown

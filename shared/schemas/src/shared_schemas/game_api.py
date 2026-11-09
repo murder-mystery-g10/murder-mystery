@@ -340,6 +340,8 @@ class GameSnapshot(Schema):
     interrogations: list[SuspectInterrogation]
     accusation_options: AccusationOptions
     accusation: AccusationProposal | None = None
+    # Set once the game has ended, so a player who reconnects still gets the end screen.
+    result: GameResult | None = None
 
 
 # --- event registry -----------------------------------------------------------------

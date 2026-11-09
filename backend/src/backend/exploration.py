@@ -110,8 +110,19 @@ async def enter_room(db: AsyncSession, player: Player, data: EnterRoom) -> None:
     player.location = data.room
 
 
-async def inspect_object(db: AsyncSession, player: Player, data: InspectObject) -> list[ClueCard]:
-    """Put the object's clues in the player's notebook. Empty list: 'Nimic interesant'."""
+def object_text(case: Case, object_id: str) -> str | None:
+    """The case's text for an object without clues, if it has one."""
+    return next((t.text for t in case.object_texts if t.object == object_id), None)
+
+
+async def inspect_object(
+    db: AsyncSession, player: Player, data: InspectObject
+) -> tuple[list[ClueCard], str | None]:
+    """Put the object's clues in the player's notebook.
+
+    Returns the clues found, and, when there are none, the object's text from the case
+    (None: the frontend shows 'Nothing of interest.').
+    """
     game = await load_game(db, player)
     room = object_room(data.object)
     if player.location != room:
@@ -133,7 +144,7 @@ async def inspect_object(db: AsyncSession, player: Player, data: InspectObject) 
                 found_by=str(player.id),
             )
         )
-    return cards
+    return cards, None if cards else object_text(game.case, data.object)
 
 
 async def unlock_room(db: AsyncSession, player: Player, data: UnlockRoom) -> list[uuid.UUID]:

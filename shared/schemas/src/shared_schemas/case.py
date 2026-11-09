@@ -186,6 +186,11 @@ class Clue(Schema):
 # --- accusation -----------------------------------------------------------------
 
 
+class ObjectText(Schema):
+    object: Id = Field(description="Clickable object id from the theme map, with no clue on it")
+    text: str = Field(description="What the player reads when they inspect the object")
+
+
 class AccusationOption(Schema):
     id: Id
     text: str
@@ -217,6 +222,10 @@ class Case(Schema):
     rooms: list[CaseRoom]
     players: list[PlayerSlot]
     clues: list[Clue]
+    object_texts: list[ObjectText] = Field(
+        default_factory=list,
+        description="Texts for objects without clues, shown when a player inspects them",
+    )
     accusation: Accusation
     reveal: str = Field(description="Final reveal story, generated with the case")
 
@@ -247,6 +256,16 @@ def find_reference_errors(case: Case) -> list[str]:
     }
     for label, ids in id_lists.items():
         errors += [f"duplicate {label} id '{dup}'" for dup in find_duplicates(ids)]
+    errors += [
+        f"duplicate object text for '{dup}'"
+        for dup in find_duplicates([t.object for t in case.object_texts])
+    ]
+    clue_objects = {c.object for c in case.clues}
+    errors += [
+        f"object '{t.object}' has a clue, so it cannot have an object text"
+        for t in case.object_texts
+        if t.object in clue_objects
+    ]
     if clue_ids & testimony_ids:
         both = sorted(clue_ids & testimony_ids)
         errors.append(f"ids used for both a clue and a testimony: {both}")
@@ -334,4 +353,7 @@ def find_map_errors(case: Case, theme_map: ThemeMap) -> list[str]:
     for clue in case.clues:
         if clue.object not in objects:
             errors.append(f"clue {clue.id}: object '{clue.object}' is not in the map")
+    for object_text in case.object_texts:
+        if object_text.object not in objects:
+            errors.append(f"object text: object '{object_text.object}' is not in the map")
     return errors

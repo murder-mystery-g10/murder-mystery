@@ -27,6 +27,19 @@ def test_valid_case_parses(case_data: dict) -> None:
         (lambda d: d.update(player_count=4), "player_count is 4"),
         (lambda d: d["accusation"].update(correct_motive="m9"), "correct motive"),
         (lambda d: d["clues"][1].update(id="key"), "duplicate clue id"),
+        (
+            lambda d: d.update(object_texts=[{"object": "hall.coat_rack", "text": "A coat."}]),
+            "has a clue",
+        ),
+        (
+            lambda d: d.update(
+                object_texts=[
+                    {"object": "hall.mirror", "text": "A mirror."},
+                    {"object": "hall.mirror", "text": "Again."},
+                ]
+            ),
+            "duplicate object text",
+        ),
     ],
 )
 def test_inconsistent_case_is_rejected(
@@ -52,3 +65,9 @@ def test_clue_on_missing_object_is_reported(case_data: dict, map_data: dict) -> 
     case_data["clues"][0]["object"] = "hall.mirror"
     errors = find_map_errors(Case.model_validate(case_data), ThemeMap.model_validate(map_data))
     assert any("hall.mirror" in error for error in errors)
+
+
+def test_object_text_on_missing_object_is_reported(case_data: dict, map_data: dict) -> None:
+    case_data["object_texts"] = [{"object": "hall.mirror", "text": "A mirror."}]
+    errors = find_map_errors(Case.model_validate(case_data), ThemeMap.model_validate(map_data))
+    assert any("object text" in error and "hall.mirror" in error for error in errors)

@@ -1,0 +1,229 @@
+import { useEffect, useState, type FormEvent } from 'react'
+import { Link, useParams } from 'react-router'
+import { CasePicker } from '../components/CasePicker'
+import { DevBanner } from '../components/DevBanner'
+import { LobbyCodeBadge } from '../components/LobbyCodeBadge'
+import { Navbar } from '../components/Navbar'
+import { PlayerList } from '../components/PlayerList'
+import { useCanStartGame, useIsHost, useLobbyStore } from '../stores/lobbyStore'
+
+export function LobbyPage() {
+  const { code } = useParams<{ code: string }>()
+  const lobby = useLobbyStore((s) => s.lobby)
+  const session = useLobbyStore((s) => s.session)
+  const cases = useLobbyStore((s) => s.cases)
+  const isLoading = useLobbyStore((s) => s.isLoading)
+  const error = useLobbyStore((s) => s.error)
+  const clearError = useLobbyStore((s) => s.clearError)
+  const loadCases = useLobbyStore((s) => s.loadCases)
+  const selectCase = useLobbyStore((s) => s.selectCase)
+  const startGame = useLobbyStore((s) => s.startGame)
+  const joinLobby = useLobbyStore((s) => s.joinLobby)
+
+  const [directJoinName, setDirectJoinName] = useState('')
+
+  const isHost = useIsHost()
+  const { canStart, reason } = useCanStartGame()
+
+  // Load the case library only once the player is in a lobby.
+  const inLobby = lobby !== null
+  useEffect(() => {
+    if (inLobby && cases.length === 0) {
+      loadCases()
+    }
+  }, [inLobby, cases.length, loadCases])
+
+  const handleDirectJoin = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!directJoinName.trim() || !code) return
+    clearError()
+    try {
+      await joinLobby(code.toUpperCase(), directJoinName.trim())
+    } catch {
+      // Handled in store
+    }
+  }
+
+  // If there's no active session or lobby in memory, allow quick join directly
+  if (!lobby) {
+    return (
+      <div className="page-wrapper">
+        <Navbar />
+        <main className="desk-container" style={{ marginTop: '3.5rem' }}>
+          <div className="dossier-entry-card" style={{ maxWidth: '460px', margin: '0 auto' }}>
+            <div className="entry-card-header">
+              <span className="entry-card-meta">CRIMINAL REGISTRY</span>
+              <h1 className="entry-card-title">Join the investigation</h1>
+              <p className="entry-card-desc">
+                Investigation lobby with code{' '}
+                <strong className="text-brass">{code?.toUpperCase()}</strong>.
+              </p>
+            </div>
+
+            {error && (
+              <div className="dispatch-alert dispatch-alert-error" role="alert">
+                <span>{error}</span>
+                <button
+                  type="button"
+                  className="alert-close-btn"
+                  onClick={clearError}
+                  aria-label="Dismiss"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            <form onSubmit={handleDirectJoin} className="dossier-form">
+              <div className="form-field">
+                <label htmlFor="direct-join-name">Your detective name</label>
+                <input
+                  id="direct-join-name"
+                  type="text"
+                  maxLength={24}
+                  required
+                  placeholder="e.g. Inspector Georgescu"
+                  value={directJoinName}
+                  onChange={(e) => setDirectJoinName(e.target.value)}
+                  disabled={isLoading}
+                  className="dossier-input"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="btn-order btn-order-primary btn-block"
+                disabled={isLoading || !directJoinName.trim()}
+              >
+                {isLoading ? 'Connecting...' : 'Enter lobby'}
+              </button>
+
+              <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                <Link to="/" className="text-link-back">
+                  ← Back to the station registry
+                </Link>
+              </div>
+            </form>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  // If game has started
+  if (lobby.status === 'playing') {
+    return (
+      <div className="page-wrapper">
+        <Navbar />
+        <main className="desk-container">
+          <div className="dispatch-warrant-card">
+            <span className="warrant-seal">ENFORCEABLE JUDICIAL WARRANT</span>
+            <h1 className="warrant-title">The investigation has begun!</h1>
+            <p className="warrant-desc">
+              The team of {lobby.players.length} detectives has left the police station and arrived
+              at Vornicu Manor. Case file:{' '}
+              <strong className="text-cream">{lobby.case?.title ?? 'Active case'}</strong>.
+            </p>
+            <div className="warrant-meta">
+              <span className="warrant-note">
+                The manor has been sealed. Begin searching the rooms and questioning the suspects.
+              </span>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  }
+
+  const hostPlayer = lobby.players.find((p) => p.is_host)
+
+  return (
+    <div className="page-wrapper">
+      <Navbar />
+      <DevBanner />
+
+      <main className="desk-container">
+        {error && (
+          <div className="dispatch-alert dispatch-alert-error" role="alert">
+            <span>{error}</span>
+            <button
+              type="button"
+              className="alert-close-btn"
+              onClick={clearError}
+              aria-label="Dismiss"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        <div className="desk-topbar">
+          <div className="desk-case-ident">
+            <div className="case-bulletin-tag">CRIMINAL CASE FILE • TASK FORCE SUMMONS</div>
+            <h1 className="desk-title">Station Waiting Room</h1>
+            <div className="desk-subtitle">
+              The assigned officers gather at the station. The lead investigator reviews the case
+              file.
+            </div>
+          </div>
+
+          <LobbyCodeBadge code={lobby.code} />
+        </div>
+
+        <div className="desk-main-grid">
+          {/* Left Column: Player Duty Roster */}
+          <aside className="desk-roster-column">
+            <PlayerList
+              players={lobby.players}
+              currentUserId={session?.player_id}
+              requiredCount={lobby.case?.player_count}
+            />
+          </aside>
+
+          {/* Right Column: Confidential Case Dossier */}
+          <section className="desk-dossier-column">
+            <CasePicker
+              cases={cases}
+              selectedCaseId={lobby.case?.case_id}
+              isHost={isHost}
+              isLoading={isLoading}
+              onSelectCase={selectCase}
+            />
+          </section>
+        </div>
+
+        {/* Integrated Dispatch Order Bar */}
+        <footer className="dispatch-order-bar">
+          <div className="dispatch-order-status">
+            {isHost ? (
+              canStart ? (
+                <span className="order-ready-status">
+                  ✓ All conditions are met. The lead investigator can order the team to the manor.
+                </span>
+              ) : (
+                <span className="order-waiting-status">{reason}</span>
+              )
+            ) : (
+              <span className="order-guest-status">
+                Waiting for the team leader ({hostPlayer?.name ?? 'the host'}) to finish the case
+                file and give the order to set out...
+              </span>
+            )}
+          </div>
+
+          {isHost && (
+            <button
+              type="button"
+              className="btn-order btn-order-primary"
+              disabled={!canStart || isLoading}
+              onClick={startGame}
+              title={reason ?? 'Give the order to begin the investigation'}
+            >
+              {isLoading ? 'Issuing the order...' : 'Start investigation'}
+            </button>
+          )}
+        </footer>
+      </main>
+    </div>
+  )
+}

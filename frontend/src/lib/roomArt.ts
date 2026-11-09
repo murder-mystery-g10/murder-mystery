@@ -5,20 +5,20 @@ const images = import.meta.glob<string>('../../../themes/*/*.webp', {
 })
 
 const names: Partial<Record<string, string>> = {
-  hall: 'Hol',
-  library: 'Bibliotecă',
-  kitchen: 'Bucătărie',
-  master_bedroom: 'Dormitorul principal',
-  guest_room: 'Camera de oaspeți',
-  greenhouse: 'Seră',
-  station: 'Secția de poliție',
+  hall: 'Hall',
+  library: 'Library',
+  kitchen: 'Kitchen',
+  master_bedroom: 'Master bedroom',
+  guest_room: 'Guest room',
+  greenhouse: 'Greenhouse',
+  station: 'Police station',
 }
 
 export function roomName(room: string): string {
   return names[room] ?? room.replaceAll('_', ' ')
 }
 
-export function roomImage(theme: string, room: string): string | undefined {
+export function roomImage(theme: string, room: string, imagePath?: string): string | undefined {
   const file = room === 'station' ? 'interrogation_room' : room
-  return images[`../../../themes/${theme}/${file}.webp`]
+  return images[`../../../themes/${theme}/${imagePath ?? `${file}.webp`}`]
 }

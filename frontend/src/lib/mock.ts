@@ -1,4 +1,12 @@
-import type { Briefing, GameSnapshot, LobbyState } from '../contracts/game-api'
+import type {
+  Ack,
+  Briefing,
+  ClueCard,
+  GameSnapshot,
+  InspectAck,
+  LobbyState,
+  UnlockRoom,
+} from '../contracts/game-api'
 
 /**
  * Mock mode: the frontend fakes the lobby REST and Socket.IO calls so it can be developed before
@@ -55,7 +63,7 @@ export const MOCK_BRIEFING: Briefing = {
   ],
 }
 
-/** Starts a local exploration preview using the host's three manor rooms. */
+/** Starts a local preview with an example of each lock type. */
 export function makeMockSnapshot(lobby: LobbyState, playerId: string): GameSnapshot {
   return {
     lobby: {
@@ -72,6 +80,7 @@ export function makeMockSnapshot(lobby: LobbyState, playerId: string): GameSnaps
       { room: 'hall', yours: true, unlocked: true },
       { room: 'library', yours: true, unlocked: true },
       { room: 'master_bedroom', yours: true, unlocked: false, lock: 'key' },
+      { room: 'greenhouse', yours: true, unlocked: false, lock: 'code' },
     ],
     notebook: [],
     board: { items: [], links: [] },
@@ -79,4 +88,56 @@ export function makeMockSnapshot(lobby: LobbyState, playerId: string): GameSnaps
     interrogations: [],
     accusation_options: { motive_options: [], method_options: [] },
   }
+}
+
+/** Small local fixture for testing a zone exported by the editor. */
+export function mockInspection(object: string, playerId: string): InspectAck {
+  if (object === 'library.medicine_bottle') {
+    return {
+      ok: true,
+      clues: [
+        {
+          id: 'B3',
+          title: 'Heart-drop bottle',
+          text: 'The bottle has a white stopper and a police tag.',
+          icon: 'bottle',
+          room: 'library',
+          found_by: playerId,
+        },
+      ],
+    }
+  }
+  if (object === 'library.clock') {
+    return { ok: true, text: 'The tall clock by the armchair has stopped.' }
+  }
+  if (object === 'library.armchair') {
+    return {
+      ok: true,
+      clues: [
+        {
+          id: 'B5',
+          title: 'Master bedroom key',
+          text: 'You found a key under the library armchair.',
+          icon: 'key',
+          room: 'library',
+          found_by: playerId,
+        },
+      ],
+    }
+  }
+  return { ok: true }
+}
+
+export function mockUnlockRoom(request: UnlockRoom, notebook: ClueCard[]): Ack {
+  if (request.room === 'master_bedroom') {
+    const hasKey = notebook.some((clue) => clue.id === request.key_clue && clue.icon === 'key')
+    if (!hasKey) return { ok: false, error: 'Choose a key from your notebook.' }
+    if (request.key_clue === 'B5') return { ok: true }
+    return { ok: false, error: 'That key does not fit.' }
+  }
+  // The local preview has its own test code.
+  if (request.room === 'greenhouse') {
+    return request.code === '0427' ? { ok: true } : { ok: false, error: 'Incorrect code.' }
+  }
+  return { ok: false, error: 'This room cannot be unlocked.' }
 }

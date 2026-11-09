@@ -128,15 +128,16 @@ def create_socket_server(
         await sio.emit("game:snapshot", snapshot.model_dump(mode="json"), to=to)
 
     async def _announce(lobby_id: uuid.UUID, sid: str | None = None) -> None:
-        """Tell the lobby who is online: lobby:state before the game, presence:update during it.
+        """Tell the lobby who is online: lobby:state before the game, presence:update after start.
 
-        With `sid` (a new connection in a game in progress), also send it the player's snapshot.
+        With `sid` (a new connection once the game has started, even if it has ended), also send
+        it the player's snapshot, which holds the result after the end.
         """
         async with _db() as db:
             game_lobby = await db.get(Lobby, lobby_id)
             if game_lobby is None:
                 return
-            if game_lobby.status != LobbyStatus.PLAYING:
+            if game_lobby.status == LobbyStatus.WAITING:
                 await _send_lobby_state(db, game_lobby)
                 return
             if sid is not None:
@@ -154,7 +155,7 @@ def create_socket_server(
 
         With `SocketAuth` (lobby code + player token): refuse a wrong token, otherwise join the
         lobby's room and the player's own room so they get their updates. Then the lobby learns
-        the player is online, and in a game in progress the player gets their game:snapshot.
+        the player is online, and once the game has started the player gets their game:snapshot.
         """
         auth = auth or {}
         token, code = auth.get("player_token"), auth.get("lobby_code")

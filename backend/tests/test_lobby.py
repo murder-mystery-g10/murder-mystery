@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from backend import lobby
+from backend import accusation, lobby
 from backend.models import Accusation as AccusationRow
 from backend.models import AccusationVote, InterrogationEntry, Player
 from backend.sockets import create_socket_server
@@ -98,6 +98,7 @@ def test_the_snapshot_has_the_public_case_data() -> None:
     assert [card.id for card in snapshot.suspects] == [suspect.id for suspect in case.suspects]
     assert len(snapshot.accusation_options.motive_options) == 4
     assert snapshot.accusation is None
+    assert snapshot.result is None
 
 
 def test_the_notebook_shows_found_clues_with_their_room() -> None:
@@ -127,3 +128,11 @@ def test_a_pending_accusation_shows_its_votes() -> None:
     snapshot = _snapshot(_case(), accusation=accusation, votes=votes)
     assert snapshot.accusation is not None
     assert snapshot.accusation.votes == {str(voter): True}
+
+
+def test_after_the_end_the_snapshot_has_the_result() -> None:
+    case = _case()
+    chosen = accusation.correct_choices(case)
+    breakdown = accusation.score(case, chosen, 30 * 60, unused=0)
+    result = accusation.game_result(case, chosen, breakdown, found=set())
+    assert _snapshot(case, result=result).result == result

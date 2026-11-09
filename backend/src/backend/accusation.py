@@ -17,7 +17,6 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend import exploration
-from backend.lobby import lobby_players
 from backend.models import Accusation as AccusationRow
 from backend.models import (
     AccusationStatus,
@@ -126,6 +125,31 @@ def missed_clues(case: Case, found: set[str]) -> list[MissedClue]:
     ]
 
 
+def game_result(
+    case: Case, chosen: AccusationChoices, breakdown: ScoreBreakdown, found: set[str]
+) -> GameResult:
+    """game:ended, and the `result` of the snapshot once the game has ended."""
+    return GameResult(
+        chosen=chosen,
+        correct=correct_choices(case),
+        score=breakdown,
+        reveal=case.reveal,
+        missed_clues=missed_clues(case, found),
+    )
+
+
+def stored_score(row: GameResultRow) -> ScoreBreakdown:
+    return ScoreBreakdown(
+        culprit=row.culprit_points,
+        motive=row.motive_points,
+        method=row.method_points,
+        time_bonus=row.time_bonus,
+        unused_questions=row.unused_questions_bonus,
+        total=row.total,
+        elapsed_seconds=row.elapsed_seconds,
+    )
+
+
 # --- events --------------------------------------------------------------------------
 
 
@@ -181,7 +205,8 @@ async def vote(db: AsyncSession, player: Player, data: VoteAccusation) -> VoteOu
             )
         )
     )
-    if any(other.id not in accepted for other in await lobby_players(db, player.lobby_id)):
+    players = await db.scalars(select(Player.id).where(Player.lobby_id == player.lobby_id))
+    if any(player_id not in accepted for player_id in players):
         return VoteOutcome(accusation)
     return VoteOutcome(accusation, await _end_game(db, game, accusation))
 
@@ -218,11 +243,21 @@ async def _end_game(
             elapsed_seconds=breakdown.elapsed_seconds,
         )
     )
-    found = await db.scalars(select(FoundClue.clue_id).where(FoundClue.lobby_id == lobby.id))
-    return GameResult(
-        chosen=chosen,
-        correct=correct_choices(case),
-        score=breakdown,
-        reveal=case.reveal,
-        missed_clues=missed_clues(case, set(found)),
+    return game_result(case, chosen, breakdown, await _found_clues(db, lobby.id))
+
+
+async def load_result(db: AsyncSession, game: exploration.Game) -> GameResult | None:
+    """The stored result of a game that has ended; None while it is in progress."""
+    row = await db.get(GameResultRow, game.lobby.id)
+    if row is None:
+        return None
+    accepted = await db.get(AccusationRow, row.accusation_id)
+    assert accepted is not None, "a stored result points to its accusation"
+    chosen = AccusationChoices(
+        culprit=accepted.culprit, motive=accepted.motive, method=accepted.method
     )
+    return game_result(game.case, chosen, stored_score(row), await _found_clues(db, game.lobby.id))
+
+
+async def _found_clues(db: AsyncSession, lobby_id: uuid.UUID) -> set[str]:
+    return set(await db.scalars(select(FoundClue.clue_id).where(FoundClue.lobby_id == lobby_id)))

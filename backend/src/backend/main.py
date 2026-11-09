@@ -51,6 +51,7 @@ def create_app(settings: Settings | None = None) -> socketio.ASGIApp:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    api.state.settings = settings
     api.include_router(router)
     api.include_router(game_router)
 

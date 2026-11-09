@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:5173"]
     # Folder with the case library (*.json). Default: cases/ at the repository root.
     cases_dir: Path = Path(__file__).resolve().parents[3] / "cases"
+    # Folder with one subfolder per theme (<theme_id>/map.json). Default: themes/ at the root.
+    themes_dir: Path = Path(__file__).resolve().parents[3] / "themes"
 
 
 @lru_cache

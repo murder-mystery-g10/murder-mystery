@@ -1,11 +1,14 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router'
+import { AccusationDialog } from '../components/AccusationDialog'
 import { CasePicker } from '../components/CasePicker'
 import { DevBanner } from '../components/DevBanner'
+import { EndScreen } from '../components/EndScreen'
 import { LobbyCodeBadge } from '../components/LobbyCodeBadge'
 import { Navbar } from '../components/Navbar'
 import { PlayerList } from '../components/PlayerList'
 import { RoomView } from '../components/RoomView'
+import { useGameStore } from '../stores/gameStore'
 import { useCanStartGame, useIsHost, useLobbyStore } from '../stores/lobbyStore'
 
 export function LobbyPage() {
@@ -20,6 +23,10 @@ export function LobbyPage() {
   const selectCase = useLobbyStore((s) => s.selectCase)
   const startGame = useLobbyStore((s) => s.startGame)
   const joinLobby = useLobbyStore((s) => s.joinLobby)
+  const gameResult = useGameStore((s) => s.gameResult)
+  const accusation = useGameStore((s) => s.accusation)
+  const openAccusationModal = useGameStore((s) => s.openAccusationModal)
+
   const [directJoinName, setDirectJoinName] = useState('')
 
   const isHost = useIsHost()
@@ -110,12 +117,58 @@ export function LobbyPage() {
     )
   }
 
+  // If the game has ended / result is available, show the end screen immediately
+  if (gameResult) {
+    return (
+      <div className="page-wrapper">
+        <Navbar />
+        <main className="desk-container">
+          <EndScreen />
+        </main>
+      </div>
+    )
+  }
+
   // If game has started
   if (lobby.status === 'playing') {
     return (
       <div className="page-wrapper">
         <Navbar />
         <main className="desk-container">
+          <AccusationDialog />
+
+          {accusation ? (
+            <div
+              className="dispatch-alert"
+              role="alert"
+              style={{
+                marginBottom: '1.5rem',
+                border: '1px solid var(--brass-accent)',
+                background: 'rgba(194, 159, 85, 0.12)',
+              }}
+            >
+              <span>⚖️ A final accusation has been proposed and is awaiting your vote!</span>
+              <button
+                type="button"
+                className="btn-order btn-order-primary"
+                style={{ padding: '0.35rem 0.75rem', fontSize: '0.85rem' }}
+                onClick={openAccusationModal}
+              >
+                Review & Vote
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+              <button
+                type="button"
+                className="btn-order btn-order-primary"
+                onClick={openAccusationModal}
+              >
+                ⚖️ Formulate Accusation
+              </button>
+            </div>
+          )}
+
           <RoomView />
         </main>
       </div>

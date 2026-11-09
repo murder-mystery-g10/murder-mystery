@@ -6,7 +6,7 @@ import type { Ack, ClueCard, InspectAck } from '../contracts/game-api'
 import { emitEnterRoom, emitInspectObject, emitUnlockRoom, socket } from '../lib/socket'
 import { useGameStore } from '../stores/gameStore'
 import { useLobbyStore } from '../stores/lobbyStore'
-import { makeSnapshot } from '../test/fixtures'
+import { GAME_RESULT, makeSnapshot } from '../test/fixtures'
 import { LobbyPage } from './LobbyPage'
 
 vi.mock('../lib/socket', async (importOriginal) => ({
@@ -387,6 +387,58 @@ describe('LobbyPage', () => {
       )
       expect(screen.queryByTestId('dev-mock-banner')).not.toBeInTheDocument()
       expect(screen.queryByText('Death at Vornicu Manor')).not.toBeInTheDocument()
+    })
+
+    it('renders accusation button when playing', () => {
+      useLobbyStore.setState({
+        session: { lobby_code: 'PLAY01', player_id: 'p1', player_token: 't1' },
+        lobby: {
+          code: 'PLAY01',
+          status: 'playing',
+          solo: false,
+          players: [
+            { id: 'p1', name: 'Inspector Real', is_host: true, connected: true, location: null },
+          ],
+          case: null,
+        },
+      })
+
+      renderLobby('PLAY01')
+
+      expect(screen.getByRole('button', { name: /Formulate Accusation/i })).toBeInTheDocument()
+    })
+
+    it('renders end screen directly when gameResult is set', () => {
+      useLobbyStore.setState({
+        session: { lobby_code: 'FIN01', player_id: 'p1', player_token: 't1' },
+        lobby: {
+          code: 'FIN01',
+          status: 'finished',
+          solo: false,
+          players: [
+            { id: 'p1', name: 'Inspector Real', is_host: true, connected: true, location: null },
+          ],
+          case: null,
+        },
+      })
+      useGameStore.getState().applySnapshot({
+        ...makeSnapshot(),
+        lobby: {
+          code: 'FIN01',
+          status: 'finished',
+          solo: false,
+          players: [
+            { id: 'p1', name: 'Inspector Real', is_host: true, connected: true, location: null },
+          ],
+          case: null,
+        },
+        result: GAME_RESULT,
+      })
+
+      renderLobby('FIN01')
+
+      expect(screen.getByText(/JUDICIAL BUREAU VERDICT/i)).toBeInTheDocument()
+      expect(screen.getByText('TOTAL SCORE')).toBeInTheDocument()
     })
   })
 })

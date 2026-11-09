@@ -1,7 +1,23 @@
 import { create } from 'zustand'
-import type { Ack, Briefing, GameSnapshot, InspectAck, UnlockRoom } from '../contracts/game-api'
+import type {
+  AccusationChoices,
+  AccusationProposal,
+  Ack,
+  Briefing,
+  GameResult,
+  GameSnapshot,
+  InspectAck,
+  UnlockRoom,
+} from '../contracts/game-api'
 import { isMockMode, makeMockSnapshot, mockInspection, mockUnlockRoom } from '../lib/mock'
-import { emitEnterRoom, emitInspectObject, emitUnlockRoom, socket } from '../lib/socket'
+import {
+  emitEnterRoom,
+  emitInspectObject,
+  emitProposeAccusation,
+  emitUnlockRoom,
+  emitVoteAccusation,
+  socket,
+} from '../lib/socket'
 import { useLobbyStore } from './lobbyStore'
 
 export interface GameStoreState {
@@ -12,6 +28,17 @@ export interface GameStoreState {
   /** Whether the case file is open. Any screen can open it with openCaseFile. */
   caseFileOpen: boolean
 
+  /** Current pending accusation proposal, if any. */
+  accusation: AccusationProposal | null
+  /** Whether the accusation dialog is open. */
+  accusationModalOpen: boolean
+  /** Final result when the game ends. */
+  gameResult: GameResult | null
+  /** Loading state during accusation submission or voting. */
+  isSubmittingAccusation: boolean
+  /** Error message from accusation submission or voting. */
+  accusationError: string | null
+
   applySnapshot: (snapshot: GameSnapshot) => void
   enterRoom: (room: string) => Promise<Ack>
   unlockRoom: (request: UnlockRoom) => Promise<Ack>
@@ -19,6 +46,13 @@ export interface GameStoreState {
   inspectObject: (object: string) => Promise<InspectAck>
   openCaseFile: () => void
   closeCaseFile: () => void
+  openAccusationModal: () => void
+  closeAccusationModal: () => void
+  clearAccusationError: () => void
+  dismissGameResult: () => void
+
+  proposeAccusation: (choices: AccusationChoices) => Promise<boolean>
+  voteAccusation: (accept: boolean) => Promise<boolean>
   reset: () => void
 }
 
@@ -26,6 +60,11 @@ const initialState = {
   snapshot: null,
   briefing: null,
   caseFileOpen: false,
+  accusation: null,
+  accusationModalOpen: false,
+  gameResult: null,
+  isSubmittingAccusation: false,
+  accusationError: null,
 }
 
 function sameGame(current: GameSnapshot, previous: GameSnapshot) {
@@ -40,7 +79,14 @@ export const useGameStore = create<GameStoreState>()((set, get) => ({
   ...initialState,
 
   applySnapshot: (snapshot) => {
-    set({ snapshot, briefing: snapshot.briefing })
+    const gameResult = snapshot.result ?? get().gameResult
+    set({
+      snapshot,
+      briefing: snapshot.briefing,
+      accusation: snapshot.result ? null : (snapshot.accusation ?? null),
+      accusationModalOpen: snapshot.result ? false : get().accusationModalOpen,
+      gameResult,
+    })
     // The snapshot also carries the lobby, so a player who reconnects mid-game sees it as started.
     useLobbyStore.getState().setLobbyState(snapshot.lobby)
   },
@@ -107,6 +153,47 @@ export const useGameStore = create<GameStoreState>()((set, get) => ({
 
   closeCaseFile: () => set({ caseFileOpen: false }),
 
+  openAccusationModal: () => set({ accusationModalOpen: true, accusationError: null }),
+  closeAccusationModal: () => set({ accusationModalOpen: false, accusationError: null }),
+  clearAccusationError: () => set({ accusationError: null }),
+  dismissGameResult: () => set({ gameResult: null }),
+
+  proposeAccusation: async (choices) => {
+    set({ isSubmittingAccusation: true, accusationError: null })
+    try {
+      const ack = await emitProposeAccusation(choices)
+      if (!ack.ok) {
+        set({ accusationError: ack.error ?? 'Failed to propose accusation.' })
+        return false
+      }
+      return true
+    } catch {
+      set({ accusationError: 'Failed to propose accusation.' })
+      return false
+    } finally {
+      set({ isSubmittingAccusation: false })
+    }
+  },
+
+  voteAccusation: async (accept) => {
+    const proposalId = get().accusation?.id
+    if (!proposalId) return false
+    set({ isSubmittingAccusation: true, accusationError: null })
+    try {
+      const ack = await emitVoteAccusation({ proposal: proposalId, accept })
+      if (!ack.ok) {
+        set({ accusationError: ack.error ?? 'Failed to submit vote.' })
+        return false
+      }
+      return true
+    } catch {
+      set({ accusationError: 'Failed to submit vote.' })
+      return false
+    } finally {
+      set({ isSubmittingAccusation: false })
+    }
+  },
+
   reset: () => set(initialState),
 }))
 
@@ -123,6 +210,22 @@ socket.on('presence:update', ({ players }) => {
 
 socket.on('room:unlocked', ({ room }) => {
   useGameStore.getState().markRoomUnlocked(room)
+})
+
+socket.on('accusation:state', ({ proposal }) => {
+  useGameStore.setState({
+    accusation: proposal,
+    // Automatically open the dialog if there's an active proposal so all detectives can review and vote
+    accusationModalOpen: proposal !== null ? true : useGameStore.getState().accusationModalOpen,
+  })
+})
+
+socket.on('game:ended', (result) => {
+  useGameStore.setState({
+    gameResult: result,
+    accusationModalOpen: false,
+    accusation: null,
+  })
 })
 
 useLobbyStore.subscribe((lobbyState, previous) => {

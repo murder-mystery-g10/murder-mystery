@@ -1,5 +1,6 @@
 import { io, type Socket } from 'socket.io-client'
 import type {
+  AccusationChoices,
   Ack,
   EnterRoom,
   InspectAck,
@@ -8,6 +9,7 @@ import type {
   SocketAuth,
   StartGame,
   UnlockRoom,
+  VoteAccusation,
 } from '../contracts/game-api'
 import type { ClientToServerEvents, ServerToClientEvents } from '../contracts/socket-events'
 import { isMockMode } from './mock'
@@ -86,6 +88,35 @@ export async function emitUnlockRoom(payload: UnlockRoom, timeoutMs = 4000): Pro
   if (!socket.connected) return { ok: false, error: NOT_CONNECTED }
   try {
     return await socket.timeout(timeoutMs).emitWithAck('room:unlock', payload)
+  } catch {
+    return { ok: false, error: NO_ANSWER }
+  }
+}
+
+/**
+ * Emits accusation:propose and resolves with the server's Ack.
+ */
+export async function emitProposeAccusation(
+  payload: AccusationChoices,
+  timeoutMs = 4000,
+): Promise<Ack> {
+  if (isMockMode()) return { ok: true }
+  if (!socket.connected) return { ok: false, error: NOT_CONNECTED }
+  try {
+    return await socket.timeout(timeoutMs).emitWithAck('accusation:propose', payload)
+  } catch {
+    return { ok: false, error: NO_ANSWER }
+  }
+}
+
+/**
+ * Emits accusation:vote and resolves with the server's Ack.
+ */
+export async function emitVoteAccusation(payload: VoteAccusation, timeoutMs = 4000): Promise<Ack> {
+  if (isMockMode()) return { ok: true }
+  if (!socket.connected) return { ok: false, error: NOT_CONNECTED }
+  try {
+    return await socket.timeout(timeoutMs).emitWithAck('accusation:vote', payload)
   } catch {
     return { ok: false, error: NO_ANSWER }
   }

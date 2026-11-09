@@ -882,12 +882,25 @@
           "title": "Error"
         },
         "clues": {
-          "description": "Empty: 'Nimic interesant'",
+          "description": "Clues found on the object",
           "items": {
             "$ref": "#/$defs/ClueCard"
           },
           "title": "Clues",
           "type": "array"
+        },
+        "text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Object without clues: what the player reads; None: 'Nothing of interest.'",
+          "title": "Text"
         }
       },
       "required": [

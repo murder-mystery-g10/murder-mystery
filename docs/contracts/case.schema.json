@@ -394,6 +394,30 @@
       "title": "KeyLock",
       "type": "object"
     },
+    "ObjectText": {
+      "additionalProperties": false,
+      "properties": {
+        "object": {
+          "description": "Clickable object id from the theme map, with no clue on it",
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Object",
+          "type": "string"
+        },
+        "text": {
+          "description": "What the player reads when they inspect the object",
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "object",
+        "text"
+      ],
+      "title": "ObjectText",
+      "type": "object"
+    },
     "Person": {
       "additionalProperties": false,
       "properties": {
@@ -793,6 +817,14 @@
         "$ref": "#/$defs/Clue"
       },
       "title": "Clues",
+      "type": "array"
+    },
+    "object_texts": {
+      "description": "Texts for objects without clues, shown when a player inspects them",
+      "items": {
+        "$ref": "#/$defs/ObjectText"
+      },
+      "title": "Object Texts",
       "type": "array"
     },
     "accusation": {

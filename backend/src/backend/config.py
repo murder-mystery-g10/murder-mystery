@@ -1,4 +1,5 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -14,6 +15,8 @@ class Settings(BaseSettings):
     internal_api_key: str
     # Origins allowed to call the API and open a socket (the frontend).
     cors_origins: list[str] = ["http://localhost:5173"]
+    # Folder with the case library (*.json). Default: cases/ at the repository root.
+    cases_dir: Path = Path(__file__).resolve().parents[3] / "cases"
 
 
 @lru_cache

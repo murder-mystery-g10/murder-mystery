@@ -9,9 +9,11 @@ from pydantic import BaseModel, ValidationError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
-from backend import board, exploration, lobby
-from backend.models import Lobby, Player
+from backend import accusation, board, exploration, lobby
+from backend.models import Accusation, AccusationStatus, AccusationVote, Lobby, Player
 from shared_schemas.game_api import (
+    AccusationChoices,
+    AccusationState,
     Ack,
     BoardAddNote,
     BoardConnect,
@@ -27,12 +29,18 @@ from shared_schemas.game_api import (
     SelectCase,
     StartGame,
     UnlockRoom,
+    VoteAccusation,
 )
 
 logger = logging.getLogger(__name__)
 
 # Rule errors whose message is sent back to the player in the ack.
-GAME_ERRORS = (board.BoardError, exploration.ExplorationError, lobby.LobbyError)
+GAME_ERRORS = (
+    board.BoardError,
+    exploration.ExplorationError,
+    lobby.LobbyError,
+    accusation.AccusationError,
+)
 
 
 class Refused(Exception):
@@ -120,15 +128,16 @@ def create_socket_server(
         await sio.emit("game:snapshot", snapshot.model_dump(mode="json"), to=to)
 
     async def _announce(lobby_id: uuid.UUID, sid: str | None = None) -> None:
-        """Tell the lobby who is online: lobby:state before the game, presence:update during it.
+        """Tell the lobby who is online: lobby:state before the game, presence:update after start.
 
-        With `sid` (a new connection in a game in progress), also send it the player's snapshot.
+        With `sid` (a new connection once the game has started, even if it has ended), also send
+        it the player's snapshot, which holds the result after the end.
         """
         async with _db() as db:
             game_lobby = await db.get(Lobby, lobby_id)
             if game_lobby is None:
                 return
-            if game_lobby.status != LobbyStatus.PLAYING:
+            if game_lobby.status == LobbyStatus.WAITING:
                 await _send_lobby_state(db, game_lobby)
                 return
             if sid is not None:
@@ -146,7 +155,7 @@ def create_socket_server(
 
         With `SocketAuth` (lobby code + player token): refuse a wrong token, otherwise join the
         lobby's room and the player's own room so they get their updates. Then the lobby learns
-        the player is online, and in a game in progress the player gets their game:snapshot.
+        the player is online, and once the game has started the player gets their game:snapshot.
         """
         auth = auth or {}
         token, code = auth.get("player_token"), auth.get("lobby_code")
@@ -277,5 +286,46 @@ def create_socket_server(
     _board_event("board:move", BoardMove, board.move)
     _board_event("board:connect", BoardConnect, board.connect)
     _board_event("board:remove", BoardRemove, board.remove)
+
+    # --- accusation ---------------------------------------------------------------------
+
+    async def _send_accusation_state(proposal: Accusation) -> None:
+        """accusation:state to the lobby; no proposal once it was rejected."""
+        async with _db() as db:
+            votes = await db.scalars(
+                select(AccusationVote).where(AccusationVote.accusation_id == proposal.id)
+            )
+            shown = (
+                None
+                if proposal.status == AccusationStatus.REJECTED
+                else lobby.accusation_proposal(proposal, list(votes))
+            )
+        state = AccusationState(proposal=shown).model_dump(mode="json")
+        await sio.emit("accusation:state", state, room=lobby_room(proposal.lobby_id))
+
+    @sio.on("accusation:propose")
+    async def accusation_propose(sid: str, data: object = None) -> dict:
+        try:
+            _, proposal = await _apply(sid, data, AccusationChoices, accusation.propose)
+        except Refused as refused:
+            return _error(str(refused))
+        await _send_accusation_state(proposal)
+        return _ok()
+
+    @sio.on("accusation:vote")
+    async def accusation_vote(sid: str, data: object = None) -> dict:
+        """Send the new accusation:state; when everyone accepted, also game:ended."""
+        try:
+            _, outcome = await _apply(sid, data, VoteAccusation, accusation.vote)
+        except Refused as refused:
+            return _error(str(refused))
+        await _send_accusation_state(outcome.accusation)
+        if outcome.result is not None:
+            await sio.emit(
+                "game:ended",
+                outcome.result.model_dump(mode="json"),
+                room=lobby_room(outcome.accusation.lobby_id),
+            )
+        return _ok()
 
     return sio

@@ -4,7 +4,8 @@ Who is online is not stored in the database (docs/database.md); the Socket.IO se
 and passes the ids of the connected players in.
 
 A snapshot is everything one player may see. It is built from the case without the solution:
-no truth, no secrets, no correct accusation answers and no reveal.
+no truth, no secrets, no correct accusation answers and no reveal. Only once the game has ended
+does it carry the result, which holds the correct answers and the reveal.
 """
 
 import uuid
@@ -14,6 +15,7 @@ from datetime import UTC, datetime
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend import accusation as accusation_rules
 from backend import board, exploration
 from backend.models import Accusation as AccusationRow
 from backend.models import (
@@ -33,6 +35,7 @@ from shared_schemas.game_api import (
     BoardState,
     CaseSummary,
     ClueCard,
+    GameResult,
     GameSnapshot,
     LobbyState,
     LobbyStatus,
@@ -247,6 +250,7 @@ def build_snapshot(
     entries: list[InterrogationEntry],
     accusation: AccusationRow | None,
     votes: list[AccusationVote],
+    result: GameResult | None = None,
 ) -> GameSnapshot:
     """game:snapshot for one player, from data already loaded from the database."""
     return GameSnapshot(
@@ -262,14 +266,15 @@ def build_snapshot(
         interrogations=interrogations(case, entries),
         accusation_options=accusation_options(case),
         accusation=accusation_proposal(accusation, votes),
+        result=result,
     )
 
 
 async def load_snapshot(
     db: AsyncSession, player: Player, connected: Collection[uuid.UUID]
 ) -> GameSnapshot:
-    """game:snapshot for one player of a game in progress."""
-    game = await exploration.load_game(db, player)
+    """game:snapshot for one player of a game in progress or one that has ended."""
+    game = await exploration.load_game(db, player, finished=True)
     found = await db.scalars(
         select(FoundClue.clue_id)
         .where(FoundClue.lobby_id == player.lobby_id, FoundClue.player_id == player.id)
@@ -305,4 +310,5 @@ async def load_snapshot(
         entries=list(entries),
         accusation=accusation,
         votes=list(votes),
+        result=await accusation_rules.load_result(db, game),
     )

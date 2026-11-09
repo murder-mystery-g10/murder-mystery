@@ -817,6 +817,17 @@
             }
           ],
           "default": null
+        },
+        "result": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GameResult"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [

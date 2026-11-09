@@ -495,6 +495,7 @@ export interface GameSnapshot {
   interrogations: Interrogations
   accusation_options: AccusationOptions
   accusation?: AccusationProposal | null
+  result?: GameResult | null
 }
 /**
  * This interface was referenced by `GameApi`'s JSON-Schema

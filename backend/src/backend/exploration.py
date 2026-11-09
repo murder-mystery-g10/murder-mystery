@@ -35,9 +35,11 @@ class Game:
     case: Case
 
 
-async def load_game(db: AsyncSession, player: Player) -> Game:
+async def load_game(db: AsyncSession, player: Player, *, finished: bool = False) -> Game:
+    """The player's game in progress; with `finished`, also a game that has ended."""
+    allowed = {LobbyStatus.PLAYING, LobbyStatus.FINISHED} if finished else {LobbyStatus.PLAYING}
     lobby = await db.get(Lobby, player.lobby_id)
-    if lobby is None or lobby.status != LobbyStatus.PLAYING or lobby.case_id is None:
+    if lobby is None or lobby.status not in allowed or lobby.case_id is None:
         raise ExplorationError("The game is not in progress.")
     record = await db.get(CaseRecord, lobby.case_id)
     if record is None:

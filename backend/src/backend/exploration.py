@@ -35,12 +35,21 @@ class Game:
     case: Case
 
 
-async def load_game(db: AsyncSession, player: Player, *, finished: bool = False) -> Game:
-    """The player's game in progress; with `finished`, also a game that has ended."""
+def check_in_progress(lobby: Lobby | None, *, finished: bool = False) -> None:
+    """Game events need a game in progress; reading the snapshot also works once it ended.
+
+    So after the accepted accusation finishes the game, nobody can propose or vote again.
+    """
     allowed = {LobbyStatus.PLAYING, LobbyStatus.FINISHED} if finished else {LobbyStatus.PLAYING}
-    lobby = await db.get(Lobby, player.lobby_id)
     if lobby is None or lobby.status not in allowed or lobby.case_id is None:
         raise ExplorationError("The game is not in progress.")
+
+
+async def load_game(db: AsyncSession, player: Player, *, finished: bool = False) -> Game:
+    """The player's game in progress; with `finished`, also a game that has ended."""
+    lobby = await db.get(Lobby, player.lobby_id)
+    check_in_progress(lobby, finished=finished)
+    assert lobby is not None and lobby.case_id is not None
     record = await db.get(CaseRecord, lobby.case_id)
     if record is None:
         raise ExplorationError("The game is not in progress.")
@@ -89,8 +98,12 @@ async def unlocked_rooms(db: AsyncSession, game: Game) -> set[str]:
 
 async def room_access(db: AsyncSession, game: Game, player: Player) -> list[RoomAccess]:
     """The `rooms` list of game:snapshot for one player."""
+    return rooms_out(game, player, await unlocked_rooms(db, game))
+
+
+def rooms_out(game: Game, player: Player, unlocked: set[str]) -> list[RoomAccess]:
+    """Every room of the case, marked `yours` only for this player's rooms; no codes or keys."""
     rooms = player_rooms(game, player)
-    unlocked = await unlocked_rooms(db, game)
     return [
         RoomAccess(
             room=room.room,
@@ -102,13 +115,19 @@ async def room_access(db: AsyncSession, game: Game, player: Player) -> list[Room
     ]
 
 
+def check_can_enter(game: Game, player: Player, room: str, unlocked: set[str]) -> None:
+    """Anyone can go to the station; a room must be one of the player's, and open."""
+    if room == STATION:
+        return
+    if room not in player_rooms(game, player):
+        raise ExplorationError("Another team handles this room.")
+    if room not in unlocked:
+        raise ExplorationError("The door is locked.")
+
+
 async def enter_room(db: AsyncSession, player: Player, data: EnterRoom) -> None:
     game = await load_game(db, player)
-    if data.room != STATION:
-        if data.room not in player_rooms(game, player):
-            raise ExplorationError("Another team handles this room.")
-        if data.room not in await unlocked_rooms(db, game):
-            raise ExplorationError("The door is locked.")
+    check_can_enter(game, player, data.room, await unlocked_rooms(db, game))
     player.location = data.room
 
 
@@ -149,28 +168,46 @@ async def inspect_object(
     return cards, None if cards else object_text(game.case, data.object)
 
 
-async def unlock_room(db: AsyncSession, player: Player, data: UnlockRoom) -> list[uuid.UUID]:
-    """Open a locked room. Returns the ids of the players who have access to it."""
-    game = await load_game(db, player)
+def check_unlock(
+    game: Game, player: Player, data: UnlockRoom, unlocked: set[str], notebook: set[str]
+) -> None:
+    """Whether this player opens the door: their own locked room, with the key or the code.
+
+    `notebook` is the clue ids the player found; a key must be one of them.
+    """
     case_room = next((room for room in game.case.rooms if room.room == data.room), None)
     if case_room is None or case_room.lock is None:
         raise ExplorationError("This door is not locked.")
     if data.room not in player_rooms(game, player):
         raise ExplorationError("Another team handles this room.")
-    if data.room in await unlocked_rooms(db, game):
+    if data.room in unlocked:
         raise ExplorationError("This door is already open.")
 
     lock = case_room.lock
     if isinstance(lock, KeyLock):
         if data.key_clue is None:
             raise ExplorationError("Use a key from your notebook.")
-        in_notebook = await db.get(FoundClue, (player.lobby_id, player.id, data.key_clue))
-        if in_notebook is None:
+        if data.key_clue not in notebook:
             raise ExplorationError("That key is not in your notebook.")
         if data.key_clue != lock.key_clue:
             raise ExplorationError("This key does not fit the door.")
     elif (data.code or "").strip() != lock.code:
         raise ExplorationError("Wrong code.")
+
+
+def players_with_access(game: Game, players: list[Player], room: str) -> list[uuid.UUID]:
+    """Who gets room:unlocked: every player whose rooms include it, not only the one who opened."""
+    return [player.id for player in players if room in player_rooms(game, player)]
+
+
+async def unlock_room(db: AsyncSession, player: Player, data: UnlockRoom) -> list[uuid.UUID]:
+    """Open a locked room. Returns the ids of the players who have access to it."""
+    game = await load_game(db, player)
+    notebook: set[str] = set()
+    if data.key_clue is not None:
+        found = await db.get(FoundClue, (player.lobby_id, player.id, data.key_clue))
+        notebook = {data.key_clue} if found else set()
+    check_unlock(game, player, data, await unlocked_rooms(db, game), notebook)
 
     await db.execute(
         insert(UnlockedRoom)
@@ -178,4 +215,4 @@ async def unlock_room(db: AsyncSession, player: Player, data: UnlockRoom) -> lis
         .on_conflict_do_nothing()
     )
     players = await db.scalars(select(Player).where(Player.lobby_id == player.lobby_id))
-    return [other.id for other in players if data.room in player_rooms(game, other)]
+    return players_with_access(game, list(players), data.room)

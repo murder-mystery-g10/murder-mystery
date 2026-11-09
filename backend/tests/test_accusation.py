@@ -7,6 +7,8 @@ from pathlib import Path
 import pytest
 
 from backend import accusation
+from backend.models import Accusation as AccusationRow
+from backend.models import Base
 from backend.models import GameResult as GameResultRow
 from backend.sockets import create_socket_server
 from shared_schemas.case import Case
@@ -119,3 +121,59 @@ def test_a_stored_score_reads_back_unchanged() -> None:
         elapsed_seconds=breakdown.elapsed_seconds,
     )
     assert accusation.stored_score(row) == breakdown
+
+
+# --- unanimous vote, one accusation ------------------------------------------------------
+
+
+def test_the_vote_needs_every_player() -> None:
+    players = [uuid.uuid4() for _ in range(4)]
+    assert accusation.everyone_accepted(players, set(players))
+    # One player has not voted yet (or is offline): the proposal keeps waiting.
+    assert not accusation.everyone_accepted(players, set(players[:3]))
+    assert not accusation.everyone_accepted(players, set())
+
+
+def test_votes_from_outside_the_lobby_do_not_count() -> None:
+    players = [uuid.uuid4() for _ in range(3)]
+    assert not accusation.everyone_accepted(players, {uuid.uuid4() for _ in range(3)})
+
+
+def test_only_one_proposal_waits_for_votes() -> None:
+    """The database enforces it with a partial unique index on the lobby."""
+    [index] = [
+        index
+        for index in Base.metadata.tables[AccusationRow.__tablename__].indexes
+        if index.name == "uq_accusations_one_pending_per_lobby"
+    ]
+    assert index.unique
+    assert [column.name for column in index.columns] == ["lobby_id"]
+    assert str(index.dialect_options["postgresql"]["where"]) == "status = 'pending'"
+
+
+# --- score (issue #20) -------------------------------------------------------------------
+
+
+def test_the_best_score() -> None:
+    case = _case()
+    unused = case.questions_per_suspect * len(case.suspects)
+    score = accusation.score(case, accusation.correct_choices(case), 20 * 60, unused=unused)
+    assert score.total == 100 + 20 + unused
+
+
+@pytest.mark.parametrize(
+    ("right", "points"),
+    [({"culprit"}, 50), ({"motive"}, 25), ({"method"}, 25), ({"motive", "method"}, 50)],
+)
+def test_each_part_of_the_accusation_scores_on_its_own(right: set[str], points: int) -> None:
+    case = _case()
+    correct, wrong = accusation.correct_choices(case), _wrong(case)
+    chosen = wrong.model_copy(update={field: getattr(correct, field) for field in right})
+    score = accusation.score(case, chosen, 55 * 60, unused=0)
+    assert score.total == points
+
+
+def test_the_time_penalty_stops_at_minus_twenty() -> None:
+    case = _case()
+    score = accusation.score(case, _wrong(case), 3 * 60 * 60, unused=0)
+    assert (score.time_bonus, score.total) == (-20, -20)

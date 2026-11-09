@@ -55,5 +55,7 @@ def create_app(settings: Settings | None = None) -> socketio.ASGIApp:
     api.include_router(router)
     api.include_router(game_router)
 
-    sio = create_socket_server(settings.cors_origins, lambda: api.state.engine)
+    sio = create_socket_server(
+        settings.cors_origins, lambda: api.state.engine, lambda: api.state.ai_client
+    )
     return socketio.ASGIApp(sio, other_asgi_app=api)

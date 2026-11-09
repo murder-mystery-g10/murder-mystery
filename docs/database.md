@@ -27,8 +27,8 @@ are sent to the frontend as strings.
 | `found_clues` | clue in one player's notebook | Personal: two players sharing a room each find the clue themselves. |
 | `board_items` | item on the shared board | `ref` is a clue, suspect or interrogation entry id; `text` is only for notes. |
 | `board_links` | string between two items | Deleting an item deletes its strings. |
-| `suspect_states` | suspect touched in a lobby | `break_stage` reached; `evidence_shown` adds up across questions (break triggers combine). |
-| `interrogation_entries` | answered question | Questions left for a suspect = the case's `questions_per_suspect` minus its rows. A failed AI call writes no row, so it does not use up a question. |
+| `suspect_states` | suspect touched in a lobby | `break_stage` reached; `evidence_shown` adds up across questions (break triggers combine). Stages are reached in order; several can follow in one answer. Written only with an answer. |
+| `interrogation_entries` | answered question | Questions left for a suspect = the case's `questions_per_suspect` minus its rows. A failed AI call writes no row, so it does not use up a question. `evidence` is a clue or quote pinned on the board; a quote counts as the testimonies in `revealed_testimonies`, which are never sent to players. One question at a time per suspect. |
 | `accusations` | proposed accusation | Status `pending`, `rejected` or `accepted`; at most one `pending` per lobby (enforced by a unique index). |
 | `accusation_votes` | player's vote on a proposal | All players must accept. |
 | `game_results` | finished game | Mirrors `ScoreBreakdown`. |

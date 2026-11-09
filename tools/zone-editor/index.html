@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Clickable-zone editor · Murder Mystery</title>
+    <link rel="stylesheet" href="editor.css" />
+    <script defer src="theme-map.js"></script>
+    <script defer src="editor.js"></script>
+  </head>
+  <body>
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">Murder Mystery / Developer tools</p>
+        <h1>Clickable-zone editor</h1>
+        <p class="muted">Trace objects and optional doors on the original room art.</p>
+      </div>
+      <div class="actions">
+        <button id="import-map" type="button">Import map</button>
+        <input id="map-file" type="file" accept=".json,application/json" hidden />
+        <button id="export-map" class="primary" type="button">Download map.json</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="layout">
+        <section class="panel workbench" aria-labelledby="room-heading">
+          <div class="toolbar">
+            <div>
+              <h2 id="room-heading">Room image</h2>
+              <p id="image-info" class="muted small"></p>
+            </div>
+            <div class="actions">
+              <label
+                >Room
+                <select id="room-select"></select
+              ></label>
+              <label>
+                Zoom
+                <select id="zoom">
+                  <option value="100">Fit width</option>
+                  <option value="150">150%</option>
+                  <option value="200">200%</option>
+                  <option value="300">300%</option>
+                </select>
+              </label>
+              <label class="check"><input id="brighten" type="checkbox" /> Brighten</label>
+              <button id="preview-image" type="button">Preview image…</button>
+              <input id="image-file" type="file" accept="image/*" hidden />
+            </div>
+          </div>
+
+          <div id="viewport" class="viewport">
+            <p id="image-message" class="image-message">Loading room image…</p>
+            <div id="stage" class="stage" hidden>
+              <img id="room-image" alt="" draggable="false" />
+              <svg
+                id="overlay"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              ></svg>
+            </div>
+          </div>
+          <div class="image-footer">
+            <p id="drawing-help" class="muted small">Choose an object or door to start drawing.</p>
+            <output id="coordinates" class="small" aria-hidden="true"></output>
+          </div>
+        </section>
+
+        <aside class="panel sidebar" aria-labelledby="zones-heading">
+          <div class="section-heading">
+            <h2 id="zones-heading">Room zones</h2>
+            <span id="zone-count" class="badge"></span>
+          </div>
+          <div id="zone-actions" class="actions">
+            <button id="new-object" class="primary" type="button">New object</button>
+            <button id="new-door" type="button">New door</button>
+          </div>
+
+          <form id="zone-form" hidden>
+            <h3 id="form-heading"></h3>
+            <label>
+              Zone ID
+              <input
+                id="zone-id"
+                maxlength="64"
+                pattern="[A-Za-z0-9_.\-]+"
+                spellcheck="false"
+                required
+              />
+            </label>
+            <label id="name-field">Display name <input id="zone-name" /></label>
+            <label id="target-field" hidden
+              >Destination room
+              <select id="door-target"></select
+            ></label>
+            <div class="actions compact">
+              <button id="undo-point" type="button">Undo point</button>
+              <button id="redraw" type="button">Clear points</button>
+            </div>
+            <p id="point-count" class="muted small"></p>
+            <p id="form-error" class="error small" role="alert" hidden></p>
+            <div class="actions compact">
+              <button id="save-zone" class="primary" type="submit">Save zone</button>
+              <button id="cancel-zone" type="button">Cancel</button>
+              <button id="delete-zone" class="danger" type="button" hidden>Delete zone</button>
+            </div>
+          </form>
+
+          <ul id="zone-list" class="zone-list"></ul>
+          <p id="empty-zones" class="muted small">No zones drawn in this room yet.</p>
+
+          <details id="required-objects" open>
+            <summary id="required-summary">Required objects</summary>
+            <ul id="required-list" class="zone-list"></ul>
+          </details>
+        </aside>
+      </div>
+
+      <footer>
+        <p id="status" role="status">Manor template loaded. Draw zones, then download the map.</p>
+        <a href="../../themes/conac/README.md">Manor object guide</a>
+      </footer>
+    </main>
+  </body>
+</html>

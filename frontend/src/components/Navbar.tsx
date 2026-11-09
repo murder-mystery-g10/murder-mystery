@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
 import { isMockMode } from '../lib/mock'
 import { useLobbyStore } from '../stores/lobbyStore'
+import { CaseFileLauncher } from './CaseFileLauncher'
 
 export function Navbar() {
   const lobby = useLobbyStore((s) => s.lobby)
@@ -25,6 +26,8 @@ export function Navbar() {
               Archive Mode (Mock)
             </span>
           )}
+
+          <CaseFileLauncher />
 
           {lobby && (
             <button

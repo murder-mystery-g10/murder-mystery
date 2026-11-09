@@ -5,6 +5,7 @@ import { DevBanner } from '../components/DevBanner'
 import { LobbyCodeBadge } from '../components/LobbyCodeBadge'
 import { Navbar } from '../components/Navbar'
 import { PlayerList } from '../components/PlayerList'
+import { useGameStore } from '../stores/gameStore'
 import { useCanStartGame, useIsHost, useLobbyStore } from '../stores/lobbyStore'
 
 export function LobbyPage() {
@@ -19,6 +20,8 @@ export function LobbyPage() {
   const selectCase = useLobbyStore((s) => s.selectCase)
   const startGame = useLobbyStore((s) => s.startGame)
   const joinLobby = useLobbyStore((s) => s.joinLobby)
+  const briefing = useGameStore((s) => s.briefing)
+  const openCaseFile = useGameStore((s) => s.openCaseFile)
 
   const [directJoinName, setDirectJoinName] = useState('')
 
@@ -129,6 +132,16 @@ export function LobbyPage() {
                 The manor has been sealed. Begin searching the rooms and questioning the suspects.
               </span>
             </div>
+            {briefing && (
+              <button
+                type="button"
+                className="btn-order btn-order-primary"
+                style={{ marginTop: '1.75rem' }}
+                onClick={openCaseFile}
+              >
+                Read the case file
+              </button>
+            )}
           </div>
         </main>
       </div>

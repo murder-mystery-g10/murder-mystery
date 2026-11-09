@@ -1149,3 +1149,154 @@ main.status-page {
 .text-center {
   text-align: center;
 }
+
+/* --- Case File (briefing + coroner report, opens over any game screen) --- */
+
+.casefile-launch {
+  font-family: var(--font-typewriter);
+  color: var(--brass-accent);
+  border: 1px solid var(--border-brass);
+  border-radius: var(--radius-sharp);
+}
+
+.casefile-launch:hover {
+  color: var(--brass-accent-hover);
+  border-color: var(--brass-accent);
+}
+
+.casefile-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(8, 7, 6, 0.78);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 3rem 1rem;
+  overflow-y: auto;
+}
+
+.casefile-dialog {
+  width: 100%;
+  max-width: 760px;
+  background: var(--docket-bg);
+  border: 1px solid var(--border-rule-strong);
+  border-top: 3px solid var(--brass-accent);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.7);
+}
+
+.casefile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.5rem 1.85rem 1.1rem;
+  border-bottom: 1px solid var(--border-rule);
+}
+
+.casefile-seal {
+  display: inline-block;
+  font-family: var(--font-typewriter);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--seal-burgundy);
+  border: 1px solid var(--seal-burgundy-border);
+  padding: 0.2rem 0.6rem;
+  margin-bottom: 0.65rem;
+}
+
+.casefile-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  margin: 0;
+  color: var(--ink-primary);
+}
+
+.casefile-close {
+  flex-shrink: 0;
+}
+
+.casefile-body {
+  padding: 1.35rem 1.85rem 1.85rem;
+  font-family: var(--font-serif);
+  color: var(--ink-primary);
+  line-height: 1.6;
+}
+
+.casefile-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-rule);
+  padding: 0.95rem 1.15rem;
+  margin: 0 0 1.5rem;
+}
+
+.casefile-fact dt {
+  font-family: var(--font-typewriter);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.casefile-fact dd {
+  margin: 0.15rem 0 0;
+  font-size: 0.92rem;
+  color: var(--ink-secondary);
+}
+
+.casefile-section + .casefile-section {
+  margin-top: 1.35rem;
+}
+
+.casefile-section p {
+  margin: 0;
+}
+
+.casefile-section-title {
+  font-family: var(--font-typewriter);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brass-accent);
+  margin: 0 0 0.45rem;
+}
+
+.casefile-report,
+.casefile-leads {
+  margin: 0;
+  padding-left: 1.4rem;
+}
+
+.casefile-report li + li,
+.casefile-leads li + li {
+  margin-top: 0.35rem;
+}
+
+.casefile-report li::marker {
+  font-family: var(--font-typewriter);
+  color: var(--ink-faint);
+}
+
+@media (max-width: 560px) {
+  .casefile-overlay {
+    padding: 0;
+  }
+
+  .casefile-dialog {
+    min-height: 100%;
+    border-left: none;
+    border-right: none;
+  }
+
+  .casefile-header,
+  .casefile-body {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

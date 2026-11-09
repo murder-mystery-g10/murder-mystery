@@ -25,11 +25,13 @@ export function LobbyPage() {
   const isHost = useIsHost()
   const { canStart, reason } = useCanStartGame()
 
+  // Load the case library only once the player is in a lobby.
+  const inLobby = lobby !== null
   useEffect(() => {
-    if (cases.length === 0) {
+    if (inLobby && cases.length === 0) {
       loadCases()
     }
-  }, [cases.length, loadCases])
+  }, [inLobby, cases.length, loadCases])
 
   const handleDirectJoin = async (e: FormEvent) => {
     e.preventDefault()
@@ -50,10 +52,10 @@ export function LobbyPage() {
         <main className="desk-container" style={{ marginTop: '3.5rem' }}>
           <div className="dossier-entry-card" style={{ maxWidth: '460px', margin: '0 auto' }}>
             <div className="entry-card-header">
-              <span className="entry-card-meta">REGISTRATURĂ PENALĂ</span>
-              <h1 className="entry-card-title">Intră în anchetă</h1>
+              <span className="entry-card-meta">CRIMINAL REGISTRY</span>
+              <h1 className="entry-card-title">Join the investigation</h1>
               <p className="entry-card-desc">
-                Camera de investigație cu codul{' '}
+                Investigation lobby with code{' '}
                 <strong className="text-brass">{code?.toUpperCase()}</strong>.
               </p>
             </div>
@@ -61,7 +63,12 @@ export function LobbyPage() {
             {error && (
               <div className="dispatch-alert dispatch-alert-error" role="alert">
                 <span>{error}</span>
-                <button type="button" className="alert-close-btn" onClick={clearError}>
+                <button
+                  type="button"
+                  className="alert-close-btn"
+                  onClick={clearError}
+                  aria-label="Dismiss"
+                >
                   ✕
                 </button>
               </div>
@@ -69,13 +76,13 @@ export function LobbyPage() {
 
             <form onSubmit={handleDirectJoin} className="dossier-form">
               <div className="form-field">
-                <label htmlFor="direct-join-name">Numele tău de detectiv</label>
+                <label htmlFor="direct-join-name">Your detective name</label>
                 <input
                   id="direct-join-name"
                   type="text"
                   maxLength={24}
                   required
-                  placeholder="Ex: Inspector Georgescu"
+                  placeholder="e.g. Inspector Georgescu"
                   value={directJoinName}
                   onChange={(e) => setDirectJoinName(e.target.value)}
                   disabled={isLoading}
@@ -88,12 +95,12 @@ export function LobbyPage() {
                 className="btn-order btn-order-primary btn-block"
                 disabled={isLoading || !directJoinName.trim()}
               >
-                {isLoading ? 'Se conectează...' : 'Intră în cameră'}
+                {isLoading ? 'Connecting...' : 'Enter lobby'}
               </button>
 
               <div style={{ textAlign: 'center', marginTop: '1rem' }}>
                 <Link to="/" className="text-link-back">
-                  ← Înapoi la registrul secției
+                  ← Back to the station registry
                 </Link>
               </div>
             </form>
@@ -110,17 +117,16 @@ export function LobbyPage() {
         <Navbar />
         <main className="desk-container">
           <div className="dispatch-warrant-card">
-            <span className="warrant-seal">MANDAT JUDICIAR EXECUTORIU</span>
-            <h1 className="warrant-title">Investigația a început!</h1>
+            <span className="warrant-seal">ENFORCEABLE JUDICIAL WARRANT</span>
+            <h1 className="warrant-title">The investigation has begun!</h1>
             <p className="warrant-desc">
-              Echipa de 4 detectivi a părăsit secția de poliție și a descins la Conacul Vornicu.
-              Dosarul de urmărire penală:{' '}
-              <strong className="text-cream">{lobby.case?.title ?? 'Dosar activ'}</strong>.
+              The team of {lobby.players.length} detectives has left the police station and arrived
+              at Vornicu Manor. Case file:{' '}
+              <strong className="text-cream">{lobby.case?.title ?? 'Active case'}</strong>.
             </p>
             <div className="warrant-meta">
               <span className="warrant-note">
-                Conacul a fost sigilat. Începeți explorarea încăperilor și interogatoriul
-                suspecților.
+                The manor has been sealed. Begin searching the rooms and questioning the suspects.
               </span>
             </div>
           </div>
@@ -140,7 +146,12 @@ export function LobbyPage() {
         {error && (
           <div className="dispatch-alert dispatch-alert-error" role="alert">
             <span>{error}</span>
-            <button type="button" className="alert-close-btn" onClick={clearError}>
+            <button
+              type="button"
+              className="alert-close-btn"
+              onClick={clearError}
+              aria-label="Dismiss"
+            >
               ✕
             </button>
           </div>
@@ -148,11 +159,11 @@ export function LobbyPage() {
 
         <div className="desk-topbar">
           <div className="desk-case-ident">
-            <div className="case-bulletin-tag">DOSAR PENAL • CONVOCARE OPERATIVĂ</div>
-            <h1 className="desk-title">Sala de Așteptare a Secției</h1>
+            <div className="case-bulletin-tag">CRIMINAL CASE FILE • TASK FORCE SUMMONS</div>
+            <h1 className="desk-title">Station Waiting Room</h1>
             <div className="desk-subtitle">
-              Ofițerii desemnați se reunesc la secție. Conducătorul de anchetă examinează dosarul
-              crimei.
+              The assigned officers gather at the station. The lead investigator reviews the case
+              file.
             </div>
           </div>
 
@@ -187,16 +198,15 @@ export function LobbyPage() {
             {isHost ? (
               canStart ? (
                 <span className="order-ready-status">
-                  ✓ Toate condițiile sunt îndeplinite. Conducătorul poate da ordinul de deplasare la
-                  conac.
+                  ✓ All conditions are met. The lead investigator can order the team to the manor.
                 </span>
               ) : (
                 <span className="order-waiting-status">{reason}</span>
               )
             ) : (
               <span className="order-guest-status">
-                Așteptăm ca șeful de echipă ({hostPlayer?.name ?? 'Gazda'}) să finalizeze dosarul și
-                să emită ordinul de deplasare...
+                Waiting for the team leader ({hostPlayer?.name ?? 'the host'}) to finish the case
+                file and give the order to set out...
               </span>
             )}
           </div>
@@ -207,9 +217,9 @@ export function LobbyPage() {
               className="btn-order btn-order-primary"
               disabled={!canStart || isLoading}
               onClick={startGame}
-              title={reason ?? 'Emite ordinul de începere a anchetei'}
+              title={reason ?? 'Give the order to begin the investigation'}
             >
-              {isLoading ? 'Se emite ordinul...' : 'Începe investigația'}
+              {isLoading ? 'Issuing the order...' : 'Start investigation'}
             </button>
           )}
         </footer>

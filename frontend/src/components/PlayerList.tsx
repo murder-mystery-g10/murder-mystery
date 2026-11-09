@@ -13,20 +13,20 @@ export function PlayerList({ players, currentUserId, requiredCount = 4 }: Player
     <div className="roster-panel">
       <div className="roster-header">
         <div>
-          <h2 className="roster-title">Registrul de Prezență</h2>
-          <span className="roster-subtitle">Echipa operativă de detectivi</span>
+          <h2 className="roster-title">Duty Roster</h2>
+          <span className="roster-subtitle">The detective task force</span>
         </div>
         <div className="roster-tally">
           <span className="roster-tally-numbers">
             {players.length}/{requiredCount}
           </span>
-          <span className="roster-tally-label">{isFull ? 'Complet' : 'În așteptare'}</span>
+          <span className="roster-tally-label">{isFull ? 'Complete' : 'Waiting'}</span>
         </div>
       </div>
 
       <div className="roster-ledger-rule" />
 
-      <ul className="roster-list" aria-label="Lista detectivilor">
+      <ul className="roster-list" aria-label="Detective list">
         {players.map((player, idx) => {
           const isYou = player.id === currentUserId
           return (
@@ -35,22 +35,22 @@ export function PlayerList({ players, currentUserId, requiredCount = 4 }: Player
                 <span className="roster-row-index">0{idx + 1}</span>
                 <span
                   className={`presence-pip ${player.connected ? 'presence-pip-on' : 'presence-pip-off'}`}
-                  title={player.connected ? 'Prezent la secție' : 'Deconectat'}
-                  aria-label={player.connected ? 'Conectat' : 'Deconectat'}
+                  title={player.connected ? 'Present at the station' : 'Disconnected'}
+                  aria-label={player.connected ? 'Connected' : 'Disconnected'}
                 />
                 <div className="roster-names">
                   <span className="roster-name">
                     {player.name}
-                    {isYou && <span className="roster-you-mark"> (Tu)</span>}
+                    {isYou && <span className="roster-you-mark"> (You)</span>}
                   </span>
                   <span className="roster-assignment">
-                    {player.is_host ? 'Conducător de anchetă' : 'Ofițer anchetator'}
+                    {player.is_host ? 'Lead investigator' : 'Investigating officer'}
                   </span>
                 </div>
               </div>
 
               <div className="roster-row-right">
-                {player.is_host && <span className="badge-host-stamp">Gazdă</span>}
+                {player.is_host && <span className="badge-host-stamp">Host</span>}
               </div>
             </li>
           )
@@ -59,12 +59,12 @@ export function PlayerList({ players, currentUserId, requiredCount = 4 }: Player
 
       {!isFull ? (
         <div className="roster-footer-note">
-          Conacul se află sub pază. Sunt necesari <strong>{requiredCount} detectivi</strong> pentru
-          percheziționarea celor 6 încăperi și interogarea suspecților.
+          The manor is under guard. <strong>{requiredCount} detectives</strong> are needed to search
+          the six rooms and question the suspects.
         </div>
       ) : (
         <div className="roster-footer-ready">
-          ✓ Toți cei {requiredCount} ofițeri sunt prezenți. Puteți demara ancheta la conac.
+          ✓ All {requiredCount} officers are present. You can begin the investigation at the manor.
         </div>
       )}
     </div>

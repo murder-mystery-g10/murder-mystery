@@ -7,17 +7,17 @@ describe('CasePicker', () => {
   const mockCases: CaseSummary[] = [
     {
       case_id: 'vornicu_1926',
-      title: 'Moarte la Conacul Vornicu',
+      title: 'Death at Vornicu Manor',
       difficulty: 'normal',
       player_count: 4,
-      summary: 'Matei Vornicu a fost găsit mort în bibliotecă.',
+      summary: 'Matei Vornicu died in the manor library.',
     },
     {
       case_id: 'ceasornicarul_1928',
-      title: 'Ultimul Tic-Tac',
+      title: 'The Last Tick',
       difficulty: 'easy',
       player_count: 3,
-      summary: 'Ceasornicarul a fost otrăvit în atelier.',
+      summary: 'The watchmaker was poisoned in his workshop.',
     },
   ]
 
@@ -26,10 +26,10 @@ describe('CasePicker', () => {
       <CasePicker cases={mockCases} selectedCaseId={null} isHost={true} onSelectCase={vi.fn()} />,
     )
 
-    expect(screen.getByText('Moarte la Conacul Vornicu')).toBeInTheDocument()
-    expect(screen.getByText('Ultimul Tic-Tac')).toBeInTheDocument()
-    expect(screen.getByText('Mediu')).toBeInTheDocument()
-    expect(screen.getByText('Ușor')).toBeInTheDocument()
+    expect(screen.getByText('Death at Vornicu Manor')).toBeInTheDocument()
+    expect(screen.getByText('The Last Tick')).toBeInTheDocument()
+    expect(screen.getByText('Normal')).toBeInTheDocument()
+    expect(screen.getByText('Easy')).toBeInTheDocument()
   })
 
   it('allows host to select a case', () => {
@@ -43,10 +43,10 @@ describe('CasePicker', () => {
       />,
     )
 
-    expect(screen.getByText('✓ Dosar Selectat')).toBeInTheDocument()
+    expect(screen.getByText('✓ Case Selected')).toBeInTheDocument()
 
     // Click on the second unselected case
-    const secondCase = screen.getByText('Ultimul Tic-Tac')
+    const secondCase = screen.getByText('The Last Tick')
     fireEvent.click(secondCase)
 
     expect(handleSelect).toHaveBeenCalledWith('ceasornicarul_1928')
@@ -63,12 +63,12 @@ describe('CasePicker', () => {
       />,
     )
 
-    const firstCase = screen.getByText('Moarte la Conacul Vornicu')
+    const firstCase = screen.getByText('Death at Vornicu Manor')
     fireEvent.click(firstCase)
 
     expect(handleSelect).not.toHaveBeenCalled()
     expect(
-      screen.getByText('Gazda analizează dosarele. În curând va fi selectat un caz...'),
+      screen.getByText('The host is reviewing the case files. A case will be chosen soon...'),
     ).toBeInTheDocument()
   })
 })

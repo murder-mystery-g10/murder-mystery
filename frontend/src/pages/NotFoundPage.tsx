@@ -3,10 +3,10 @@ import { Link } from 'react-router'
 export function NotFoundPage() {
   return (
     <main className="landing-container text-center">
-      <h1>Pagină inexistentă</h1>
-      <p>Indiciul pe care îl cauți nu se află aici.</p>
+      <h1>Page not found</h1>
+      <p>The clue you are looking for is not here.</p>
       <Link to="/" className="btn btn-secondary">
-        Înapoi la pagina principală
+        Back to home
       </Link>
     </main>
   )

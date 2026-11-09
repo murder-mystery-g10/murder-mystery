@@ -5,6 +5,7 @@ import {
   fetchCases as apiFetchCases,
   joinLobby as apiJoinLobby,
 } from '../lib/api'
+import { isMockMode } from '../lib/mock'
 import {
   connectLobbySocket,
   disconnectLobbySocket,
@@ -42,7 +43,6 @@ export interface LobbyStoreState {
   cases: CaseSummary[]
   isLoading: boolean
   error: string | null
-  isMock: boolean
 
   // Actions
   createLobby: (playerName: string) => Promise<void>
@@ -53,7 +53,7 @@ export interface LobbyStoreState {
   leaveLobby: () => void
   clearError: () => void
 
-  // Simulation helpers for testing / dev mode
+  // Simulation helpers for mock mode and tests
   simulateAddPlayer: (playerName?: string) => void
   setLobbyState: (state: LobbyState) => void
 }
@@ -69,6 +69,10 @@ function setupSocketListener(
   socket.on('lobby:state', (updatedState: LobbyState) => {
     set(() => ({ lobby: updatedState }))
   })
+
+  socket.on('connect_error', (err: Error) => {
+    set(() => ({ error: `Could not connect to the game server: ${err.message}` }))
+  })
 }
 
 export const useLobbyStore = create<LobbyStoreState>()((set, get) => {
@@ -80,12 +84,11 @@ export const useLobbyStore = create<LobbyStoreState>()((set, get) => {
     cases: [],
     isLoading: false,
     error: null,
-    isMock: false,
 
     createLobby: async (playerName: string) => {
       set({ isLoading: true, error: null })
       try {
-        const { session, isMock } = await apiCreateLobby({
+        const session = await apiCreateLobby({
           player_name: playerName.trim(),
           solo: false,
         })
@@ -111,21 +114,22 @@ export const useLobbyStore = create<LobbyStoreState>()((set, get) => {
           session,
           lobby: initialLobby,
           isLoading: false,
-          isMock,
         })
 
-        // Connect socket with credentials
-        connectLobbySocket({
-          lobby_code: session.lobby_code,
-          player_token: session.player_token,
-        })
+        // Mock sessions are fake, so there is no server to connect to.
+        if (!isMockMode()) {
+          connectLobbySocket({
+            lobby_code: session.lobby_code,
+            player_token: session.player_token,
+          })
+        }
 
         // Fetch available cases
         await get().loadCases()
       } catch (err: unknown) {
         set({
           isLoading: false,
-          error: err instanceof Error ? err.message : 'Nu s-a putut crea camera',
+          error: err instanceof Error ? err.message : 'Could not create the lobby.',
         })
         throw err
       }
@@ -136,7 +140,7 @@ export const useLobbyStore = create<LobbyStoreState>()((set, get) => {
       const normalizedCode = code.trim().toUpperCase()
 
       try {
-        const { session, isMock } = await apiJoinLobby(normalizedCode, {
+        const session = await apiJoinLobby(normalizedCode, {
           player_name: playerName.trim(),
         })
         persistSession(session)
@@ -153,16 +157,19 @@ export const useLobbyStore = create<LobbyStoreState>()((set, get) => {
           code: normalizedCode,
           status: 'waiting',
           solo: false,
-          players: [
-            {
-              id: 'host_player_1',
-              name: 'Comisar Vasile (Gazdă)',
-              is_host: true,
-              connected: true,
-              location: null,
-            },
-            initialPlayer,
-          ],
+          // The real roster arrives with the server's lobby:state; mock mode fakes a host.
+          players: isMockMode()
+            ? [
+                {
+                  id: 'host_player_1',
+                  name: 'Inspector Vasile',
+                  is_host: true,
+                  connected: true,
+                  location: null,
+                },
+                initialPlayer,
+              ]
+            : [initialPlayer],
           case: null,
         }
 
@@ -170,21 +177,22 @@ export const useLobbyStore = create<LobbyStoreState>()((set, get) => {
           session,
           lobby: initialLobby,
           isLoading: false,
-          isMock,
         })
 
-        // Connect socket with credentials
-        connectLobbySocket({
-          lobby_code: session.lobby_code,
-          player_token: session.player_token,
-        })
+        // Mock sessions are fake, so there is no server to connect to.
+        if (!isMockMode()) {
+          connectLobbySocket({
+            lobby_code: session.lobby_code,
+            player_token: session.player_token,
+          })
+        }
 
         // Fetch available cases
         await get().loadCases()
       } catch (err: unknown) {
         set({
           isLoading: false,
-          error: err instanceof Error ? err.message : 'Nu s-a putut alătura camerei',
+          error: err instanceof Error ? err.message : 'Could not join the lobby.',
         })
         throw err
       }
@@ -195,7 +203,9 @@ export const useLobbyStore = create<LobbyStoreState>()((set, get) => {
         const cases = await apiFetchCases()
         set({ cases })
       } catch (err: unknown) {
-        console.error('Failed to load cases:', err)
+        set({
+          error: err instanceof Error ? err.message : 'Could not load the case library.',
+        })
       }
     },
 
@@ -209,7 +219,7 @@ export const useLobbyStore = create<LobbyStoreState>()((set, get) => {
       try {
         const ack = await emitSelectCase({ case_id: caseId })
         if (!ack.ok) {
-          throw new Error(ack.error ?? 'Nu s-a putut selecta cazul')
+          throw new Error(ack.error ?? 'Could not select the case.')
         }
 
         // Update local state (in case server has not emitted lobby:state yet)
@@ -220,7 +230,7 @@ export const useLobbyStore = create<LobbyStoreState>()((set, get) => {
       } catch (err: unknown) {
         set({
           isLoading: false,
-          error: err instanceof Error ? err.message : 'Eroare la selectarea cazului',
+          error: err instanceof Error ? err.message : 'Could not select the case.',
         })
       }
     },
@@ -233,7 +243,7 @@ export const useLobbyStore = create<LobbyStoreState>()((set, get) => {
       try {
         const ack = await emitStartGame({})
         if (!ack.ok) {
-          throw new Error(ack.error ?? 'Nu s-a putut porni jocul')
+          throw new Error(ack.error ?? 'Could not start the game.')
         }
 
         // Update local lobby status to playing
@@ -244,7 +254,7 @@ export const useLobbyStore = create<LobbyStoreState>()((set, get) => {
       } catch (err: unknown) {
         set({
           isLoading: false,
-          error: err instanceof Error ? err.message : 'Eroare la pornirea jocului',
+          error: err instanceof Error ? err.message : 'Could not start the game.',
         })
       }
     },
@@ -273,13 +283,13 @@ export const useLobbyStore = create<LobbyStoreState>()((set, get) => {
       const count = lobby.players.length + 1
       const defaultNames = [
         'Inspector Tudor',
-        'Detectiv Andrei',
-        'Comisar Radu',
-        'Ofițer Ileana',
-        'Sergent Matei',
+        'Detective Andrei',
+        'Superintendent Radu',
+        'Officer Ileana',
+        'Sergeant Matei',
       ]
       const name =
-        playerName ?? defaultNames[(count - 2) % defaultNames.length] ?? `Detectiv #${count}`
+        playerName ?? defaultNames[(count - 2) % defaultNames.length] ?? `Detective #${count}`
       const newPlayer: Player = {
         id: `sim_player_${Date.now()}_${count}`,
         name,
@@ -313,17 +323,17 @@ export function useIsHost(): boolean {
 export function useCanStartGame(): { canStart: boolean; reason: string | null } {
   const lobby = useLobbyStore((s) => s.lobby)
   if (!lobby) {
-    return { canStart: false, reason: 'Nu există o cameră activă' }
+    return { canStart: false, reason: 'There is no active lobby.' }
   }
   if (!lobby.case) {
-    return { canStart: false, reason: 'Alegeți un caz înainte de a începe' }
+    return { canStart: false, reason: 'Choose a case before starting.' }
   }
   const needed = lobby.case.player_count
   const current = lobby.players.length
   if (current < needed) {
     return {
       canStart: false,
-      reason: `Sunt necesari ${needed} detectivi pentru acest caz (${current}/${needed} prezenți)`,
+      reason: `This case needs ${needed} detectives (${current}/${needed} present).`,
     }
   }
   return { canStart: true, reason: null }

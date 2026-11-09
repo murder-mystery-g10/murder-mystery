@@ -52,14 +52,21 @@ export function HomePage() {
 
       <main className="desk-container">
         <header className="registry-masthead">
-          <div className="masthead-prefecture">REGATUL ROMÂNIEI • SECȚIA CRIMINALISTICĂ</div>
-          <h1 className="masthead-title">Biroul de Anchetă</h1>
+          <div className="masthead-prefecture">
+            KINGDOM OF ROMANIA • CRIMINAL INVESTIGATION DIVISION
+          </div>
+          <h1 className="masthead-title">Investigation Bureau</h1>
         </header>
 
         {error && (
           <div className="dispatch-alert dispatch-alert-error" role="alert">
             <span>{error}</span>
-            <button type="button" className="alert-close-btn" onClick={clearError}>
+            <button
+              type="button"
+              className="alert-close-btn"
+              onClick={clearError}
+              aria-label="Dismiss"
+            >
               ✕
             </button>
           </div>
@@ -68,21 +75,21 @@ export function HomePage() {
         <div className="registry-dockets-grid">
           {/* Create Docket */}
           <section className="docket-card">
-            <div className="docket-top-stamp">DOSAR NOU • ȘEF DE ECHIPĂ</div>
-            <h2 className="docket-title">Creează o investigație</h2>
+            <div className="docket-top-stamp">NEW CASE FILE • TEAM LEADER</div>
+            <h2 className="docket-title">Create an investigation</h2>
             <p className="docket-desc">
-              Deschide un nou dosar penal la secție și devino conducătorul anchetei operative.
+              Open a new criminal case file at the station and lead the investigation.
             </p>
 
             <form onSubmit={handleCreate} className="dossier-form">
               <div className="form-field">
-                <label htmlFor="create-name">Numele tău de detectiv</label>
+                <label htmlFor="create-name">Your detective name</label>
                 <input
                   id="create-name"
                   type="text"
                   maxLength={24}
                   required
-                  placeholder="Ex: Comisar Popescu"
+                  placeholder="e.g. Inspector Popescu"
                   value={createName}
                   onChange={(e) => setCreateName(e.target.value)}
                   disabled={isLoading}
@@ -95,28 +102,28 @@ export function HomePage() {
                 className="btn-order btn-order-primary btn-block"
                 disabled={isLoading || !createName.trim()}
               >
-                {isLoading ? 'Se înregistrează...' : 'Creează camera'}
+                {isLoading ? 'Registering...' : 'Create lobby'}
               </button>
             </form>
           </section>
 
           {/* Join Docket */}
           <section className="docket-card">
-            <div className="docket-top-stamp">CONVOCARE TELEGRAFICĂ</div>
-            <h2 className="docket-title">Alătură-te unei echipe</h2>
+            <div className="docket-top-stamp">TELEGRAPH SUMMONS</div>
+            <h2 className="docket-title">Join a team</h2>
             <p className="docket-desc">
-              Răspunde convocării primite de la conducătorul de anchetă pe baza codului de acces.
+              Answer the lead investigator's summons with the lobby code you received.
             </p>
 
             <form onSubmit={handleJoin} className="dossier-form">
               <div className="form-field">
-                <label htmlFor="join-name">Numele tău de detectiv</label>
+                <label htmlFor="join-name">Your detective name</label>
                 <input
                   id="join-name"
                   type="text"
                   maxLength={24}
                   required
-                  placeholder="Ex: Detectiv Ionescu"
+                  placeholder="e.g. Detective Ionescu"
                   value={joinName}
                   onChange={(e) => setJoinName(e.target.value)}
                   disabled={isLoading}
@@ -125,13 +132,13 @@ export function HomePage() {
               </div>
 
               <div className="form-field">
-                <label htmlFor="join-code">Codul camerei</label>
+                <label htmlFor="join-code">Lobby code</label>
                 <input
                   id="join-code"
                   type="text"
                   maxLength={10}
                   required
-                  placeholder="Ex: CRIME1"
+                  placeholder="e.g. CRIME1"
                   value={joinCode}
                   onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                   disabled={isLoading}
@@ -144,7 +151,7 @@ export function HomePage() {
                 className="btn-order btn-order-secondary btn-block"
                 disabled={isLoading || !joinName.trim() || !joinCode.trim()}
               >
-                {isLoading ? 'Se conectează...' : 'Intră în joc'}
+                {isLoading ? 'Connecting...' : 'Join game'}
               </button>
             </form>
           </section>

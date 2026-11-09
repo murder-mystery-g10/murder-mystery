@@ -89,6 +89,9 @@ npm run dev
 You should see `Local: http://localhost:5173/`. Open it; the status page should show four
 green OKs. The dev server forwards `/api` and `/socket.io` to the backend on
 `http://localhost:8000`. To use another backend address, set `BACKEND_URL` before `npm run dev`.
+To work on the lobby screens before the backend implements them, set `VITE_USE_MOCK=true` in
+`.env` and restart `npm run dev`: the frontend then fakes the lobby API with local data and shows
+a mock banner. Keep it `false` otherwise, so backend errors reach the screen.
 
 ### Backend
 

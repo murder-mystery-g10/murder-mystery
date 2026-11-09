@@ -46,7 +46,7 @@ export function StatusPage() {
     <main className="status-page">
       <div style={{ marginBottom: '1.5rem' }}>
         <a href="/" style={{ color: '#c29b38', textDecoration: 'none', fontSize: '0.9rem' }}>
-          ← Înapoi la joc
+          ← Back to the game
         </a>
       </div>
       <h1>System status</h1>

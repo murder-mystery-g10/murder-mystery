@@ -20,15 +20,15 @@ export function LobbyCodeBadge({ code }: LobbyCodeBadgeProps) {
   return (
     <div className="dispatch-token">
       <div className="dispatch-token-header">
-        <span className="dispatch-label">TELEGRAMĂ CONVOCARE</span>
+        <span className="dispatch-label">SUMMONS TELEGRAM</span>
         <button
           type="button"
           onClick={handleCopy}
           className="btn-copy-token"
-          title="Copiază codul camerei"
-          aria-label="Copiază codul camerei"
+          title="Copy the lobby code"
+          aria-label="Copy the lobby code"
         >
-          {copied ? '✓ Copiat' : 'Copiază'}
+          {copied ? '✓ Copied' : 'Copy'}
         </button>
       </div>
 
@@ -39,7 +39,7 @@ export function LobbyCodeBadge({ code }: LobbyCodeBadgeProps) {
       </div>
 
       <div className="dispatch-token-hint">
-        Codul oficial de acces pentru ofițerii mobilizați în caz.
+        The official access code for the officers assigned to the case.
       </div>
     </div>
   )

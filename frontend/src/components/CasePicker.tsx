@@ -11,11 +11,11 @@ interface CasePickerProps {
 function difficultyLabel(diff: Difficulty): { text: string; className: string } {
   switch (diff) {
     case 'easy':
-      return { text: 'Ușor', className: 'dossier-tag-easy' }
+      return { text: 'Easy', className: 'dossier-tag-easy' }
     case 'normal':
-      return { text: 'Mediu', className: 'dossier-tag-normal' }
+      return { text: 'Normal', className: 'dossier-tag-normal' }
     case 'hard':
-      return { text: 'Dificil', className: 'dossier-tag-hard' }
+      return { text: 'Hard', className: 'dossier-tag-hard' }
   }
 }
 
@@ -30,10 +30,10 @@ export function CasePicker({
     <div className="dossier-panel">
       <div className="dossier-panel-header">
         <div className="dossier-folder-tab">
-          <span className="folder-tab-label">DOSAR NR. 1926/V</span>
-          <span className="folder-tab-sub">ARHIVA PENALĂ TURDA</span>
+          <span className="folder-tab-label">CASE FILE NO. 1926/V</span>
+          <span className="folder-tab-sub">TURDA CRIMINAL ARCHIVE</span>
         </div>
-        <div className="dossier-confidential-stamp">STRICT CONFIDENȚIAL</div>
+        <div className="dossier-confidential-stamp">STRICTLY CONFIDENTIAL</div>
       </div>
 
       <div className="dossier-contents">
@@ -64,19 +64,17 @@ export function CasePicker({
             >
               <div className="case-file-topbar">
                 <div className="case-file-heading">
-                  <span className="case-file-meta-number">
-                    CAUZA PENALĂ • EXONERARE DE LA CLASARE
-                  </span>
+                  <span className="case-file-meta-number">CRIMINAL CASE • REOPENED FILE</span>
                   <h3 className="case-file-title">{c.title}</h3>
                   <div className="case-file-place">
-                    Conacul Vornicu, Turda • Noaptea de 14–15 Noiembrie 1926
+                    Vornicu Manor, near Turda • Night of November 14–15, 1926
                   </div>
                 </div>
 
                 <div className="case-file-tags">
                   <span className={`dossier-tag ${diff.className}`}>{diff.text}</span>
                   <span className="dossier-tag dossier-tag-players">
-                    {c.player_count} Detectivi
+                    {c.player_count} Detectives
                   </span>
                 </div>
               </div>
@@ -84,30 +82,32 @@ export function CasePicker({
               <div className="case-file-divider" />
 
               <div className="case-file-section">
-                <span className="case-file-section-label">RAPORT OPERATIV PRELIMINAR:</span>
+                <span className="case-file-section-label">PRELIMINARY FIELD REPORT:</span>
                 <p className="case-file-summary">{c.summary}</p>
               </div>
 
               <div className="case-file-briefing-grid">
                 <div className="briefing-fact">
-                  <span className="fact-label">VICTIMĂ</span>
-                  <span className="fact-value">Matei Vornicu, 64 ani (Proprietar cherestea)</span>
+                  <span className="fact-label">VICTIM</span>
+                  <span className="fact-value">Matei Vornicu, 64 (lumber mill owner)</span>
                 </div>
                 <div className="briefing-fact">
-                  <span className="fact-label">LOCUL CRIMEI</span>
-                  <span className="fact-value">Biblioteca conacului (sub sigiliu judiciar)</span>
+                  <span className="fact-label">CRIME SCENE</span>
+                  <span className="fact-value">The manor library (under judicial seal)</span>
                 </div>
                 <div className="briefing-fact">
-                  <span className="fact-label">SUSPECȚI REȚINUȚI</span>
-                  <span className="fact-value">4 persoane (medicul, menajera, soția, nepotul)</span>
+                  <span className="fact-label">SUSPECTS HELD</span>
+                  <span className="fact-value">
+                    4 people (the doctor, the housekeeper, the wife, the nephew)
+                  </span>
                 </div>
               </div>
 
               <div className="case-file-footer">
                 {isSelected ? (
-                  <span className="case-stamp-selected">✓ Dosar Selectat</span>
+                  <span className="case-stamp-selected">✓ Case Selected</span>
                 ) : isHost ? (
-                  <span className="case-pick-prompt">Apasă pentru a alege acest dosar</span>
+                  <span className="case-pick-prompt">Click to choose this case</span>
                 ) : null}
               </div>
             </article>
@@ -116,7 +116,7 @@ export function CasePicker({
 
         {!selectedCaseId && !isHost && (
           <div className="case-empty-notice">
-            Gazda analizează dosarele. În curând va fi selectat un caz...
+            The host is reviewing the case files. A case will be chosen soon...
           </div>
         )}
       </div>

@@ -2,6 +2,12 @@ import { io, type Socket } from 'socket.io-client'
 import type {
   AccusationChoices,
   Ack,
+  BoardAddNote,
+  BoardConnect,
+  BoardEditNote,
+  BoardMove,
+  BoardPin,
+  BoardRemove,
   EnterRoom,
   InspectAck,
   InspectObject,
@@ -20,6 +26,8 @@ export const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
 
 const NOT_CONNECTED = 'Not connected to the game server. Reload the page and try again.'
 const NO_ANSWER = 'The game server did not answer in time. Try again.'
+const BOARD_REQUIRES_SERVER =
+  'The shared board needs a live game server. Set VITE_USE_MOCK=false and restart the frontend.'
 
 /** Connects Socket.IO with player authentication */
 export function connectLobbySocket(auth: SocketAuth): void {
@@ -91,6 +99,61 @@ export async function emitUnlockRoom(payload: UnlockRoom, timeoutMs = 4000): Pro
   } catch {
     return { ok: false, error: NO_ANSWER }
   }
+}
+
+async function emitBoardAction(
+  send: (timeoutMs: number) => Promise<Ack>,
+  timeoutMs = 4000,
+): Promise<Ack> {
+  if (isMockMode()) return { ok: false, error: BOARD_REQUIRES_SERVER }
+  if (!socket.connected) return { ok: false, error: NOT_CONNECTED }
+  try {
+    return await send(timeoutMs)
+  } catch {
+    return { ok: false, error: NO_ANSWER }
+  }
+}
+
+export function emitBoardPin(payload: BoardPin, timeoutMs = 4000): Promise<Ack> {
+  return emitBoardAction(
+    (timeout) => socket.timeout(timeout).emitWithAck('board:pin', payload),
+    timeoutMs,
+  )
+}
+
+export function emitBoardAddNote(payload: BoardAddNote, timeoutMs = 4000): Promise<Ack> {
+  return emitBoardAction(
+    (timeout) => socket.timeout(timeout).emitWithAck('board:add_note', payload),
+    timeoutMs,
+  )
+}
+
+export function emitBoardEditNote(payload: BoardEditNote, timeoutMs = 4000): Promise<Ack> {
+  return emitBoardAction(
+    (timeout) => socket.timeout(timeout).emitWithAck('board:edit_note', payload),
+    timeoutMs,
+  )
+}
+
+export function emitBoardMove(payload: BoardMove, timeoutMs = 4000): Promise<Ack> {
+  return emitBoardAction(
+    (timeout) => socket.timeout(timeout).emitWithAck('board:move', payload),
+    timeoutMs,
+  )
+}
+
+export function emitBoardConnect(payload: BoardConnect, timeoutMs = 4000): Promise<Ack> {
+  return emitBoardAction(
+    (timeout) => socket.timeout(timeout).emitWithAck('board:connect', payload),
+    timeoutMs,
+  )
+}
+
+export function emitBoardRemove(payload: BoardRemove, timeoutMs = 4000): Promise<Ack> {
+  return emitBoardAction(
+    (timeout) => socket.timeout(timeout).emitWithAck('board:remove', payload),
+    timeoutMs,
+  )
 }
 
 /**

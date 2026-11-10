@@ -4,6 +4,7 @@ import type { MapObject } from '../contracts/theme-map'
 import { roomImage, roomName } from '../lib/roomArt'
 import { useThemeMap } from '../lib/useThemeMap'
 import { useGameStore } from '../stores/gameStore'
+import { InvestigationBoard } from './InvestigationBoard'
 import { InspectionPanel } from './InspectionPanel'
 import { InvestigationDialog } from './InvestigationDialog'
 import { Notebook } from './Notebook'
@@ -35,6 +36,7 @@ export function RoomView() {
   const [error, setError] = useState<string | null>(null)
   const [detail, setDetail] = useState<Detail | null>(null)
   const [unlock, setUnlock] = useState<UnlockSelection | null>(null)
+  const [stationView, setStationView] = useState<'board' | null>(null)
   const { map, error: mapError } = useThemeMap(snapshot?.theme) ?? {}
 
   const player = snapshot?.lobby.players.find((player) => player.id === snapshot.you)
@@ -56,6 +58,7 @@ export function RoomView() {
 
   async function moveTo(room: string) {
     if (busy || room === location) return
+    setStationView(null)
     setError(null)
     setUnlock(null)
     setMoving(true)
@@ -164,31 +167,53 @@ export function RoomView() {
         )}
       </header>
 
-      <div className="room-view-grid">
-        {image ? (
-          <RoomScene
-            image={image}
-            title={title}
-            objects={location === 'station' ? undefined : room?.objects}
-            busy={busy}
-            onInspect={(object) => void inspect(object)}
-          />
-        ) : (
-          <div className="room-view-scene">
-            <p role="status">
-              {snapshot
-                ? location
-                  ? 'The room image is unavailable.'
-                  : 'Choose a room to start exploring.'
-                : 'Loading the investigation…'}
-            </p>
+      {location === 'station' && stationView === 'board' ? (
+        <InvestigationBoard onReturnToStation={() => setStationView(null)} />
+      ) : (
+        <>
+          <div className="room-view-grid">
+            {image ? (
+              <RoomScene
+                image={image}
+                title={title}
+                objects={location === 'station' ? undefined : room?.objects}
+                busy={busy}
+                onInspect={(object) => void inspect(object)}
+              />
+            ) : (
+              <div className="room-view-scene">
+                <p role="status">
+                  {snapshot
+                    ? location
+                      ? 'The room image is unavailable.'
+                      : 'Choose a room to start exploring.'
+                    : 'Loading the investigation…'}
+                </p>
+              </div>
+            )}
+            <div className="room-view-sidebar">
+              <Notebook
+                clues={snapshot?.notebook}
+                onSelectClue={(id) => setDetail({ kind: 'clue', id })}
+              />
+              {location === 'station' && (
+                <section className="room-view-actions" aria-labelledby="station-tools-title">
+                  <h2 id="station-tools-title" className="room-view-actions-title">
+                    Police Station Tools
+                  </h2>
+                  <button
+                    type="button"
+                    className="btn-order btn-order-primary"
+                    onClick={() => setStationView('board')}
+                  >
+                    Investigation Board
+                  </button>
+                </section>
+              )}
+            </div>
           </div>
-        )}
-        <Notebook
-          clues={snapshot?.notebook}
-          onSelectClue={(id) => setDetail({ kind: 'clue', id })}
-        />
-      </div>
+        </>
+      )}
       {activeInspection && (
         <InspectionPanel
           objectName={activeInspection.name}

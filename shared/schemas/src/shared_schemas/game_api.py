@@ -170,6 +170,8 @@ class BoardItem(Schema):
     x: float
     y: float
     added_by: Id
+    # The clue card of a pinned clue, so teammates who did not find it can read it.
+    clue: ClueCard | None = None
 
 
 class BoardLink(Schema):

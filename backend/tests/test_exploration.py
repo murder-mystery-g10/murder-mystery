@@ -12,6 +12,7 @@ from backend.exploration import (
     check_can_enter,
     check_in_progress,
     check_unlock,
+    clue_card,
     findable_clues,
     object_room,
     object_text,
@@ -203,3 +204,18 @@ def test_after_the_end_only_the_snapshot_reads_the_game() -> None:
     check_in_progress(finished, finished=True)
     with pytest.raises(ExplorationError, match="not in progress"):
         check_in_progress(finished)
+
+
+def test_a_clue_card_shows_what_players_may_see() -> None:
+    case = _game().case
+    clue = case.clues[0]
+    finder = uuid.uuid4()
+    card = clue_card(case, clue.id, finder)
+    assert card is not None
+    assert (card.id, card.title, card.text) == (clue.id, clue.title, clue.player_text)
+    assert card.room == object_room(clue.object)
+    assert card.found_by == str(finder)
+
+
+def test_an_unknown_clue_has_no_card() -> None:
+    assert clue_card(_game().case, "nope", uuid.uuid4()) is None

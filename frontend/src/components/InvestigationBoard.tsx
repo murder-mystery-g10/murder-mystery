@@ -181,7 +181,9 @@ function InvestigationBoardCanvas({ onReturnToStation }: InvestigationBoardProps
     const resolved = new Map<string, ResolvedItem>()
     if (!snapshot) return resolved
 
-    for (const clue of snapshot.notebook) {
+    // Notebooks are personal: a clue pinned by a teammate comes with its card on the board.
+    const pinnedClues = snapshot.board.items.flatMap((item) => (item.clue ? [item.clue] : []))
+    for (const clue of [...pinnedClues, ...snapshot.notebook]) {
       resolved.set(itemKey('clue', clue.id), {
         title: clue.title,
         summary: clue.text,

@@ -181,18 +181,8 @@ def accusation_options(case: Case) -> AccusationOptions:
 
 def notebook(case: Case, player_id: uuid.UUID, clue_ids: list[str]) -> list[ClueCard]:
     """The player's found clues, in the order they were found."""
-    clues = {clue.id: clue for clue in case.clues}
-    return [
-        ClueCard(
-            id=clue.id,
-            title=clue.title,
-            icon=clue.icon,
-            text=clue.player_text,
-            room=exploration.object_room(clue.object),
-            found_by=str(player_id),
-        )
-        for clue in (clues[clue_id] for clue_id in clue_ids if clue_id in clues)
-    ]
+    cards = (exploration.clue_card(case, clue_id, player_id) for clue_id in clue_ids)
+    return [card for card in cards if card is not None]
 
 
 def interrogations(case: Case, entries: list[InterrogationEntry]) -> list[SuspectInterrogation]:
@@ -293,7 +283,7 @@ async def load_snapshot(
         started_at=game.lobby.started_at,
         rooms=await exploration.room_access(db, game, player),
         found_clue_ids=list(found),
-        board_state=await board.load_board(db, player.lobby_id),
+        board_state=await board.load_board(db, player.lobby_id, game.case),
         entries=list(entries),
         accusation=accusation,
         votes=list(votes),

@@ -72,6 +72,21 @@ def object_room(object_id: str) -> str:
     return object_id.split(".", 1)[0]
 
 
+def clue_card(case: Case, clue_id: str, found_by: uuid.UUID) -> ClueCard | None:
+    """A clue as players see it; None if the case has no such clue."""
+    clue = next((clue for clue in case.clues if clue.id == clue_id), None)
+    if clue is None:
+        return None
+    return ClueCard(
+        id=clue.id,
+        title=clue.title,
+        icon=clue.icon,
+        text=clue.player_text,
+        room=object_room(clue.object),
+        found_by=str(found_by),
+    )
+
+
 def findable_clues(game: Game, player: Player, object_id: str) -> list[Clue]:
     """Clues on an object that this player can find.
 

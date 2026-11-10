@@ -344,6 +344,17 @@
           "pattern": "^[A-Za-z0-9_.-]+$",
           "title": "Added By",
           "type": "string"
+        },
+        "clue": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ClueCard"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [

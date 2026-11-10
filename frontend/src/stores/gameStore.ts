@@ -4,14 +4,28 @@ import type {
   AccusationProposal,
   Ack,
   Briefing,
+  BoardAddNote,
+  BoardConnect,
+  BoardEditNote,
+  BoardMove,
+  BoardPin,
+  BoardRemove,
+  BoardState,
   GameResult,
   GameSnapshot,
+  InterrogationAnswer,
   InspectAck,
   UnlockRoom,
 } from '../contracts/game-api'
 import { isMockMode, makeMockSnapshot, mockInspection, mockUnlockRoom } from '../lib/mock'
 import {
   emitEnterRoom,
+  emitBoardAddNote,
+  emitBoardConnect,
+  emitBoardEditNote,
+  emitBoardMove,
+  emitBoardPin,
+  emitBoardRemove,
   emitInspectObject,
   emitProposeAccusation,
   emitUnlockRoom,
@@ -40,10 +54,18 @@ export interface GameStoreState {
   accusationError: string | null
 
   applySnapshot: (snapshot: GameSnapshot) => void
+  applyBoardState: (board: BoardState) => void
+  applyInterrogationAnswer: (answer: InterrogationAnswer) => void
   enterRoom: (room: string) => Promise<Ack>
   unlockRoom: (request: UnlockRoom) => Promise<Ack>
   markRoomUnlocked: (room: string) => void
   inspectObject: (object: string) => Promise<InspectAck>
+  pinBoardItem: (request: BoardPin) => Promise<Ack>
+  addBoardNote: (request: BoardAddNote) => Promise<Ack>
+  editBoardNote: (request: BoardEditNote) => Promise<Ack>
+  moveBoardItem: (request: BoardMove) => Promise<Ack>
+  connectBoardItems: (request: BoardConnect) => Promise<Ack>
+  removeBoardItem: (request: BoardRemove) => Promise<Ack>
   openCaseFile: () => void
   closeCaseFile: () => void
   openAccusationModal: () => void
@@ -89,6 +111,29 @@ export const useGameStore = create<GameStoreState>()((set, get) => ({
     })
     // The snapshot also carries the lobby, so a player who reconnects mid-game sees it as started.
     useLobbyStore.getState().setLobbyState(snapshot.lobby)
+  },
+
+  applyBoardState: (board) => {
+    const snapshot = get().snapshot
+    if (snapshot) set({ snapshot: { ...snapshot, board } })
+  },
+
+  applyInterrogationAnswer: ({ entry, questions_left }) => {
+    const snapshot = get().snapshot
+    if (!snapshot) return
+
+    const interrogations = snapshot.interrogations.map((interrogation) =>
+      interrogation.suspect === entry.suspect
+        ? {
+            ...interrogation,
+            questions_left,
+            entries: interrogation.entries.some((current) => current.id === entry.id)
+              ? interrogation.entries.map((current) => (current.id === entry.id ? entry : current))
+              : [...interrogation.entries, entry],
+          }
+        : interrogation,
+    )
+    set({ snapshot: { ...snapshot, interrogations } })
   },
 
   enterRoom: async (room) => {
@@ -148,6 +193,13 @@ export const useGameStore = create<GameStoreState>()((set, get) => ({
     return ack
   },
 
+  pinBoardItem: (request) => emitBoardPin(request),
+  addBoardNote: (request) => emitBoardAddNote(request),
+  editBoardNote: (request) => emitBoardEditNote(request),
+  moveBoardItem: (request) => emitBoardMove(request),
+  connectBoardItems: (request) => emitBoardConnect(request),
+  removeBoardItem: (request) => emitBoardRemove(request),
+
   // Nothing to show before the briefing arrives.
   openCaseFile: () => set((state) => ({ caseFileOpen: state.briefing !== null })),
 
@@ -199,6 +251,14 @@ export const useGameStore = create<GameStoreState>()((set, get) => ({
 
 socket.on('game:snapshot', (snapshot) => {
   useGameStore.getState().applySnapshot(snapshot)
+})
+
+socket.on('board:state', (board) => {
+  useGameStore.getState().applyBoardState(board)
+})
+
+socket.on('interrogation:answer', (answer) => {
+  useGameStore.getState().applyInterrogationAnswer(answer)
 })
 
 socket.on('presence:update', ({ players }) => {

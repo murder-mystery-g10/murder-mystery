@@ -1,7 +1,8 @@
 """Shared investigation board: rules and persistence (docs/database.md).
 
 Every change is written to board_items / board_links right away; the whole board is then
-sent to the lobby as board:state and is part of game:snapshot.
+sent to the lobby as board:state and is part of game:snapshot. A pinned clue carries its card:
+notebooks are personal, so the board is how the team shares what each player found.
 """
 
 import uuid
@@ -9,6 +10,7 @@ import uuid
 from sqlalchemy import and_, delete, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend import exploration
 from backend.models import (
     BoardItem,
     BoardLink,
@@ -19,6 +21,7 @@ from backend.models import (
     Player,
 )
 from shared_schemas import STATION
+from shared_schemas.case import Case
 from shared_schemas.game_api import (
     BoardAddNote,
     BoardConnect,
@@ -28,6 +31,7 @@ from shared_schemas.game_api import (
     BoardPin,
     BoardRemove,
     BoardState,
+    ClueCard,
     LobbyStatus,
 )
 from shared_schemas.game_api import BoardItem as BoardItemOut
@@ -45,8 +49,13 @@ def _parse_id(value: str) -> uuid.UUID:
         raise BoardError("The item is not on the board.") from None
 
 
-async def load_board(db: AsyncSession, lobby_id: uuid.UUID) -> BoardState:
-    """The whole board of a lobby, for board:state and game:snapshot."""
+async def load_board(db: AsyncSession, lobby_id: uuid.UUID, case: Case | None = None) -> BoardState:
+    """The whole board of a lobby, for board:state and game:snapshot.
+
+    Pass the lobby's case if it is already loaded; otherwise it is read here.
+    """
+    if case is None:
+        case = await _lobby_case(db, lobby_id)
     items = await db.scalars(
         select(BoardItem).where(BoardItem.lobby_id == lobby_id).order_by(BoardItem.created_at)
     )
@@ -63,6 +72,7 @@ async def load_board(db: AsyncSession, lobby_id: uuid.UUID) -> BoardState:
                 x=item.x,
                 y=item.y,
                 added_by=str(item.added_by),
+                clue=_pinned_clue(case, item),
             )
             for item in items
         ],
@@ -71,6 +81,19 @@ async def load_board(db: AsyncSession, lobby_id: uuid.UUID) -> BoardState:
             for link in links
         ],
     )
+
+
+async def _lobby_case(db: AsyncSession, lobby_id: uuid.UUID) -> Case | None:
+    lobby = await db.get(Lobby, lobby_id)
+    record = await db.get(CaseRecord, lobby.case_id) if lobby and lobby.case_id else None
+    return Case.model_validate(record.data) if record else None
+
+
+def _pinned_clue(case: Case | None, item: BoardItem) -> ClueCard | None:
+    """The card of a pinned clue; the player who pinned it is the one who found it."""
+    if case is None or item.kind != BoardItemKind.CLUE or item.ref is None:
+        return None
+    return exploration.clue_card(case, item.ref, item.added_by)
 
 
 async def _check_can_edit(db: AsyncSession, player: Player) -> Lobby:

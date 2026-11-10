@@ -46,6 +46,16 @@ export type X1 = number
 export type Y1 = number
 export type AddedBy = string
 export type Id3 = string
+export type Title = string
+/**
+ * This interface was referenced by `GameApi`'s JSON-Schema
+ * via the `definition` "ClueIcon".
+ */
+export type ClueIcon = 'letter' | 'document' | 'bottle' | 'key' | 'photo' | 'item'
+export type Text4 = string
+export type Room = string
+export type FoundBy = string
+export type Id4 = string
 export type Source1 = string
 export type Target1 = string
 export type Item1 = string
@@ -58,7 +68,7 @@ export type Y3 = number
 /**
  * Item or link id
  */
-export type Id4 = string
+export type Id5 = string
 export type Items = BoardItem[]
 export type Links = BoardLink[]
 export type When = string
@@ -69,11 +79,11 @@ export type Description = string
 export type Summary = string
 export type Discovery = string
 export type CoronerReport = string[]
-export type Text4 = string
+export type Text5 = string
 export type PointsToRoom = string
 export type StoryHooks = StoryHook[]
 export type CaseId = string
-export type Title = string
+export type Title1 = string
 /**
  * This interface was referenced by `GameApi`'s JSON-Schema
  * via the `definition` "Difficulty".
@@ -81,16 +91,6 @@ export type Title = string
 export type Difficulty = 'easy' | 'normal' | 'hard'
 export type PlayerCount = number
 export type Summary1 = string
-export type Id5 = string
-export type Title1 = string
-/**
- * This interface was referenced by `GameApi`'s JSON-Schema
- * via the `definition` "ClueIcon".
- */
-export type ClueIcon = 'letter' | 'document' | 'bottle' | 'key' | 'photo' | 'item'
-export type Text5 = string
-export type Room = string
-export type FoundBy = string
 export type PlayerName = string
 /**
  * Solo test mode: one player sees every room
@@ -329,13 +329,26 @@ export interface BoardItem {
   x: X1
   y: Y1
   added_by: AddedBy
+  clue?: ClueCard | null
+}
+/**
+ * This interface was referenced by `GameApi`'s JSON-Schema
+ * via the `definition` "ClueCard".
+ */
+export interface ClueCard {
+  id: Id3
+  title: Title
+  icon: ClueIcon
+  text: Text4
+  room: Room
+  found_by: FoundBy
 }
 /**
  * This interface was referenced by `GameApi`'s JSON-Schema
  * via the `definition` "BoardLink".
  */
 export interface BoardLink {
-  id: Id3
+  id: Id4
   source: Source1
   target: Target1
 }
@@ -363,7 +376,7 @@ export interface BoardPin {
  * via the `definition` "BoardRemove".
  */
 export interface BoardRemove {
-  id: Id4
+  id: Id5
 }
 /**
  * This interface was referenced by `GameApi`'s JSON-Schema
@@ -400,7 +413,7 @@ export interface Person {
  * via the `definition` "StoryHook".
  */
 export interface StoryHook {
-  text: Text4
+  text: Text5
   points_to_room: PointsToRoom
 }
 /**
@@ -409,22 +422,10 @@ export interface StoryHook {
  */
 export interface CaseSummary {
   case_id: CaseId
-  title: Title
+  title: Title1
   difficulty: Difficulty
   player_count: PlayerCount
   summary: Summary1
-}
-/**
- * This interface was referenced by `GameApi`'s JSON-Schema
- * via the `definition` "ClueCard".
- */
-export interface ClueCard {
-  id: Id5
-  title: Title1
-  icon: ClueIcon
-  text: Text5
-  room: Room
-  found_by: FoundBy
 }
 /**
  * This interface was referenced by `GameApi`'s JSON-Schema

@@ -1,17 +1,21 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import type { InspectAck, UnlockRoom } from '../contracts/game-api'
 import type { MapObject } from '../contracts/theme-map'
 import { roomImage, roomName } from '../lib/roomArt'
 import { useThemeMap } from '../lib/useThemeMap'
 import { useGameStore } from '../stores/gameStore'
 import { InterrogationScreen } from './InterrogationScreen'
-import { InvestigationBoard } from './InvestigationBoard'
 import { InspectionPanel } from './InspectionPanel'
 import { InvestigationDialog } from './InvestigationDialog'
 import { Notebook } from './Notebook'
 import { PlayerPresence } from './PlayerPresence'
 import { RoomScene } from './RoomScene'
 import { RoomUnlockForm } from './RoomUnlockForm'
+
+// The board brings React Flow, the largest dependency: load it only when a player opens it.
+const InvestigationBoard = lazy(() =>
+  import('./InvestigationBoard').then((module) => ({ default: module.InvestigationBoard })),
+)
 
 interface Inspection {
   kind: 'inspection'
@@ -169,7 +173,9 @@ export function RoomView() {
       </header>
 
       {location === 'station' && stationView === 'board' ? (
-        <InvestigationBoard onReturnToStation={() => setStationView(null)} />
+        <Suspense fallback={<p role="status">Loading the investigation board…</p>}>
+          <InvestigationBoard onReturnToStation={() => setStationView(null)} />
+        </Suspense>
       ) : location === 'station' && stationView === 'interrogation' ? (
         <InterrogationScreen onReturnToStation={() => setStationView(null)} />
       ) : (

@@ -28,6 +28,7 @@ export function LobbyPage() {
   const leaveLobby = useLobbyStore((s) => s.leaveLobby)
   const gameResult = useGameStore((s) => s.gameResult)
   const accusation = useGameStore((s) => s.accusation)
+  const you = useGameStore((s) => s.snapshot?.you)
   const openAccusationModal = useGameStore((s) => s.openAccusationModal)
 
   const [directJoinName, setDirectJoinName] = useState('')
@@ -177,7 +178,11 @@ export function LobbyPage() {
                 background: 'rgba(194, 159, 85, 0.12)',
               }}
             >
-              <span>⚖️ A final accusation has been proposed and is awaiting your vote!</span>
+              <span>
+                {you && accusation.votes?.[you] !== undefined
+                  ? '⚖️ A final accusation has been proposed. Waiting for the other detectives.'
+                  : '⚖️ A final accusation has been proposed and is awaiting your vote!'}
+              </span>
               <button
                 type="button"
                 className="btn-order btn-order-primary"

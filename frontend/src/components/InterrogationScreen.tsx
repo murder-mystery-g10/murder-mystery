@@ -5,7 +5,20 @@ import { useGameStore } from '../stores/gameStore'
 import { useConnectionStore } from '../stores/connectionStore'
 import { useLobbyStore } from '../stores/lobbyStore'
 import { SuspectPortrait } from './SuspectPortrait'
-import interrogationRoomFront from '../../../themes/conac/interrogation_room_front.png'
+import interrogationRoomFront from '../../../themes/conac/interrogation_room_front.webp'
+
+interface Evidence {
+  id: string
+  title: string
+  text: string
+}
+
+const QUOTE_PREVIEW = 60
+
+function quoteTitle(speaker: string, answer: string): string {
+  const short = answer.length > QUOTE_PREVIEW ? `${answer.slice(0, QUOTE_PREVIEW)}…` : answer
+  return `${speaker}: “${short}”`
+}
 
 export function InterrogationScreen({ onReturnToStation }: { onReturnToStation: () => void }) {
   const snapshot = useGameStore((state) => state.snapshot)
@@ -105,11 +118,23 @@ function Interview({
   const submitting = useRef(false)
   const entries = interview?.entries ?? []
   const emotion = entries.at(-1)?.emotion ?? 'calm'
+  const allEntries = snapshot.interrogations.flatMap((record) => record.entries)
+  // Evidence is what the team pinned on the board: clues and interview quotes.
   const clues = snapshot.board.items
-    .flatMap((item) => {
-      if (item.kind !== 'clue' || !item.ref) return []
-      const clue = item.clue ?? snapshot.notebook.find((card) => card.id === item.ref)
-      return clue ? [clue] : []
+    .flatMap((item): Evidence[] => {
+      if (!item.ref) return []
+      if (item.kind === 'clue') {
+        const clue = item.clue ?? snapshot.notebook.find((card) => card.id === item.ref)
+        return clue ? [{ id: clue.id, title: clue.title, text: clue.text }] : []
+      }
+      if (item.kind === 'quote') {
+        const entry = allEntries.find((candidate) => candidate.id === item.ref)
+        if (!entry) return []
+        const speaker =
+          snapshot.suspects.find((candidate) => candidate.id === entry.suspect)?.name ?? 'Suspect'
+        return [{ id: entry.id, title: quoteTitle(speaker, entry.answer), text: entry.answer }]
+      }
+      return []
     })
     .filter((clue, index, all) => all.findIndex((item) => item.id === clue.id) === index)
   const chosenClue = clues.find((clue) => clue.id === evidence)
@@ -189,9 +214,7 @@ function Interview({
                 <p className="interrogation-evidence">
                   Evidence presented:{' '}
                   {clues.find((clue) => clue.id === entry.evidence)?.title ??
-                    snapshot.interrogations
-                      .flatMap((item) => item.entries)
-                      .find((item) => item.id === entry.evidence)?.answer ??
+                    allEntries.find((item) => item.id === entry.evidence)?.answer ??
                     entry.evidence}
                 </p>
               )}
@@ -228,7 +251,9 @@ function Interview({
             ))}
           </select>
           {chosenClue && <p>{chosenClue.text}</p>}
-          {clues.length === 0 && <p>Pin a clue on the investigation board to present it here.</p>}
+          {clues.length === 0 && (
+            <p>Pin a clue or a quote on the investigation board to present it here.</p>
+          )}
           <label htmlFor="interrogation-question">Your question</label>
           <textarea
             id="interrogation-question"

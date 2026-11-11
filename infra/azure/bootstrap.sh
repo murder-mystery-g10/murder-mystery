@@ -4,6 +4,7 @@
 #   ssh azureuser@<fqdn> "sudo DEPLOY_PUBKEY='$(cat ~/.ssh/mm-deploy.pub)' bash -s" < infra/azure/bootstrap.sh
 #
 # Disable the idle, 3-hour and night stops (demo / test days):  sudo touch /etc/idle-deallocate.disabled
+#   (the pause ends by itself after DISABLED_MAX_HOURS, 12 by default; touch it again to extend)
 # Re-enable them:                                               sudo rm /etc/idle-deallocate.disabled
 
 set -euo pipefail
@@ -17,6 +18,7 @@ BOOT_GRACE_MINUTES="${BOOT_GRACE_MINUTES:-15}"
 MAX_UPTIME_MINUTES="${MAX_UPTIME_MINUTES:-180}"
 NIGHT_START_HOUR="${NIGHT_START_HOUR:-1}"   # Romania time
 NIGHT_END_HOUR="${NIGHT_END_HOUR:-7}"
+DISABLED_MAX_HOURS="${DISABLED_MAX_HOURS:-12}"
 STORAGE_ACCOUNT="${STORAGE_ACCOUNT:-mmg10backups}"     # must match backup-storage.sh
 BACKUP_CONTAINER="${BACKUP_CONTAINER:-postgres-backups}"
 
@@ -101,6 +103,7 @@ BOOT_GRACE_MINUTES=$BOOT_GRACE_MINUTES
 MAX_UPTIME_MINUTES=$MAX_UPTIME_MINUTES
 NIGHT_START_HOUR=$NIGHT_START_HOUR
 NIGHT_END_HOUR=$NIGHT_END_HOUR
+DISABLED_MAX_HOURS=$DISABLED_MAX_HOURS
 EOF
 
 cat > /usr/local/bin/idle-deallocate <<'SCRIPT'
@@ -126,7 +129,16 @@ deallocate() {
   exit 0
 }
 
-if [[ -e /etc/idle-deallocate.disabled ]]; then mark_active; exit 0; fi
+# A forgotten pause must not keep the VM running for days: it expires after DISABLED_MAX_HOURS.
+PAUSE=/etc/idle-deallocate.disabled
+if [[ -e $PAUSE ]]; then
+  if (( $(date +%s) - $(stat -c %Y "$PAUSE") < ${DISABLED_MAX_HOURS:-12} * 3600 )); then
+    mark_active
+    exit 0
+  fi
+  logger -t idle-deallocate "pause older than ${DISABLED_MAX_HOURS:-12} h, removing it"
+  rm -f "$PAUSE"
+fi
 
 hour=$(TZ=Europe/Bucharest date +%-H)
 if (( hour >= NIGHT_START_HOUR && hour < NIGHT_END_HOUR )); then deallocate "night hours ($hour:00 Romania time)"; fi

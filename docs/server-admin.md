@@ -118,7 +118,9 @@ az consumption usage list --query "[].{date:date, cost:pretaxCost, resource:inst
 
 ## Demo and test days
 
-Disable the automatic stops (idle, 3 hours, night) for the day, and enable them again after:
+Disable the automatic stops (idle, 3 hours, night) for the day, and enable them again after.
+A pause ends by itself after 12 hours (`DISABLED_MAX_HOURS`), so a forgotten one cannot keep
+the VM running; touch the file again to extend it.
 
 ```bash
 ssh azureuser@murder-mystery-g10.polandcentral.cloudapp.azure.com "sudo touch /etc/idle-deallocate.disabled"

@@ -3,13 +3,11 @@ import { StatusRow } from '../components/StatusRow'
 import type { ReadinessResponse } from '../contracts/game-api'
 import { fetchReadiness } from '../lib/api'
 import { socket } from '../lib/socket'
-import { useConnectionStore } from '../stores/connectionStore'
 
 export function StatusPage() {
   // undefined = still loading, null = backend unreachable
   const [readiness, setReadiness] = useState<ReadinessResponse | null | undefined>(undefined)
   const [pong, setPong] = useState<boolean | null>(null)
-  const setConnected = useConnectionStore((state) => state.setConnected)
 
   useEffect(() => {
     fetchReadiness().then(setReadiness)
@@ -17,7 +15,6 @@ export function StatusPage() {
 
   useEffect(() => {
     const onConnect = async () => {
-      setConnected(true)
       try {
         const reply = await socket.timeout(3000).emitWithAck('system:ping', {})
         setPong(reply?.message === 'pong')
@@ -25,21 +22,23 @@ export function StatusPage() {
         setPong(false)
       }
     }
-    const onDisconnect = () => setConnected(false)
+    const onDisconnect = () => setPong(false)
     const onConnectError = () => setPong(false)
 
     socket.on('connect', onConnect)
     socket.on('disconnect', onDisconnect)
     socket.on('connect_error', onConnectError)
-    socket.connect()
+    if (socket.connected) void onConnect()
+    else socket.connect()
 
     return () => {
       socket.off('connect', onConnect)
       socket.off('disconnect', onDisconnect)
       socket.off('connect_error', onConnectError)
-      socket.disconnect()
+      // This is the application's shared client. Leaving diagnostics must not
+      // disconnect an active detective or remove the global lifecycle listeners.
     }
-  }, [setConnected])
+  }, [])
 
   const loaded = readiness !== undefined
   return (

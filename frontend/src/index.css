@@ -2449,3 +2449,115 @@ body:has(.investigation-detail[open]) {
     width: 100%;
   }
 }
+
+/* Police station interview record */
+.interrogation {
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid var(--brass-accent);
+}
+.interrogation-suspects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.interrogation-suspects button {
+  display: grid;
+  gap: 0.3rem;
+  text-align: left;
+  flex: 1 1 190px;
+}
+.interrogation-suspects [aria-pressed='true'] {
+  outline: 2px solid var(--brass-accent);
+  outline-offset: 2px;
+}
+.interrogation-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+}
+.interrogation-scene {
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 1674 / 940;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  background-color: #24231f;
+}
+.interrogation-portrait {
+  position: absolute;
+  z-index: 1;
+  width: 32%;
+  height: auto;
+  left: 50%;
+  bottom: 14%;
+  transform: translateX(-50%);
+}
+/* Repeat the exact background alignment, exposing only the table in front of
+   the portrait. No new artwork or separate table asset is needed. */
+.interrogation-table-foreground {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background-image: inherit;
+  background-size: inherit;
+  background-position: inherit;
+  clip-path: inset(77% 0 0);
+  pointer-events: none;
+}
+.interrogation-portrait[hidden] {
+  display: none;
+}
+.interrogation-portrait-fallback {
+  position: absolute;
+  z-index: 3;
+  bottom: 0;
+  padding: 0.5rem;
+  background: #24231f;
+}
+.interrogation-history {
+  max-height: 30rem;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  scrollbar-gutter: stable;
+}
+.interrogation-history article {
+  border-bottom: 1px solid var(--brass-accent);
+  padding: 0.5rem 0;
+}
+.interrogation-history blockquote {
+  margin: 0.75rem 0 0.75rem 1rem;
+  padding-left: 1rem;
+  border-left: 2px solid var(--brass-accent);
+}
+.interrogation-history p,
+.interrogation-form p {
+  white-space: pre-wrap;
+}
+.interrogation-evidence {
+  font-size: 0.85rem;
+}
+.interrogation-form {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+.interrogation-form textarea,
+.interrogation-form select {
+  width: 100%;
+  box-sizing: border-box;
+  background: #24231f;
+  color: inherit;
+  border: 1px solid var(--brass-accent);
+  padding: 0.7rem;
+  font: inherit;
+}
+.interrogation-form textarea {
+  resize: vertical;
+}
+@media (max-width: 760px) {
+  .interrogation-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

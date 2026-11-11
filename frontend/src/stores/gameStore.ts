@@ -3,6 +3,7 @@ import type {
   AccusationChoices,
   AccusationProposal,
   Ack,
+  Ask,
   Briefing,
   BoardAddNote,
   BoardConnect,
@@ -20,6 +21,7 @@ import type {
 import { isMockMode, makeMockSnapshot, mockInspection, mockUnlockRoom } from '../lib/mock'
 import {
   emitEnterRoom,
+  emitAsk,
   emitBoardAddNote,
   emitBoardConnect,
   emitBoardEditNote,
@@ -53,6 +55,8 @@ export interface GameStoreState {
   /** Error message from accusation submission or voting. */
   accusationError: string | null
 
+  interrogationStatus: Record<string, { thinking: boolean; error?: string }>
+  askQuestion: (request: Ask) => Promise<Ack>
   applySnapshot: (snapshot: GameSnapshot) => void
   applyBoardState: (board: BoardState) => void
   applyInterrogationAnswer: (answer: InterrogationAnswer) => void
@@ -79,6 +83,7 @@ export interface GameStoreState {
 }
 
 const initialState = {
+  interrogationStatus: {},
   snapshot: null,
   briefing: null,
   caseFileOpen: false,
@@ -104,6 +109,7 @@ export const useGameStore = create<GameStoreState>()((set, get) => ({
     const gameResult = snapshot.result ?? get().gameResult
     set({
       snapshot,
+      interrogationStatus: {},
       briefing: snapshot.briefing,
       accusation: snapshot.result ? null : (snapshot.accusation ?? null),
       accusationModalOpen: snapshot.result ? false : get().accusationModalOpen,
@@ -121,6 +127,12 @@ export const useGameStore = create<GameStoreState>()((set, get) => ({
   applyInterrogationAnswer: ({ entry, questions_left }) => {
     const snapshot = get().snapshot
     if (!snapshot) return
+    // Entries are immutable. A replay must not restore an older counter or clear
+    // the waiting state for a newer question.
+    if (
+      snapshot.interrogations.some((record) => record.entries.some((item) => item.id === entry.id))
+    )
+      return
 
     const interrogations = snapshot.interrogations.map((interrogation) =>
       interrogation.suspect === entry.suspect
@@ -133,7 +145,39 @@ export const useGameStore = create<GameStoreState>()((set, get) => ({
           }
         : interrogation,
     )
-    set({ snapshot: { ...snapshot, interrogations } })
+    set({
+      snapshot: { ...snapshot, interrogations },
+      interrogationStatus: {
+        ...get().interrogationStatus,
+        [entry.suspect]: { thinking: false },
+      },
+    })
+  },
+
+  askQuestion: async (request) => {
+    const game = get().snapshot
+    if (!game || get().interrogationStatus[request.suspect]?.thinking) return { ok: false }
+    const pending = { thinking: true }
+    set({ interrogationStatus: { ...get().interrogationStatus, [request.suspect]: pending } })
+    const ack = await emitAsk(request)
+    const current = get().snapshot
+    // Events precede the acknowledgement; preserve their results and later requests.
+    if (
+      current &&
+      sameGame(current, game) &&
+      get().interrogationStatus[request.suspect] === pending
+    ) {
+      set({
+        interrogationStatus: {
+          ...get().interrogationStatus,
+          [request.suspect]: {
+            thinking: false,
+            error: ack.ok ? undefined : (ack.error ?? 'Could not ask the question.'),
+          },
+        },
+      })
+    }
+    return ack
   },
 
   enterRoom: async (room) => {
@@ -259,6 +303,42 @@ socket.on('board:state', (board) => {
 
 socket.on('interrogation:answer', (answer) => {
   useGameStore.getState().applyInterrogationAnswer(answer)
+})
+
+socket.on('interrogation:thinking', ({ suspect }) => {
+  const state = useGameStore.getState()
+  if (!state.snapshot?.suspects.some((item) => item.id === suspect)) return
+  if (!state.interrogationStatus[suspect]?.thinking) {
+    useGameStore.setState({
+      interrogationStatus: { ...state.interrogationStatus, [suspect]: { thinking: true } },
+    })
+  }
+})
+socket.on('interrogation:unavailable', ({ suspect }) => {
+  const state = useGameStore.getState()
+  if (!state.snapshot?.suspects.some((item) => item.id === suspect)) return
+  useGameStore.setState({
+    interrogationStatus: {
+      ...state.interrogationStatus,
+      [suspect]: { thinking: false, error: 'The suspect refuses to talk right now.' },
+    },
+  })
+})
+socket.on('disconnect', () => {
+  const state = useGameStore.getState()
+  useGameStore.setState({
+    interrogationStatus: Object.fromEntries(
+      Object.entries(state.interrogationStatus).map(([id, status]) => [
+        id,
+        {
+          thinking: false,
+          error: status.thinking
+            ? 'Connection lost. Reconnect to restore interview history.'
+            : status.error,
+        },
+      ]),
+    ),
+  })
 })
 
 socket.on('presence:update', ({ players }) => {

@@ -10,6 +10,7 @@ import { PlayerList } from '../components/PlayerList'
 import { RoomView } from '../components/RoomView'
 import { useGameStore } from '../stores/gameStore'
 import { useCanStartGame, useIsHost, useLobbyStore } from '../stores/lobbyStore'
+import { isMockMode } from '../lib/mock'
 
 export function LobbyPage() {
   const { code } = useParams<{ code: string }>()
@@ -23,6 +24,8 @@ export function LobbyPage() {
   const selectCase = useLobbyStore((s) => s.selectCase)
   const startGame = useLobbyStore((s) => s.startGame)
   const joinLobby = useLobbyStore((s) => s.joinLobby)
+  const resumeLobby = useLobbyStore((s) => s.resumeLobby)
+  const leaveLobby = useLobbyStore((s) => s.leaveLobby)
   const gameResult = useGameStore((s) => s.gameResult)
   const accusation = useGameStore((s) => s.accusation)
   const openAccusationModal = useGameStore((s) => s.openAccusationModal)
@@ -34,6 +37,10 @@ export function LobbyPage() {
 
   // Load the case library only once the player is in a lobby.
   const inLobby = lobby !== null
+  const restoring = !lobby && session?.lobby_code === code?.toUpperCase() && !isMockMode()
+  useEffect(() => {
+    if (restoring) resumeLobby()
+  }, [restoring, resumeLobby])
   useEffect(() => {
     if (inLobby && cases.length === 0) {
       loadCases()
@@ -51,7 +58,30 @@ export function LobbyPage() {
     }
   }
 
-  // If there's no active session or lobby in memory, allow quick join directly
+  if (restoring) {
+    return (
+      <div className="page-wrapper">
+        <Navbar />
+        <main className="desk-container">
+          <h1 className="desk-title">Reconnecting to the investigation</h1>
+          <p role="status">Restoring your saved detective session…</p>
+          {error && (
+            <p className="dispatch-alert dispatch-alert-error" role="alert">
+              {error}
+            </p>
+          )}
+          <button type="button" className="btn-order btn-order-primary" onClick={resumeLobby}>
+            Retry connection
+          </button>
+          <button type="button" className="btn-order btn-order-secondary" onClick={leaveLobby}>
+            Use a different detective session
+          </button>
+        </main>
+      </div>
+    )
+  }
+
+  // No matching saved identity: allow quick join directly.
   if (!lobby) {
     return (
       <div className="page-wrapper">

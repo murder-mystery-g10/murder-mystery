@@ -2,6 +2,7 @@ import { io, type Socket } from 'socket.io-client'
 import type {
   AccusationChoices,
   Ack,
+  Ask,
   BoardAddNote,
   BoardConnect,
   BoardEditNote,
@@ -19,10 +20,23 @@ import type {
 } from '../contracts/game-api'
 import type { ClientToServerEvents, ServerToClientEvents } from '../contracts/socket-events'
 import { isMockMode } from './mock'
+import { useConnectionStore } from '../stores/connectionStore'
 
 export const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
   autoConnect: false,
 })
+
+// The shared client's lifecycle owns transport state, independently of mounted pages.
+socket.on('connect', () => {
+  const auth = socket.auth
+  const lobbyCode =
+    typeof auth !== 'function' && auth?.player_token && typeof auth.lobby_code === 'string'
+      ? auth.lobby_code
+      : null
+  useConnectionStore.getState().setConnected(socket.connected, lobbyCode)
+})
+socket.on('disconnect', () => useConnectionStore.getState().setConnected(false))
+socket.on('connect_error', () => useConnectionStore.getState().setConnected(false))
 
 const NOT_CONNECTED = 'Not connected to the game server. Reload the page and try again.'
 const NO_ANSWER = 'The game server did not answer in time. Try again.'
@@ -31,6 +45,16 @@ const BOARD_REQUIRES_SERVER =
 
 /** Connects Socket.IO with player authentication */
 export function connectLobbySocket(auth: SocketAuth): void {
+  const previous = socket.auth
+  // Changing auth on a connected client does not authenticate its existing server session.
+  // In particular, a status-page connection may be anonymous (system:ping only).
+  if (
+    typeof previous === 'function' ||
+    previous?.lobby_code !== auth.lobby_code ||
+    previous?.player_token !== auth.player_token
+  ) {
+    socket.disconnect()
+  }
   socket.auth = auth
   if (!socket.connected) {
     socket.connect()
@@ -40,6 +64,7 @@ export function connectLobbySocket(auth: SocketAuth): void {
 /** Disconnects Socket.IO and stops any reconnection attempts */
 export function disconnectLobbySocket(): void {
   socket.disconnect()
+  socket.auth = {}
 }
 
 /**
@@ -182,5 +207,20 @@ export async function emitVoteAccusation(payload: VoteAccusation, timeoutMs = 40
     return await socket.timeout(timeoutMs).emitWithAck('accusation:vote', payload)
   } catch {
     return { ok: false, error: NO_ANSWER }
+  }
+}
+
+/** Ack follows the AI call, whose backend timeout is 30 seconds. */
+export async function emitAsk(payload: Ask): Promise<Ack> {
+  if (isMockMode()) return { ok: false, error: 'Interrogation requires a live game server.' }
+  if (!socket.connected) return { ok: false, error: NOT_CONNECTED }
+  try {
+    return await socket.timeout(45000).emitWithAck('interrogation:ask', payload)
+  } catch {
+    return {
+      ok: false,
+      error:
+        'Connection interrupted. Reconnect to confirm the interview history before trying again.',
+    }
   }
 }

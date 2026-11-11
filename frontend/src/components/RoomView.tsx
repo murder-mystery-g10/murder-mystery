@@ -4,6 +4,7 @@ import type { MapObject } from '../contracts/theme-map'
 import { roomImage, roomName } from '../lib/roomArt'
 import { useThemeMap } from '../lib/useThemeMap'
 import { useGameStore } from '../stores/gameStore'
+import { InterrogationScreen } from './InterrogationScreen'
 import { InvestigationBoard } from './InvestigationBoard'
 import { InspectionPanel } from './InspectionPanel'
 import { InvestigationDialog } from './InvestigationDialog'
@@ -36,7 +37,7 @@ export function RoomView() {
   const [error, setError] = useState<string | null>(null)
   const [detail, setDetail] = useState<Detail | null>(null)
   const [unlock, setUnlock] = useState<UnlockSelection | null>(null)
-  const [stationView, setStationView] = useState<'board' | null>(null)
+  const [stationView, setStationView] = useState<'board' | 'interrogation' | null>(null)
   const { map, error: mapError } = useThemeMap(snapshot?.theme) ?? {}
 
   const player = snapshot?.lobby.players.find((player) => player.id === snapshot.you)
@@ -169,6 +170,8 @@ export function RoomView() {
 
       {location === 'station' && stationView === 'board' ? (
         <InvestigationBoard onReturnToStation={() => setStationView(null)} />
+      ) : location === 'station' && stationView === 'interrogation' ? (
+        <InterrogationScreen onReturnToStation={() => setStationView(null)} />
       ) : (
         <>
           <div className="room-view-grid">
@@ -207,6 +210,13 @@ export function RoomView() {
                     onClick={() => setStationView('board')}
                   >
                     Investigation Board
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-order btn-order-primary"
+                    onClick={() => setStationView('interrogation')}
+                  >
+                    Interrogation Room
                   </button>
                 </section>
               )}

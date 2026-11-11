@@ -51,6 +51,7 @@ export interface LobbyStoreState {
   selectCase: (caseId: string) => Promise<void>
   startGame: () => Promise<void>
   leaveLobby: () => void
+  resumeLobby: () => void
   clearError: () => void
 
   // Simulation helpers for mock mode and tests
@@ -73,6 +74,7 @@ function setupSocketListener(
   socket.on('connect_error', (err: Error) => {
     set(() => ({ error: `Could not connect to the game server: ${err.message}` }))
   })
+  socket.on('connect', () => set(() => ({ error: null })))
 }
 
 export const useLobbyStore = create<LobbyStoreState>()((set, get) => {
@@ -257,6 +259,15 @@ export const useLobbyStore = create<LobbyStoreState>()((set, get) => {
           error: err instanceof Error ? err.message : 'Could not start the game.',
         })
       }
+    },
+
+    resumeLobby: () => {
+      const session = get().session
+      if (!session || isMockMode()) return
+      set({ error: null })
+      // Reuse the saved identity. The server authenticates it, joins its lobby,
+      // and sends lobby:state plus game:snapshot for a running game.
+      connectLobbySocket({ lobby_code: session.lobby_code, player_token: session.player_token })
     },
 
     leaveLobby: () => {

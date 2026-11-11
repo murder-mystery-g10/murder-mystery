@@ -44,6 +44,7 @@ describe('LobbyPage', () => {
   })
 
   afterEach(() => {
+    vi.restoreAllMocks()
     vi.unstubAllEnvs()
     vi.unstubAllGlobals()
   })
@@ -55,6 +56,53 @@ describe('LobbyPage', () => {
     expect(screen.getByText('Join the investigation')).toBeInTheDocument()
     expect(screen.getByText(/TEST99/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Enter lobby' })).toBeInTheDocument()
+  })
+
+  it('resumes a saved session after refresh without creating another player', () => {
+    vi.stubEnv('VITE_USE_MOCK', 'false')
+    const connect = vi.spyOn(socket, 'connect').mockReturnValue(socket)
+    const join = vi.spyOn(useLobbyStore.getState(), 'joinLobby')
+    const snapshot = makeSnapshot()
+    useLobbyStore.setState({
+      session: {
+        lobby_code: snapshot.lobby.code,
+        player_id: snapshot.you,
+        player_token: 'saved-token',
+      },
+      lobby: null,
+      cases: [snapshot.lobby.case!],
+    })
+    renderLobby(snapshot.lobby.code)
+    expect(screen.getByText('Reconnecting to the investigation')).toBeInTheDocument()
+    expect(screen.queryByLabelText('Your detective name')).not.toBeInTheDocument()
+    expect(connect).toHaveBeenCalledTimes(1)
+    expect(socket.auth).toEqual({ lobby_code: snapshot.lobby.code, player_token: 'saved-token' })
+    act(() => {
+      for (const listener of socket.listeners('game:snapshot')) listener(snapshot)
+    })
+    expect(screen.queryByText('Reconnecting to the investigation')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Formulate Accusation/i })).toBeInTheDocument()
+    expect(useLobbyStore.getState().session?.player_id).toBe(snapshot.you)
+    expect(join).not.toHaveBeenCalled()
+  })
+
+  it('lets a rejected saved session retry or return to the join form', () => {
+    vi.stubEnv('VITE_USE_MOCK', 'false')
+    const connect = vi.spyOn(socket, 'connect').mockReturnValue(socket)
+    useLobbyStore.setState({
+      session: { lobby_code: 'TEST99', player_id: 'p1', player_token: 'expired-token' },
+    })
+    renderLobby('TEST99')
+    act(() => {
+      for (const listener of socket.listeners('connect_error'))
+        listener(new Error('Connection rejected'))
+    })
+    expect(screen.getByRole('alert')).toHaveTextContent('Connection rejected')
+    fireEvent.click(screen.getByRole('button', { name: 'Retry connection' }))
+    expect(connect).toHaveBeenCalledTimes(2)
+    fireEvent.click(screen.getByRole('button', { name: 'Use a different detective session' }))
+    expect(screen.getByText('Join the investigation')).toBeInTheDocument()
+    expect(useLobbyStore.getState().session).toBeNull()
   })
 
   describe('in mock mode', () => {

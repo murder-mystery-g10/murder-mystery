@@ -2,10 +2,14 @@ import { create } from 'zustand'
 
 interface ConnectionState {
   connected: boolean
-  setConnected: (connected: boolean) => void
+  /** Lobby authenticated by the current connection; anonymous diagnostics have none. */
+  lobbyCode: string | null
+  setConnected: (connected: boolean, lobbyCode?: string | null) => void
 }
 
 export const useConnectionStore = create<ConnectionState>()((set) => ({
   connected: false,
-  setConnected: (connected) => set({ connected }),
+  lobbyCode: null,
+  setConnected: (connected, lobbyCode = null) =>
+    set({ connected, lobbyCode: connected ? lobbyCode : null }),
 }))

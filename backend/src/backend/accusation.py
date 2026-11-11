@@ -3,6 +3,7 @@
 Rules (issue #20, docs/database.md):
 - One proposal waits for votes at a time. Every player online must accept it: a player who left
   does not block the end of the game, and when one leaves, the votes are counted again.
+- The player who proposes accepts their own proposal (alone online, e.g. in solo, that ends it).
 - One rejection rejects the proposal; the team can propose again.
 - An accepted proposal is the team's only attempt: the game ends and is scored.
 - Score: 50 culprit + 25 motive + 25 method; time bonus +20 under 35 min, down to 0 at 55 min,
@@ -167,8 +168,10 @@ def stored_score(row: GameResultRow) -> ScoreBreakdown:
 # --- events --------------------------------------------------------------------------
 
 
-async def propose(db: AsyncSession, player: Player, data: AccusationChoices) -> AccusationRow:
-    """accusation:propose: a new proposal waiting for every player's vote."""
+async def propose(
+    db: AsyncSession, player: Player, data: AccusationChoices, online: Collection[uuid.UUID]
+) -> VoteOutcome:
+    """accusation:propose: a new proposal, accepted by the player who proposes it."""
     game = await exploration.load_game(db, player)
     check_choices(game.case, data)
     accusation = AccusationRow(
@@ -186,7 +189,9 @@ async def propose(db: AsyncSession, player: Player, data: AccusationChoices) -> 
         await db.flush()
     except IntegrityError:
         raise AccusationError("A proposal is already waiting for votes.") from None
-    return accusation
+    db.add(AccusationVote(accusation_id=accusation.id, player_id=player.id, accept=True))
+    await db.flush()
+    return await _count_votes(db, game, accusation, online)
 
 
 async def vote(

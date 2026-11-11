@@ -142,6 +142,12 @@ def test_a_player_who_left_does_not_block_the_vote() -> None:
     assert not accusation.everyone_accepted(players, set(players[:2]), online)
 
 
+def test_alone_online_the_proposer_ends_the_game() -> None:
+    # The proposer accepts their own proposal, so in solo it is the whole vote.
+    player = uuid.uuid4()
+    assert accusation.everyone_accepted([player], {player}, {player})
+
+
 def test_with_nobody_online_the_proposal_keeps_waiting() -> None:
     players = [uuid.uuid4() for _ in range(4)]
     assert not accusation.everyone_accepted(players, set(players), set())

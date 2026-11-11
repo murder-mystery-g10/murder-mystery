@@ -193,6 +193,35 @@ describe('interrogation', () => {
     expect(screen.queryByText('The suspect is thinking...')).not.toBeInTheDocument()
     expect(useGameStore.getState().snapshot?.interrogations[0].questions_left).toBe(3)
   })
+  it('offers interview quotes pinned on the board as evidence', async () => {
+    const send = vi.spyOn(socketLib, 'emitAsk').mockResolvedValue({ ok: true })
+    setup()
+    act(() => {
+      const snapshot = useGameStore.getState().snapshot!
+      useGameStore.getState().applySnapshot({
+        ...snapshot,
+        interrogations: snapshot.interrogations.map((record) =>
+          record.suspect === 'strat' ? { ...record, entries: [answer.entry] } : record,
+        ),
+        board: {
+          ...snapshot.board,
+          items: [
+            ...snapshot.board.items,
+            { id: 'pin-quote', added_by: 'p2', kind: 'quote', ref: 'entry-1', x: 0, y: 0 },
+          ],
+        },
+      })
+    })
+    expect(screen.getByRole('option', { name: 'Dr. Ilie Strat: “At home.”' })).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Your question'), { target: { value: 'Really?' } })
+    fireEvent.change(screen.getByLabelText('Present board evidence (optional)'), {
+      target: { value: 'entry-1' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Ask question' }))
+    await waitFor(() =>
+      expect(send).toHaveBeenCalledWith({ suspect: 'strat', question: 'Really?', evidence: 'entry-1' }),
+    )
+  })
   it('blocks duplicate submissions and exhaustion, and allows questions without evidence', async () => {
     let finish!: (value: { ok: boolean }) => void
     const send = vi.spyOn(socketLib, 'emitAsk').mockImplementation(

@@ -316,11 +316,18 @@ def create_socket_server(
 
     @sio.on("accusation:propose")
     async def accusation_propose(sid: str, data: object = None) -> dict:
+        """Send the new accusation:state; the proposer's own vote may already end the game."""
+
+        async def propose(
+            db: AsyncSession, player: Player, payload: AccusationChoices
+        ) -> accusation.VoteOutcome:
+            return await accusation.propose(db, player, payload, _connected())
+
         try:
-            _, proposal = await _apply(sid, data, AccusationChoices, accusation.propose)
+            _, outcome = await _apply(sid, data, AccusationChoices, propose)
         except Refused as refused:
             return _error(str(refused))
-        await _send_accusation_state(proposal)
+        await _send_vote_outcome(outcome)
         return _ok()
 
     async def _send_vote_outcome(outcome: accusation.VoteOutcome) -> None:

@@ -219,7 +219,11 @@ describe('interrogation', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: 'Ask question' }))
     await waitFor(() =>
-      expect(send).toHaveBeenCalledWith({ suspect: 'strat', question: 'Really?', evidence: 'entry-1' }),
+      expect(send).toHaveBeenCalledWith({
+        suspect: 'strat',
+        question: 'Really?',
+        evidence: 'entry-1',
+      }),
     )
   })
   it('blocks duplicate submissions and exhaustion, and allows questions without evidence', async () => {

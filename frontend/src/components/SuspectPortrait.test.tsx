@@ -182,16 +182,14 @@ describe('backend emotion updates with the real portrait component', () => {
     render(<InterrogationScreen onReturnToStation={vi.fn()} />)
     expectPortrait(suspects[0], 'sad')
     act(() => {
-      useGameStore
-        .getState()
-        .applySnapshot({
-          ...snapshot,
-          interrogations: snapshot.interrogations.map((record) =>
-            record.suspect === 'strat'
-              ? { ...record, entries: [...record.entries, answerFor('strat', 'angry', 1).entry] }
-              : record,
-          ),
-        })
+      useGameStore.getState().applySnapshot({
+        ...snapshot,
+        interrogations: snapshot.interrogations.map((record) =>
+          record.suspect === 'strat'
+            ? { ...record, entries: [...record.entries, answerFor('strat', 'angry', 1).entry] }
+            : record,
+        ),
+      })
     })
     expectPortrait(suspects[0], 'angry')
   })
